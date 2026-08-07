@@ -12,7 +12,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'phone', 'address', 'is_active',
+        'name', 'email', 'password', 'role', 'phone', 'address', 'is_active', 'photo',
     ];
 
     protected $hidden = [
@@ -42,5 +42,17 @@ class User extends Authenticatable
     public function isOrangTua(): bool
     {
         return $this->role === 'orang_tua';
+    }
+
+    // Relasi jika role = orang_tua
+    public function students()
+    {
+        return $this->hasMany(Student::class, 'parent_id');
+    }
+
+    // Relasi jika role = pelatih
+    public function classes()
+    {
+        return $this->hasMany(SchoolClass::class, 'coach_id');
     }
 }

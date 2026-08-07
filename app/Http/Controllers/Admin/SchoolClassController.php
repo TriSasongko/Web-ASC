@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Program;
+use App\Models\SchoolClass;
+use App\Models\User;
+use Illuminate\Http\Request;
+
+class SchoolClassController extends Controller
+{
+    public function index(Request $request)
+    {
+        $classes = SchoolClass::with(['program', 'coach', 'schedules'])
+            ->when($request->program_id, fn($q) => $q->where('program_id', $request->program_id))
+            ->latest()
+            ->paginate(10);
+
+        $programs = Program::where('is_active', true)->get();
+
+        return view('admin.classes.index', compact('classes', 'programs'));
+    }
+
+    public function create()
+    {
+        $programs = Program::where('is_active', true)->get();
+        $coaches = User::where('role', 'pelatih')->where('is_active', true)->get();
+
+        return view('admin.classes.create', compact('programs', 'coaches'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'program_id' => ['required', 'exists:programs,id'],
+            'coach_id' => ['required', 'exists:users,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'capacity' => ['nullable', 'integer', 'min:1'],
+        ]);
+
+        SchoolClass::create($validated);
+
+        return redirect()->route('admin.classes.index')->with('success', 'Kelas berhasil dibuat.');
+    }
+
+    public function edit(SchoolClass $class)
+    {
+        $programs = Program::where('is_active', true)->get();
+        $coaches = User::where('role', 'pelatih')->where('is_active', true)->get();
+
+        return view('admin.classes.edit', compact('class', 'programs', 'coaches'));
+    }
+
+    public function update(Request $request, SchoolClass $class)
+    {
+        $validated = $request->validate([
+            'program_id' => ['required', 'exists:programs,id'],
+            'coach_id' => ['required', 'exists:users,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'capacity' => ['nullable', 'integer', 'min:1'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $validated['is_active'] = $request->has('is_active');
+
+        $class->update($validated);
+
+        return redirect()->route('admin.classes.index')->with('success', 'Kelas berhasil diperbarui.');
+    }
+
+    public function destroy(SchoolClass $class)
+    {
+        $class->delete();
+        return back()->with('success', 'Kelas berhasil dihapus.');
+    }
+
+    public function show(SchoolClass $class)
+    {
+        $class->load(['program', 'coach', 'schedules', 'students']);
+        return view('admin.classes.show', compact('class'));
+    }
+}
