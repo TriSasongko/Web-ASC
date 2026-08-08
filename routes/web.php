@@ -8,11 +8,15 @@ use App\Http\Controllers\Admin\CoachController;
 use App\Http\Controllers\Admin\ParentController;
 use App\Http\Controllers\OrangTua\RegistrationController as OrangTuaRegistration;
 use App\Http\Controllers\Admin\RegistrationController as AdminRegistration;
+use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\ClassScheduleController;
 use App\Http\Controllers\Admin\ClassStudentController;
 use App\Http\Controllers\Pelatih\AttendanceController as PelatihAttendance;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendance;
+use App\Http\Controllers\Pelatih\DevelopmentController as PelatihDevelopment;
+use App\Http\Controllers\Admin\DevelopmentController as AdminDevelopment;
+use App\Http\Controllers\ERaportController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -41,14 +45,22 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('registrations/{registration}/accept', [AdminRegistration::class, 'accept'])->name('registrations.accept');
     Route::patch('registrations/{registration}/reject', [AdminRegistration::class, 'reject'])->name('registrations.reject');
 
+
+    // Route Siswa untuk Admin
+    Route::get('students', [StudentController::class, 'index'])->name('students.index');
+    Route::get('students/{student}', [StudentController::class, 'show'])->name('students.show');
+
+
     // Route Kelas, Jadwal, Penempatan Siswa
     Route::resource('classes', SchoolClassController::class);
     Route::post('classes/{class}/schedules', [ClassScheduleController::class, 'store'])->name('classes.schedules.store');
     Route::delete('schedules/{schedule}', [ClassScheduleController::class, 'destroy'])->name('schedules.destroy');
 
+
     Route::get('class-students/unplaced', [ClassStudentController::class, 'unplaced'])->name('class-students.unplaced');
     Route::post('registrations/{registration}/place', [ClassStudentController::class, 'place'])->name('class-students.place');
     Route::delete('classes/{class}/students/{studentId}', [ClassStudentController::class, 'remove'])->name('class-students.remove');
+
 
     // Route Absensi untuk Admin
     Route::get('attendances', [AdminAttendance::class, 'index'])->name('attendances.index');
@@ -58,17 +70,28 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('attendance-records/{attendance}/edit', [AdminAttendance::class, 'edit'])->name('attendances.edit');
     Route::put('attendance-records/{attendance}', [AdminAttendance::class, 'update'])->name('attendances.update');
     Route::delete('attendance-records/{attendance}', [AdminAttendance::class, 'destroy'])->name('attendances.destroy');
+
+    // Route Perkembangan Siswa untuk Admin
+    Route::get('developments', [AdminDevelopment::class, 'index'])->name('developments.index');
+    Route::delete('developments/{development}', [AdminDevelopment::class, 'destroy'])->name('developments.destroy');
 });
 
 
 Route::middleware(['auth', 'role:pelatih'])->prefix('pelatih')->name('pelatih.')->group(function () {
     Route::get('/dashboard', [PelatihDashboard::class, 'index'])->name('dashboard');
 
+
     // Route Absensi untuk Pelatih
     Route::get('attendances', [PelatihAttendance::class, 'index'])->name('attendances.index');
     Route::get('attendances/{class}/create', [PelatihAttendance::class, 'create'])->name('attendances.create');
     Route::post('attendances/{class}', [PelatihAttendance::class, 'store'])->name('attendances.store');
     Route::get('attendances/{class}/history', [PelatihAttendance::class, 'history'])->name('attendances.history');
+
+    // Route Perkembangan Siswa untuk Pelatih
+    Route::get('classes/{class}/developments', [PelatihDevelopment::class, 'index'])->name('developments.index');
+    Route::get('classes/{class}/developments/{student}/create', [PelatihDevelopment::class, 'create'])->name('developments.create');
+    Route::post('classes/{class}/developments/{student}', [PelatihDevelopment::class, 'store'])->name('developments.store');
+    Route::get('classes/{class}/developments/{student}/history', [PelatihDevelopment::class, 'history'])->name('developments.history');
 });
 
 
@@ -98,6 +121,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Route E-Raport (dipakai bersama Admin & Orang Tua, otorisasi dicek di controller)
+    Route::get('/eraport/{student}/{developmentId}', [ERaportController::class, 'show'])->name('eraport.show');
+    Route::get('/eraport/{student}/{developmentId}/pdf', [ERaportController::class, 'downloadPdf'])->name('eraport.pdf');
 });
 
 

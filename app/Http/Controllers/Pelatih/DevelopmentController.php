@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Http\Controllers\Pelatih;
+
+use App\Http\Controllers\Controller;
+use App\Models\Development;
+use App\Models\SchoolClass;
+use Illuminate\Http\Request;
+
+class DevelopmentController extends Controller
+{
+    // Daftar siswa di kelas yang diampu, untuk dipilih isi perkembangannya
+    public function index(SchoolClass $class)
+    {
+        abort_unless($class->coach_id === auth()->id(), 403);
+
+        $students = $class->students()->wherePivot('is_active', true)->get();
+
+        return view('pelatih.developments.index', compact('class', 'students'));
+    }
+
+    public function create(SchoolClass $class, \App\Models\Student $student)
+    {
+        abort_unless($class->coach_id === auth()->id(), 403);
+
+        return view('pelatih.developments.create', compact('class', 'student'));
+    }
+
+    public function store(Request $request, SchoolClass $class, \App\Models\Student $student)
+    {
+        abort_unless($class->coach_id === auth()->id(), 403);
+
+        $rules = ['period' => ['required', 'string', 'max:255']];
+        foreach (Development::aspects() as $key => $label) {
+            $rules[$key] = ['required', 'in:belum,cukup,baik,sangat_baik'];
+        }
+        $rules['coach_note'] = ['nullable', 'string'];
+
+        $validated = $request->validate($rules);
+        $validated['class_id'] = $class->id;
+        $validated['student_id'] = $student->id;
+        $validated['coach_id'] = auth()->id();
+
+        Development::updateOrCreate(
+            ['class_id' => $class->id, 'student_id' => $student->id, 'period' => $validated['period']],
+            $validated
+        );
+
+        return redirect()->route('pelatih.developments.index', $class)
+            ->with('success', 'Perkembangan siswa berhasil disimpan.');
+    }
+
+    // Riwayat semua periode penilaian untuk 1 siswa
+    public function history(SchoolClass $class, \App\Models\Student $student)
+    {
+        abort_unless($class->coach_id === auth()->id(), 403);
+
+        $developments = Development::where('class_id', $class->id)
+            ->where('student_id', $student->id)
+            ->latest()
+            ->get();
+
+        return view('pelatih.developments.history', compact('class', 'student', 'developments'));
+    }
+}

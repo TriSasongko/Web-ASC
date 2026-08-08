@@ -28,6 +28,7 @@
                                 <td class="px-4 py-2">{{ $class->students()->wherePivot('is_active', true)->count() }}</td>
                                 <td class="px-4 py-2 space-x-2">
                                     <a href="{{ route('pelatih.attendances.create', $class) }}" class="text-indigo-600">Ambil Absensi</a>
+                                    <a href="{{ route('pelatih.developments.index', $class) }}" class="text-green-600">Perkembangan</a>
                                     <a href="{{ route('pelatih.attendances.history', $class) }}" class="text-gray-600">Riwayat</a>
                                 </td>
                             </tr>

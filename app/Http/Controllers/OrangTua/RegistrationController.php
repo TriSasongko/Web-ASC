@@ -24,12 +24,22 @@ class RegistrationController extends Controller
 
     public function create()
     {
+        if (empty(auth()->user()->phone)) {
+            return redirect()->route('profile.edit')
+                ->with('warning', 'Mohon lengkapi Nomor HP/WhatsApp Anda terlebih dahulu sebelum mendaftarkan anak.');
+        }
+
         $programs = Program::where('is_active', true)->get();
         return view('orangtua.registrations.create', compact('programs'));
     }
 
     public function store(Request $request)
     {
+        if (empty(auth()->user()->phone)) {
+            return redirect()->route('profile.edit')
+                ->with('warning', 'Mohon lengkapi Nomor HP/WhatsApp Anda terlebih dahulu.');
+        }
+
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
             'birth_place' => ['nullable', 'string', 'max:255'],

@@ -31,6 +31,12 @@
                         <x-nav-link :href="route('admin.attendances.index')" :active="request()->routeIs('admin.attendances.*')">
                             {{ __('Absensi') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.students.index')" :active="request()->routeIs('admin.students.*')">
+                            {{ __('Siswa') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.developments.index')" :active="request()->routeIs('admin.developments.*')">
+                            {{ __('Perkembangan') }}
+                        </x-nav-link>
                     @endif
                     @if (auth()->user()->role === 'pelatih')
                         <x-nav-link :href="route('pelatih.attendances.index')" :active="request()->routeIs('pelatih.attendances.*')">
