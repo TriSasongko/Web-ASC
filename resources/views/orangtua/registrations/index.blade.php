@@ -17,13 +17,23 @@
                     </a>
                 </div>
 
+                @php
+                    $jam = (int) now()->format('G');
+                    $salam = match (true) {
+                        $jam >= 5 && $jam < 11 => 'pagi',
+                        $jam >= 11 && $jam < 15 => 'siang',
+                        $jam >= 15 && $jam < 18 => 'sore',
+                        default => 'malam',
+                    };
+                @endphp
+
                 <table class="w-full text-sm text-left">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-4 py-2">Nama Anak</th>
                             <th class="px-4 py-2">Program</th>
                             <th class="px-4 py-2">Status</th>
-                            <th class="px-4 py-2">Catatan</th>
+                            <th class="px-4 py-2">Konfirmasi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,7 +53,32 @@
                                         {{ str_replace('_', ' ', ucfirst($reg->status)) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-2">{{ $reg->rejection_reason ?? '-' }}</td>
+                                @php
+                                    $student = $reg->student;
+                                    $gender = $student->gender === 'L' ? 'Laki-laki' : 'Perempuan';
+                                    $ttl = implode(', ', array_filter([$student->birth_place, $student->birth_date?->format('d/m/Y')])) ?: '-';
+
+                                    $waText = "Selamat {$salam} Admin Antasena Swimming Club.\n\n"
+                                        . "Saya orang tua/wali dari calon peserta didik yang ingin mendaftarkan diri ke Antasena Swimming Club. Berikut data yang telah saya isi:\n\n"
+                                        . "*Formulir Pendaftaran Antasena Swimming Club*\n\n"
+                                        . "Nama : {$student->full_name}\n"
+                                        . "TTL : {$ttl}\n"
+                                        . "Jenis Kelamin : {$gender}\n"
+                                        . "No. HP : " . (auth()->user()->phone ?: '-') . "\n"
+                                        . "Alamat : " . ($student->address ?: '-') . "\n"
+                                        . "Kelas/Program : {$reg->program->name}\n"
+                                        . "BB : " . ($student->weight ?: '-') . " kg\n"
+                                        . "TB : " . ($student->height ?: '-') . " cm\n\n"
+                                        . "Mohon dibantu untuk proses pendaftarannya, Admin.\n\n"
+                                        . "Terima kasih atas bantuan dan informasinya.";
+
+                                    $waUrl = 'https://wa.me/62895609706131?text=' . rawurlencode($waText);
+                                @endphp
+                                <td class="px-4 py-2">
+                                    <a href="{{ $waUrl }}" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs font-medium rounded-md">
+                                        Konfirmasi via WhatsApp
+                                    </a>
+                                </td>
                             </tr>
                         @empty
                             <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Belum ada pendaftaran.</td></tr>
