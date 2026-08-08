@@ -70,14 +70,18 @@
                                         . "BB : " . ($student->weight ?: '-') . " kg\n"
                                         . "TB : " . ($student->height ?: '-') . " cm\n\n"
                                         . "Mohon dibantu untuk proses pendaftarannya, Admin.\n\n"
-                                        . "Terima kasih atas bantuan dan informasinya.";
+                                        . "Terima kasih atas bantuan dan informasinya. 🙏";
 
                                     $waUrl = 'https://wa.me/62895609706131?text=' . rawurlencode($waText);
                                 @endphp
                                 <td class="px-4 py-2">
-                                    <a href="{{ $waUrl }}" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs font-medium rounded-md">
-                                        Konfirmasi via WhatsApp
-                                    </a>
+                                    @if ($reg->status === 'menunggu_verifikasi')
+                                        <a href="{{ $waUrl }}" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs font-medium rounded-md">
+                                            Konfirmasi via WhatsApp
+                                        </a>
+                                    @else
+                                        <span class="text-xs text-gray-400">-</span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
