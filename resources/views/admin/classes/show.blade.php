@@ -66,7 +66,10 @@
             </div>
 
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="font-semibold mb-3">Siswa di Kelas Ini</h3>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-semibold">Siswa di Kelas Ini</h3>
+                    <a href="{{ route('admin.classes.developments.index', $class) }}" class="text-indigo-600 text-sm">Perkembangan Siswa →</a>
+                </div>
                 <table class="w-full text-sm text-left">
                     <thead class="bg-gray-50">
                         <tr>
@@ -80,8 +83,9 @@
                             <tr class="border-b">
                                 <td class="px-4 py-2">{{ $student->full_name }}</td>
                                 <td class="px-4 py-2">{{ $student->pivot->sessions_completed }}/{{ $class->program->total_sessions ?? '-' }}</td>
-                                <td class="px-4 py-2">
-                                    <form action="{{ route('admin.class-students.remove', [$class, $student->id]) }}" method="POST"
+                                <td class="px-4 py-2 space-x-2">
+                                    <a href="{{ route('admin.classes.developments.history', [$class, $student]) }}" class="text-indigo-600">Perkembangan</a>
+                                    <form action="{{ route('admin.class-students.remove', [$class, $student->id]) }}" method="POST" class="inline"
                                           onsubmit="return confirm('Keluarkan siswa dari kelas ini?')">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="text-red-600">Keluarkan</button>

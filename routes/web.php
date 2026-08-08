@@ -74,6 +74,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Route Perkembangan Siswa untuk Admin
     Route::get('developments', [AdminDevelopment::class, 'index'])->name('developments.index');
     Route::delete('developments/{development}', [AdminDevelopment::class, 'destroy'])->name('developments.destroy');
+    Route::get('classes/{class}/developments', [AdminDevelopment::class, 'classIndex'])->name('classes.developments.index');
+    Route::get('classes/{class}/developments/{student}/create', [AdminDevelopment::class, 'create'])->name('classes.developments.create');
+    Route::post('classes/{class}/developments/{student}', [AdminDevelopment::class, 'store'])->name('classes.developments.store');
+    Route::get('classes/{class}/developments/{student}/history', [AdminDevelopment::class, 'history'])->name('classes.developments.history');
 });
 
 

@@ -23,12 +23,16 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('layouts.sidebar', function ($view) {
-            $view->with('sidebarClasses', Auth::check() && Auth::user()->role === 'pelatih'
+            $role = Auth::check() ? Auth::user()->role : null;
+
+            $view->with('sidebarClasses', $role === 'pelatih'
                 ? SchoolClass::where('coach_id', Auth::id())
                     ->where('is_active', true)
                     ->orderBy('name')
                     ->get()
-                : collect());
+                : ($role === 'admin'
+                    ? SchoolClass::where('is_active', true)->orderBy('name')->get()
+                    : collect()));
         });
     }
 }
