@@ -28,6 +28,14 @@
                         <x-nav-link :href="route('admin.classes.index')" :active="request()->routeIs('admin.classes.*')">
                             {{ __('Kelas') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.attendances.index')" :active="request()->routeIs('admin.attendances.*')">
+                            {{ __('Absensi') }}
+                        </x-nav-link>
+                    @endif
+                    @if (auth()->user()->role === 'pelatih')
+                        <x-nav-link :href="route('pelatih.attendances.index')" :active="request()->routeIs('pelatih.attendances.*')">
+                            {{ __('Absensi') }}
+                        </x-nav-link>
                     @endif
                     @if (auth()->user()->role === 'orang_tua')
                         <x-nav-link :href="route('orangtua.registrations.index')" :active="request()->routeIs('orangtua.registrations.*')">

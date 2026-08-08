@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\RegistrationController as AdminRegistration;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\ClassScheduleController;
 use App\Http\Controllers\Admin\ClassStudentController;
+use App\Http\Controllers\Pelatih\AttendanceController as PelatihAttendance;
+use App\Http\Controllers\Admin\AttendanceController as AdminAttendance;
 use Illuminate\Support\Facades\Route;
 
 
@@ -47,11 +49,26 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('class-students/unplaced', [ClassStudentController::class, 'unplaced'])->name('class-students.unplaced');
     Route::post('registrations/{registration}/place', [ClassStudentController::class, 'place'])->name('class-students.place');
     Route::delete('classes/{class}/students/{studentId}', [ClassStudentController::class, 'remove'])->name('class-students.remove');
+
+    // Route Absensi untuk Admin
+    Route::get('attendances', [AdminAttendance::class, 'index'])->name('attendances.index');
+    Route::get('attendances/{class}/create', [AdminAttendance::class, 'create'])->name('attendances.create');
+    Route::post('attendances/{class}', [AdminAttendance::class, 'store'])->name('attendances.store');
+    Route::get('attendances/{class}/history', [AdminAttendance::class, 'history'])->name('attendances.history');
+    Route::get('attendance-records/{attendance}/edit', [AdminAttendance::class, 'edit'])->name('attendances.edit');
+    Route::put('attendance-records/{attendance}', [AdminAttendance::class, 'update'])->name('attendances.update');
+    Route::delete('attendance-records/{attendance}', [AdminAttendance::class, 'destroy'])->name('attendances.destroy');
 });
 
 
 Route::middleware(['auth', 'role:pelatih'])->prefix('pelatih')->name('pelatih.')->group(function () {
     Route::get('/dashboard', [PelatihDashboard::class, 'index'])->name('dashboard');
+
+    // Route Absensi untuk Pelatih
+    Route::get('attendances', [PelatihAttendance::class, 'index'])->name('attendances.index');
+    Route::get('attendances/{class}/create', [PelatihAttendance::class, 'create'])->name('attendances.create');
+    Route::post('attendances/{class}', [PelatihAttendance::class, 'store'])->name('attendances.store');
+    Route::get('attendances/{class}/history', [PelatihAttendance::class, 'history'])->name('attendances.history');
 });
 
 
