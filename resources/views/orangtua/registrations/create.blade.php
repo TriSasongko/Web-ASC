@@ -9,6 +9,19 @@
                 <form action="{{ route('orangtua.registrations.store') }}" method="POST" class="space-y-4">
                     @csrf
 
+                    <h3 class="font-semibold text-gray-700">Data Orang Tua</h3>
+
+                    <div>
+                        <x-input-label for="phone" value="Nomor HP / WhatsApp" />
+                        <x-text-input id="phone" name="phone" class="mt-1 block w-full"
+                                      value="{{ old('phone', auth()->user()->phone) }}"
+                                      placeholder="08xxxxxxxxxx" required />
+                        <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+                        <p class="text-xs text-gray-500 mt-1">Digunakan Admin untuk menghubungi Anda terkait pembayaran, jadwal, atau informasi penting lainnya.</p>
+                    </div>
+
+                    <hr>
+
                     <h3 class="font-semibold text-gray-700">Data Anak</h3>
 
                     <div>
