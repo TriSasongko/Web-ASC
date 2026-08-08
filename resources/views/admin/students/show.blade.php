@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-sidebar-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Rekap — {{ $student->full_name }}</h2>
     </x-slot>
@@ -97,4 +97,4 @@
             <a href="{{ route('admin.students.index') }}" class="text-gray-600">← Kembali</a>
         </div>
     </div>
-</x-app-layout>
+</x-sidebar-layout>

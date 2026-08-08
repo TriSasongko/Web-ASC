@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-sidebar-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Riwayat Penilaian — {{ $student->full_name }}</h2>
     </x-slot>
@@ -27,4 +27,4 @@
             <a href="{{ route('pelatih.developments.index', $class) }}" class="text-gray-600">← Kembali</a>
         </div>
     </div>
-</x-app-layout>
+</x-sidebar-layout>

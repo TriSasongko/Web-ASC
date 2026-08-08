@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-sidebar-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Riwayat Absensi — {{ $class->name }}</h2>
     </x-slot>
@@ -39,4 +39,4 @@
             <a href="{{ route('pelatih.attendances.index') }}" class="text-gray-600 mt-4 inline-block">← Kembali</a>
         </div>
     </div>
-</x-app-layout>
+</x-sidebar-layout>

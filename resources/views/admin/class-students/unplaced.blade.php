@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-sidebar-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Siswa Belum Ditempatkan</h2>
     </x-slot>
@@ -50,4 +50,4 @@
             <a href="{{ route('admin.classes.index') }}" class="text-gray-600">← Kembali ke Kelas</a>
         </div>
     </div>
-</x-app-layout>
+</x-sidebar-layout>
