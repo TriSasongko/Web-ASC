@@ -33,15 +33,20 @@
 
                     <div>
                         <x-input-label for="name" value="Nama Kelas" />
-                        <x-text-input id="name" name="name" class="mt-1 block w-full" value="{{ old('name') }}" placeholder="Contoh: Reguler A" required />
+                        <select id="name" name="name" class="mt-1 block w-full border-gray-300 rounded-md" required>
+                            <option value="">-- Pilih Level --</option>
+                            @foreach (['Beginner', 'Advanced', 'Elite'] as $level)
+                                <option value="{{ $level }}" {{ old('name') == $level ? 'selected' : '' }}>{{ $level }}</option>
+                            @endforeach
+                        </select>
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
 
-                    <div>
+                    {{-- <div>
                         <x-input-label for="capacity" value="Kapasitas (opsional)" />
                         <x-text-input id="capacity" type="number" name="capacity" class="mt-1 block w-full" value="{{ old('capacity') }}" />
                         <x-input-error :messages="$errors->get('capacity')" class="mt-2" />
-                    </div>
+                    </div> --}}
 
                     <div class="flex justify-end gap-2">
                         <a href="{{ route('admin.classes.index') }}" class="px-4 py-2 bg-gray-200 rounded-md">Batal</a>

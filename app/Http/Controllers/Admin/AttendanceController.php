@@ -14,7 +14,7 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         $classes = SchoolClass::with(['program', 'coach'])
-            ->when($request->coach_id, fn($q) => $q->where('coach_id', $request->coach_id))
+            ->when($request->coach_id, fn ($q) => $q->where('coach_id', $request->coach_id))
             ->where('is_active', true)
             ->get();
 
@@ -26,6 +26,7 @@ class AttendanceController extends Controller
     public function create(SchoolClass $class)
     {
         $students = $class->students()->wherePivot('is_active', true)->get();
+
         return view('admin.attendances.create', compact('class', 'students'));
     }
 
@@ -33,10 +34,12 @@ class AttendanceController extends Controller
     {
         $validated = $request->validate([
             'attendance_date' => ['required', 'date'],
-            'session_number' => ['required', 'integer', 'min:1'],
+            'session_number' => ['nullable', 'integer', 'min:1'],
             'attendance' => ['required', 'array'],
             'attendance.*' => ['required', 'in:hadir,tidak_hadir'],
         ]);
+
+        $validated['session_number'] ??= 1;
 
         DB::transaction(function () use ($validated, $class) {
             foreach ($validated['attendance'] as $studentId => $status) {

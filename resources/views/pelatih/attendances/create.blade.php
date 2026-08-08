@@ -10,19 +10,19 @@
                 <form action="{{ route('pelatih.attendances.store', $class) }}" method="POST" class="space-y-4">
                     @csrf
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4">
                         <div>
                             <x-input-label for="attendance_date" value="Tanggal Latihan" />
                             <x-text-input id="attendance_date" type="date" name="attendance_date" class="mt-1 block w-full"
                                           value="{{ old('attendance_date', now()->format('Y-m-d')) }}" required />
                             <x-input-error :messages="$errors->get('attendance_date')" class="mt-2" />
                         </div>
-                        <div>
+                        {{-- <div>
                             <x-input-label for="session_number" value="Sesi Ke-" />
                             <x-text-input id="session_number" type="number" min="1" name="session_number" class="mt-1 block w-full"
                                           value="{{ old('session_number', 1) }}" required />
                             <x-input-error :messages="$errors->get('session_number')" class="mt-2" />
-                        </div>
+                        </div> --}}
                     </div>
 
                     <hr>

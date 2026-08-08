@@ -13,8 +13,8 @@ class RegistrationController extends Controller
     public function index()
     {
         $registrations = Registration::whereHas('student', function ($q) {
-                $q->where('parent_id', auth()->id());
-            })
+            $q->where('parent_id', auth()->id());
+        })
             ->with(['student', 'program'])
             ->latest()
             ->paginate(10);
@@ -25,6 +25,7 @@ class RegistrationController extends Controller
     public function create()
     {
         $programs = Program::where('is_active', true)->get();
+
         return view('orangtua.registrations.create', compact('programs'));
     }
 
@@ -33,12 +34,12 @@ class RegistrationController extends Controller
         $validated = $request->validate([
             'phone' => ['required', 'string', 'max:20'],
             'full_name' => ['required', 'string', 'max:255'],
-            'birth_place' => ['nullable', 'string', 'max:255'],
-            'birth_date' => ['nullable', 'date'],
+            'birth_place' => ['required', 'string', 'max:255'],
+            'birth_date' => ['required', 'date'],
             'gender' => ['required', 'in:L,P'],
-            'weight' => ['nullable', 'numeric'],
-            'height' => ['nullable', 'numeric'],
-            'address' => ['nullable', 'string'],
+            'weight' => ['required', 'numeric'],
+            'height' => ['required', 'numeric'],
+            'address' => ['required', 'string'],
             'program_id' => ['required', 'exists:programs,id'],
         ]);
 

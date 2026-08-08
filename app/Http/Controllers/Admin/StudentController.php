@@ -12,7 +12,8 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $students = Student::with('parent')
-            ->when($request->search, fn($q) => $q->where('full_name', 'like', '%'.$request->search.'%'))
+            ->whereHas('registrations', fn ($q) => $q->where('status', 'diterima'))
+            ->when($request->search, fn ($q) => $q->where('full_name', 'like', '%'.$request->search.'%'))
             ->latest()
             ->paginate(10);
 

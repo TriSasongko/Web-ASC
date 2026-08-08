@@ -33,11 +33,11 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <x-input-label for="birth_place" value="Tempat Lahir" />
-                            <x-text-input id="birth_place" name="birth_place" class="mt-1 block w-full" value="{{ old('birth_place') }}" />
+                            <x-text-input id="birth_place" name="birth_place" class="mt-1 block w-full" value="{{ old('birth_place') }}" required />
                         </div>
                         <div>
                             <x-input-label for="birth_date" value="Tanggal Lahir" />
-                            <x-text-input id="birth_date" type="date" name="birth_date" class="mt-1 block w-full" value="{{ old('birth_date') }}" />
+                            <x-text-input id="birth_date" type="date" name="birth_date" class="mt-1 block w-full" value="{{ old('birth_date') }}" required />
                         </div>
                     </div>
 
@@ -54,17 +54,17 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <x-input-label for="weight" value="Berat Badan (kg)" />
-                            <x-text-input id="weight" type="number" step="0.1" name="weight" class="mt-1 block w-full" value="{{ old('weight') }}" />
+                            <x-text-input id="weight" type="number" step="0.1" name="weight" class="mt-1 block w-full" value="{{ old('weight') }}" required />
                         </div>
                         <div>
                             <x-input-label for="height" value="Tinggi Badan (cm)" />
-                            <x-text-input id="height" type="number" step="0.1" name="height" class="mt-1 block w-full" value="{{ old('height') }}" />
+                            <x-text-input id="height" type="number" step="0.1" name="height" class="mt-1 block w-full" value="{{ old('height') }}" required />
                         </div>
                     </div>
 
                     <div>
                         <x-input-label for="address" value="Alamat" />
-                        <textarea id="address" name="address" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">{{ old('address') }}</textarea>
+                        <textarea id="address" name="address" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>{{ old('address') }}</textarea>
                     </div>
 
                     <hr>

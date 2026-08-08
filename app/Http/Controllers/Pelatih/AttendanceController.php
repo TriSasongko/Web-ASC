@@ -35,10 +35,12 @@ class AttendanceController extends Controller
 
         $validated = $request->validate([
             'attendance_date' => ['required', 'date'],
-            'session_number' => ['required', 'integer', 'min:1'],
+            'session_number' => ['nullable', 'integer', 'min:1'],
             'attendance' => ['required', 'array'],
             'attendance.*' => ['required', 'in:hadir,tidak_hadir'],
         ]);
+
+        $validated['session_number'] ??= 1;
 
         DB::transaction(function () use ($validated, $class) {
             foreach ($validated['attendance'] as $studentId => $status) {
