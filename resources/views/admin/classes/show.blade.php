@@ -91,10 +91,7 @@
                             @php
                                 $student = $e->student;
                                 $program = $e->schoolClass->program;
-                                $parent = $student->parent;
                                 $left = $remaining($e);
-                                $phone = preg_replace('/\D/', '', $parent->phone ?? '');
-                                $wa = 'https://wa.me/'.preg_replace('/^0/', '62', $phone);
                             @endphp
                             <tr class="border-b">
                                 <td class="px-4 py-2">{{ $student->full_name }}</td>
@@ -116,42 +113,7 @@
                                 </td>
                                 <td class="px-4 py-2 space-x-2">
                                     @if ($left !== null && $left <= 1)
-                                        <div x-data="{ open: false }" class="relative inline-block">
-                                            <button @click="open = ! open" type="button"
-                                                class="px-3 py-1 bg-indigo-600 text-white rounded-md text-xs">
-                                                Konfirmasi
-                                            </button>
-
-                                            <div x-show="open" @click.outside="open = false" x-transition
-                                                class="absolute right-0 z-20 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-                                                <p class="font-semibold text-gray-800">{{ $student->full_name }}</p>
-                                                <p class="text-sm text-gray-600">Paket: {{ $program->name }} — {{ $fmt($program->price) }}</p>
-                                                <p class="text-sm text-gray-600">Pertemuan: {{ $e->sessions_completed }}/{{ $program->total_sessions }} (sisa {{ $left }}x)</p>
-                                                <p class="text-sm text-gray-600 mb-3">Orang Tua: {{ $parent->name }} ({{ $parent->phone ?? '-' }})</p>
-
-                                                @if ($phone)
-                                                    <a href="{{ $wa }}?text={{ urlencode('Halo '.$parent->name.', paket '.$program->name.' an. '.$student->full_name.' tersisa '.$left.' pertemuan lagi. Harga '.$fmt($program->price).'. Apakah ingin memperpanjang paket?') }}"
-                                                       target="_blank" class="block text-center px-3 py-2 bg-green-600 text-white rounded-md text-xs mb-3">
-                                                        Konfirmasi via WA
-                                                    </a>
-                                                @else
-                                                    <p class="text-gray-400 text-xs mb-3">No. HP orang tua belum diisi.</p>
-                                                @endif
-
-                                                <form action="{{ route('admin.class-students.renew', $e) }}" method="POST" class="space-y-2">
-                                                    @csrf @method('PATCH')
-                                                    <input type="text" name="renewal_note" placeholder="Catatan (opsional)" class="w-full border-gray-300 rounded-md text-xs">
-                                                    <button type="submit" class="w-full px-3 py-2 bg-blue-600 text-white rounded-md text-xs">Perpanjang Paket</button>
-                                                </form>
-
-                                                <form action="{{ route('admin.class-students.stop', $e) }}" method="POST" class="mt-2 space-y-2"
-                                                      onsubmit="return confirm('Tandai '.$student->full_name.' sebagai BERHENTI?')">
-                                                    @csrf @method('PATCH')
-                                                    <input type="text" name="renewal_note" placeholder="Alasan berhenti (opsional)" class="w-full border-gray-300 rounded-md text-xs">
-                                                    <button type="submit" class="w-full px-3 py-2 bg-red-600 text-white rounded-md text-xs">Tandai Berhenti</button>
-                                                </form>
-                                            </div>
-                                        </div>
+                                        <a href="{{ route('admin.students.show', $student) }}" class="text-indigo-600">Kelola Paket</a>
                                     @endif
 
                                     <div x-data="{ open: false }" class="relative inline-block">

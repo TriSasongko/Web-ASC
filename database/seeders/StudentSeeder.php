@@ -176,16 +176,11 @@ class StudentSeeder extends Seeder
     protected function seedAttendance(Student $student, SchoolClass $class, $schedule, int $completed, User $admin): void
     {
         $total = $class->program->total_sessions;
-        $rows = min($completed + 2, $total);
+        $rows = min($completed, $total);
 
         $dates = $this->sessionDates($schedule->day, $rows);
 
-        $absentCount = $rows - $completed;
-        $absentIndexes = $absentCount > 0
-            ? (array) array_rand(range(0, $rows - 1), $absentCount)
-            : [];
-
-        foreach ($dates as $i => $date) {
+        foreach ($dates as $date) {
             Attendance::firstOrCreate(
                 [
                     'class_id' => $class->id,
@@ -195,7 +190,6 @@ class StudentSeeder extends Seeder
                 ],
                 [
                     'recorded_by' => $admin->id,
-                    'status' => in_array($i, $absentIndexes) ? 'tidak_hadir' : 'hadir',
                 ]
             );
         }

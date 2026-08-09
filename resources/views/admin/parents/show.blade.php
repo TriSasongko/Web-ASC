@@ -46,6 +46,7 @@
                             @if ($student->nickname)
                                 <span class="text-gray-500 text-sm">({{ $student->nickname }})</span>
                             @endif
+                            <a href="{{ route('admin.students.show', $student) }}" class="text-indigo-600 text-sm ml-2">Lihat Rekap →</a>
                         </p>
 
                         @forelse ($student->classes as $enrollment)
@@ -53,8 +54,6 @@
                                 $program = $enrollment->program;
                                 $total = $program->total_sessions;
                                 $left = $total === null ? null : max(0, $total - $enrollment->pivot->sessions_completed);
-                                $phone = preg_replace('/\D/', '', $parent->phone ?? '');
-                                $wa = 'https://wa.me/'.preg_replace('/^0/', '62', $phone);
                             @endphp
                             <div class="ml-4 mt-2 flex flex-wrap items-center gap-2 text-sm">
                                 <span class="text-gray-700">{{ $enrollment->name }} ({{ $program->name }} · {{ $fmt($program->price) }})</span>
@@ -71,24 +70,6 @@
                                 @else
                                     <span class="px-2 py-1 rounded text-xs bg-green-100 text-green-700">Aman</span>
                                 @endif
-
-                                <div class="space-x-2 ml-auto">
-                                    @if ($enrollment->pivot->renewal_status === 'berhenti')
-                                        <form action="{{ route('admin.class-students.activate', $enrollment->pivot->id) }}" method="POST" class="inline">
-                                            @csrf @method('PATCH')
-                                            <button type="submit" class="text-green-600">Aktifkan</button>
-                                        </form>
-                                    @else
-                                        <form action="{{ route('admin.class-students.renew', $enrollment->pivot->id) }}" method="POST" class="inline">
-                                            @csrf @method('PATCH')
-                                            <button type="submit" class="text-blue-600">Perpanjang</button>
-                                        </form>
-                                        @if ($phone && $left !== null && $left <= 1)
-                                            <a href="{{ $wa }}?text={{ urlencode('Halo '.$parent->name.', paket '.$program->name.' an. '.$student->full_name.' tersisa '.$left.' pertemuan lagi. Harga '.$fmt($program->price).'. Apakah ingin memperpanjang paket?') }}"
-                                               target="_blank" class="text-green-600">WA</a>
-                                        @endif
-                                    @endif
-                                </div>
                             </div>
                         @empty
                             <p class="ml-4 text-sm text-gray-400">Belum ada enrolment di kelas manapun.</p>

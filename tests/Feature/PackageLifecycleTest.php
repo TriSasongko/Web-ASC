@@ -260,7 +260,7 @@ class PackageLifecycleTest extends TestCase
         $this->actingAs($data['admin'])
             ->post(route('admin.attendances.store', $data['class']), [
                 'attendance_date' => '2026-08-09',
-                'attendance' => [$child->id => 'hadir'],
+                'attendance' => [$child->id],
             ])
             ->assertRedirect();
 

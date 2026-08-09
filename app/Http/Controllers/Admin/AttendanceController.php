@@ -36,13 +36,13 @@ class AttendanceController extends Controller
             'attendance_date' => ['required', 'date'],
             'session_number' => ['nullable', 'integer', 'min:1'],
             'attendance' => ['required', 'array'],
-            'attendance.*' => ['required', 'in:hadir,tidak_hadir'],
+            'attendance.*' => ['integer', 'exists:students,id'],
         ]);
 
         $validated['session_number'] ??= 1;
 
         DB::transaction(function () use ($validated, $class) {
-            foreach ($validated['attendance'] as $studentId => $status) {
+            foreach ($validated['attendance'] as $studentId) {
 
                 $exists = Attendance::where('class_id', $class->id)
                     ->where('student_id', $studentId)
@@ -60,10 +60,9 @@ class AttendanceController extends Controller
                     'recorded_by' => auth()->id(),
                     'attendance_date' => $validated['attendance_date'],
                     'session_number' => $validated['session_number'],
-                    'status' => $status,
                 ]);
 
-                if ($status === 'hadir' && $class->program->billing_type === 'per_paket') {
+                if ($class->program->billing_type === 'per_paket') {
                     $pivot = DB::table('class_student')
                         ->where('class_id', $class->id)
                         ->where('student_id', $studentId)
@@ -101,32 +100,31 @@ class AttendanceController extends Controller
     public function update(Request $request, Attendance $attendance)
     {
         $validated = $request->validate([
-            'status' => ['required', 'in:hadir,tidak_hadir'],
+            'attendance_date' => ['required', 'date'],
         ]);
 
-        $class = $attendance->schoolClass;
-        $wasHadir = $attendance->status === 'hadir';
-        $nowHadir = $validated['status'] === 'hadir';
+        $exists = Attendance::where('class_id', $attendance->class_id)
+            ->where('student_id', $attendance->student_id)
+            ->where('session_number', $attendance->session_number)
+            ->where('attendance_date', $validated['attendance_date'])
+            ->where('id', '!=', $attendance->id)
+            ->exists();
 
-        DB::transaction(function () use ($attendance, $validated, $class, $wasHadir, $nowHadir) {
-            $attendance->update($validated);
+        if ($exists) {
+            return back()->withErrors(['attendance_date' => 'Tanggal ini sudah tercatat untuk siswa tersebut.']);
+        }
 
-            if ($class->program->billing_type === 'per_paket' && $wasHadir !== $nowHadir) {
-                $adjustment = $nowHadir ? 1 : -1;
-                $class->students()->updateExistingPivot($attendance->student_id, [
-                    'sessions_completed' => DB::raw("GREATEST(0, sessions_completed + ({$adjustment}))"),
-                ]);
-            }
-        });
+        $attendance->update($validated);
 
-        return redirect()->route('admin.attendances.history', $class)->with('success', 'Absensi berhasil dikoreksi.');
+        return redirect()->route('admin.attendances.history', $attendance->schoolClass)
+            ->with('success', 'Tanggal absensi berhasil dikoreksi.');
     }
 
     public function destroy(Attendance $attendance)
     {
         $class = $attendance->schoolClass;
 
-        if ($attendance->status === 'hadir' && $class->program->billing_type === 'per_paket') {
+        if ($class->program->billing_type === 'per_paket') {
             $class->students()->updateExistingPivot($attendance->student_id, [
                 'sessions_completed' => DB::raw('GREATEST(0, sessions_completed - 1)'),
             ]);

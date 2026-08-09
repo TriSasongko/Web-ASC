@@ -28,25 +28,20 @@
                     <hr>
 
                     <h3 class="font-semibold text-gray-700">Daftar Siswa</h3>
+                    <p class="text-xs text-gray-500 mb-2">Centang siswa yang mengikuti latihan pada tanggal tersebut.</p>
 
                     @forelse ($students as $student)
                         <div class="flex items-center justify-between border-b py-2">
                             <div>
                                 <p class="font-medium">{{ $student->full_name }}</p>
                                 <p class="text-xs text-gray-500">
-                                    Sisa pertemuan: {{ $student->pivot->sessions_completed }}/{{ $class->program->total_sessions ?? '∞' }}
+                                    Pertemuan terhitung: {{ $student->pivot->sessions_completed }}/{{ $class->program->total_sessions ?? '∞' }}
                                 </p>
                             </div>
-                            <div class="flex gap-4">
-                                <label class="flex items-center gap-1">
-                                    <input type="radio" name="attendance[{{ $student->id }}]" value="hadir" required>
-                                    Hadir
-                                </label>
-                                <label class="flex items-center gap-1">
-                                    <input type="radio" name="attendance[{{ $student->id }}]" value="tidak_hadir">
-                                    Tidak Hadir
-                                </label>
-                            </div>
+                            <label class="flex items-center gap-1">
+                                <input type="checkbox" name="attendance[]" value="{{ $student->id }}" checked class="rounded border-gray-300">
+                                Hadir
+                            </label>
                         </div>
                     @empty
                         <p class="text-gray-500">Belum ada siswa aktif di kelas ini.</p>

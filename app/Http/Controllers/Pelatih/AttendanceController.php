@@ -37,13 +37,13 @@ class AttendanceController extends Controller
             'attendance_date' => ['required', 'date'],
             'session_number' => ['nullable', 'integer', 'min:1'],
             'attendance' => ['required', 'array'],
-            'attendance.*' => ['required', 'in:hadir,tidak_hadir'],
+            'attendance.*' => ['integer', 'exists:students,id'],
         ]);
 
         $validated['session_number'] ??= 1;
 
         DB::transaction(function () use ($validated, $class) {
-            foreach ($validated['attendance'] as $studentId => $status) {
+            foreach ($validated['attendance'] as $studentId) {
 
                 $exists = Attendance::where('class_id', $class->id)
                     ->where('student_id', $studentId)
@@ -61,10 +61,9 @@ class AttendanceController extends Controller
                     'recorded_by' => auth()->id(),
                     'attendance_date' => $validated['attendance_date'],
                     'session_number' => $validated['session_number'],
-                    'status' => $status,
                 ]);
 
-                if ($status === 'hadir' && $class->program->billing_type === 'per_paket') {
+                if ($class->program->billing_type === 'per_paket') {
                     $pivot = DB::table('class_student')
                         ->where('class_id', $class->id)
                         ->where('student_id', $studentId)

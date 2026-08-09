@@ -17,7 +17,6 @@
                             <th class="px-4 py-2">Tanggal</th>
                             <th class="px-4 py-2">Sesi</th>
                             <th class="px-4 py-2">Nama Siswa</th>
-                            <th class="px-4 py-2">Status</th>
                             <th class="px-4 py-2">Dicatat Oleh</th>
                             <th class="px-4 py-2">Aksi</th>
                         </tr>
@@ -28,11 +27,6 @@
                                 <td class="px-4 py-2">{{ $a->attendance_date->format('d-m-Y') }}</td>
                                 <td class="px-4 py-2">Sesi {{ $a->session_number }}</td>
                                 <td class="px-4 py-2">{{ $a->student->full_name }}</td>
-                                <td class="px-4 py-2">
-                                    <span class="px-2 py-1 rounded text-xs {{ $a->status === 'hadir' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                                        {{ $a->status === 'hadir' ? 'Hadir' : 'Tidak Hadir' }}
-                                    </span>
-                                </td>
                                 <td class="px-4 py-2">{{ $a->recorder->name }}</td>
                                 <td class="px-4 py-2 space-x-2">
                                     <a href="{{ route('admin.attendances.edit', $a) }}" class="text-indigo-600">Edit</a>

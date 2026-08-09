@@ -6,7 +6,6 @@ use App\Models\Attendance;
 use App\Models\Development;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 
 class ERaportController extends Controller
 {
@@ -18,7 +17,6 @@ class ERaportController extends Controller
 
         $attendanceCount = Attendance::where('class_id', $development->class_id)
             ->where('student_id', $student->id)
-            ->where('status', 'hadir')
             ->count();
 
         return view('eraport.show', compact('student', 'development', 'attendanceCount'));
@@ -32,7 +30,6 @@ class ERaportController extends Controller
 
         $attendanceCount = Attendance::where('class_id', $development->class_id)
             ->where('student_id', $student->id)
-            ->where('status', 'hadir')
             ->count();
 
         $pdf = Pdf::loadView('eraport.pdf', compact('student', 'development', 'attendanceCount'));

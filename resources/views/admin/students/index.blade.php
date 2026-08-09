@@ -19,6 +19,7 @@
                             <th class="px-4 py-2">Nama Siswa</th>
                             <th class="px-4 py-2">Orang Tua</th>
                             <th class="px-4 py-2">No. HP</th>
+                            <th class="px-4 py-2">Paket</th>
                             <th class="px-4 py-2">Aksi</th>
                         </tr>
                     </thead>
@@ -28,12 +29,39 @@
                                 <td class="px-4 py-2">{{ $student->full_name }}</td>
                                 <td class="px-4 py-2">{{ $student->parent->name }}</td>
                                 <td class="px-4 py-2">{{ $student->parent->phone ?? '-' }}</td>
+                                <td class="px-4 py-2 space-y-1">
+                                    @forelse ($student->classes as $class)
+                                        @if ($class->pivot->is_active)
+                                            @php
+                                                $total = $class->program->total_sessions;
+                                                $left = $total === null ? null : max(0, $total - $class->pivot->sessions_completed);
+                                            @endphp
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-gray-700">{{ $class->name }}</span>
+                                                <span class="text-gray-500 text-xs">{{ $class->pivot->sessions_completed }}/{{ $total ?? '-' }}</span>
+                                                @if ($class->pivot->renewal_status === 'lanjut')
+                                                    <span class="px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700">Lanjut</span>
+                                                @elseif ($left === null)
+                                                    <span class="px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-600">Bulanan</span>
+                                                @elseif ($left === 0)
+                                                    <span class="px-2 py-0.5 rounded text-xs bg-red-100 text-red-700">Paket habis</span>
+                                                @elseif ($left <= 1)
+                                                    <span class="px-2 py-0.5 rounded text-xs bg-yellow-100 text-yellow-700">Sisa {{ $left }}x</span>
+                                                @else
+                                                    <span class="px-2 py-0.5 rounded text-xs bg-green-100 text-green-700">Sisa {{ $left }}x</span>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    @empty
+                                        <span class="text-gray-400 text-sm">-</span>
+                                    @endforelse
+                                </td>
                                 <td class="px-4 py-2">
                                     <a href="{{ route('admin.students.show', $student) }}" class="text-indigo-600">Lihat Rekap</a>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Belum ada data siswa.</td></tr>
+                            <tr><td colspan="5" class="px-4 py-6 text-center text-gray-500">Belum ada data siswa.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

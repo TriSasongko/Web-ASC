@@ -7,18 +7,16 @@
         <div class="max-w-md mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
                 <p class="mb-2"><strong>Siswa:</strong> {{ $attendance->student->full_name }}</p>
-                <p class="mb-4"><strong>Tanggal:</strong> {{ $attendance->attendance_date->format('d-m-Y') }} — Sesi {{ $attendance->session_number }}</p>
 
                 <form action="{{ route('admin.attendances.update', $attendance) }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
 
                     <div>
-                        <x-input-label for="status" value="Status Kehadiran" />
-                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 rounded-md" required>
-                            <option value="hadir" {{ $attendance->status === 'hadir' ? 'selected' : '' }}>Hadir</option>
-                            <option value="tidak_hadir" {{ $attendance->status === 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir</option>
-                        </select>
+                        <x-input-label for="attendance_date" value="Tanggal Pertemuan" />
+                        <x-text-input id="attendance_date" type="date" name="attendance_date" class="mt-1 block w-full"
+                                      value="{{ old('attendance_date', $attendance->attendance_date->format('Y-m-d')) }}" required />
+                        <x-input-error :messages="$errors->get('attendance_date')" class="mt-2" />
                     </div>
 
                     <div class="flex justify-end gap-2">

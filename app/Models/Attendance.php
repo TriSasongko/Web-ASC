@@ -11,7 +11,7 @@ class Attendance extends Model
 
     protected $fillable = [
         'class_id', 'student_id', 'recorded_by',
-        'attendance_date', 'session_number', 'status',
+        'attendance_date', 'session_number',
     ];
 
     protected function casts(): array

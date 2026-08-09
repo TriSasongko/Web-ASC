@@ -12,7 +12,6 @@
                             <th class="px-4 py-2">Tanggal</th>
                             <th class="px-4 py-2">Sesi</th>
                             <th class="px-4 py-2">Nama Siswa</th>
-                            <th class="px-4 py-2">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -21,14 +20,9 @@
                                 <td class="px-4 py-2">{{ $a->attendance_date->format('d-m-Y') }}</td>
                                 <td class="px-4 py-2">Sesi {{ $a->session_number }}</td>
                                 <td class="px-4 py-2">{{ $a->student->full_name }}</td>
-                                <td class="px-4 py-2">
-                                    <span class="px-2 py-1 rounded text-xs {{ $a->status === 'hadir' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                                        {{ $a->status === 'hadir' ? 'Hadir' : 'Tidak Hadir' }}
-                                    </span>
-                                </td>
                             </tr>
                         @empty
-                            <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Belum ada riwayat absensi.</td></tr>
+                            <tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Belum ada riwayat absensi.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
