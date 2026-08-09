@@ -4,6 +4,7 @@
         $backUrl = ($referer && parse_url($referer, PHP_URL_HOST) === request()->getHost() && $referer !== url()->current())
             ? $referer
             : route('admin.classes.developments.index', $class);
+        $defaultPeriod = $developments->first()?->id;
     @endphp
     <div class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -17,77 +18,101 @@
             </a>
         </div>
 
-        @forelse ($developments as $dev)
-            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
-                <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex flex-wrap items-center gap-3 justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-[20px]">event_note</span>
-                        <h3 class="font-headline text-headline-sm text-on-surface">{{ $dev->period }}</h3>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <a href="{{ route('eraport.show', [$student, $dev->id]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
-                            <span class="material-symbols-outlined text-[16px]">description</span>
-                            Lihat E-Raport
-                        </a>
-                        <form action="{{ route('admin.developments.destroy', $dev) }}" method="POST" class="inline"
-                              onsubmit="return confirm('Hapus data ini?')">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="inline-flex items-center gap-1 text-error font-label-md text-label-md hover:underline">
-                                <span class="material-symbols-outlined text-[16px]">delete</span>
-                                Hapus
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="p-5 space-y-5">
-                    <div>
-                        <p class="font-label-md text-label-md text-on-surface mb-2">Penilaian Umum</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            @foreach (\App\Models\Development::umumAspects() as $key => $label)
-                                <div class="flex items-center justify-between gap-3 bg-surface-container-low rounded-lg px-3 py-2">
-                                    <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $label }}</span>
-                                    <strong class="font-label-md text-label-md text-primary">{{ \App\Models\Development::scoreLabel($dev->$key) }}</strong>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div>
-                        <p class="font-label-md text-label-md text-on-surface mb-2">Penilaian Gaya Renang</p>
-                        <div class="space-y-3">
-                            @foreach (\App\Models\Development::styles() as $style => $styleLabel)
-                                <div class="rounded-xl border border-outline-variant/30 bg-surface-container-low/40 p-3">
-                                    <p class="font-label-md text-label-md text-on-surface mb-2">{{ $styleLabel }}</p>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                        @foreach (\App\Models\Development::khususAspects() as $aspect => $label)
-                                            @php
-                                                $key = \App\Models\Development::styleAspectKey($style, $aspect);
-                                            @endphp
-                                            <div class="flex items-center justify-between gap-3 bg-surface-container-low rounded-lg px-3 py-2">
-                                                <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $label }}</span>
-                                                <strong class="font-label-md text-label-md text-primary">{{ \App\Models\Development::scoreLabel($dev->$key) }}</strong>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    @if ($dev->coach_note)
-                        <div class="flex items-start gap-2 bg-[#FFF8E1] text-[#B26A00] border border-[#B26A00]/20 px-4 py-3 rounded-lg">
-                            <span class="material-symbols-outlined text-[18px] shrink-0">note</span>
-                            <p class="font-body-sm text-body-sm">Catatan: {{ $dev->coach_note }}</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        @empty
+        @if ($developments->isEmpty())
             <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-8 text-center">
                 <span class="material-symbols-outlined text-outline text-[40px] mb-2">inbox</span>
                 <p class="font-body-sm text-body-sm text-outline">Belum ada penilaian untuk siswa ini.</p>
             </div>
-        @endforelse
+        @else
+            <div x-data="{ active: {{ $defaultPeriod }} }" class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
+                <div class="p-4 sm:p-5 border-b border-outline-variant/30 bg-surface/50">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-[20px]">event_note</span>
+                            <h3 class="font-headline text-headline-sm text-on-surface">Riwayat Periode</h3>
+                        </div>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-primary-container/60 text-on-primary">
+                            {{ $developments->count() }} periode
+                        </span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        @foreach ($developments as $devTab)
+                            <button type="button" @click="active = {{ $devTab->id }}"
+                                :class="active === {{ $devTab->id }} ? 'bg-primary text-on-primary shadow-sm' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container'"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-label-md text-label-md transition-all">
+                                <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                                {{ $devTab->period }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                @foreach ($developments as $devPanel)
+                    <div x-show="active === {{ $devPanel->id }}" x-cloak>
+                        <div class="flex flex-wrap items-center gap-3 justify-between px-5 py-3 border-b border-outline-variant/30 bg-surface-container-low/50">
+                            <span class="font-label-md text-label-md text-on-surface-variant">{{ $devPanel->period }}</span>
+                            <div class="flex items-center gap-4">
+                                <a href="{{ route('eraport.show', [$student, $devPanel->id]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+                                    <span class="material-symbols-outlined text-[16px]">description</span>
+                                    Lihat E-Raport
+                                </a>
+                                <form action="{{ route('admin.developments.destroy', $devPanel) }}" method="POST" class="inline"
+                                      onsubmit="return confirm('Hapus data ini?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="inline-flex items-center gap-1 text-error font-label-md text-label-md hover:underline">
+                                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="p-5 space-y-5">
+                            <div>
+                                <p class="font-label-md text-label-md text-on-surface mb-2">Penilaian Umum</p>
+                                <div class="divide-y divide-outline-variant/30 rounded-xl border border-outline-variant/30 overflow-hidden bg-surface-container-low/40">
+                                    @foreach (\App\Models\Development::umumAspects() as $key => $label)
+                                        <div class="flex items-center justify-between gap-3 px-4 py-2.5 bg-surface-container-lowest/60">
+                                            <span class="font-body-sm text-body-sm text-on-surface">{{ $label }}</span>
+                                            <strong class="font-label-md text-label-md text-primary">{{ \App\Models\Development::scoreLabel($devPanel->$key) }}</strong>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <div>
+                                <p class="font-label-md text-label-md text-on-surface mb-2">Penilaian Gaya Renang</p>
+                                <div class="space-y-3">
+                                    @foreach (\App\Models\Development::styles() as $style => $styleLabel)
+                                        <div class="rounded-xl border border-outline-variant/30 bg-surface-container-low/40 overflow-hidden">
+                                            <p class="font-label-md text-label-md text-on-surface px-4 py-2 bg-surface-container-low border-b border-outline-variant/30">{{ $styleLabel }}</p>
+                                            <div class="divide-y divide-outline-variant/30">
+                                                @foreach (\App\Models\Development::khususAspects() as $aspect => $label)
+                                                    @php
+                                                        $key = \App\Models\Development::styleAspectKey($style, $aspect);
+                                                    @endphp
+                                                    <div class="flex items-center justify-between gap-3 px-4 py-2.5 bg-surface-container-lowest/60">
+                                                        <span class="font-body-sm text-body-sm text-on-surface">{{ $label }}</span>
+                                                        <strong class="font-label-md text-label-md text-primary">{{ \App\Models\Development::scoreLabel($devPanel->$key) }}</strong>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            @if ($devPanel->coach_note)
+                                <div class="flex items-start gap-2 bg-[#FFF8E1] text-[#B26A00] border border-[#B26A00]/20 px-4 py-3 rounded-lg">
+                                    <span class="material-symbols-outlined text-[18px] shrink-0">note</span>
+                                    <p class="font-body-sm text-body-sm">Catatan: {{ $devPanel->coach_note }}</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 </x-sidebar-layout>
