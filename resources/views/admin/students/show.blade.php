@@ -132,41 +132,65 @@
                         @elseif ($pivot->renewal_status === 'lanjut')
                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E6F8FC] text-secondary">Lanjut</span>
                         @elseif ($left <= 1)
-                            <div x-data="{ open: false }" class="relative">
-                                <button @click="open = ! open" type="button"
+                            <div x-data="{ open: false }" class="relative inline-block">
+                                <button @click="open = true" type="button"
                                     class="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg font-label-sm text-label-sm text-on-primary hover:opacity-90 transition-all active:scale-95 {{ $left === 0 ? 'bg-error' : 'bg-[#B26A00]' }}">
                                     {{ $left === 0 ? 'Paket habis — Konfirmasi' : 'Sisa '.$left.'x — Konfirmasi' }}
                                 </button>
 
-                                <div x-show="open" @click.outside="open = false" x-transition
-                                    class="absolute left-0 z-20 mt-2 w-80 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-[0px_16px_48px_rgba(23,32,51,0.16)] p-5">
-                                    <p class="font-label-md text-label-md text-on-surface">{{ $student->full_name }}</p>
-                                    <p class="font-body-sm text-body-sm text-outline mt-1">Paket: {{ $class->program->name }} — {{ $fmt($class->program->price) }}</p>
-                                    <p class="font-body-sm text-body-sm text-outline mt-1">Pertemuan: {{ $pivot->sessions_completed }}/{{ $total }} (sisa {{ $left }}x)</p>
-                                    <p class="font-body-sm text-body-sm text-outline mt-1 mb-3">Orang Tua: {{ $student->parent->name }} ({{ $student->parent->phone ?? '-' }})</p>
+                                <div x-show="open" x-cloak x-transition.opacity
+                                    class="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+                                    @click="open = false"></div>
 
-                                    @if ($phone)
-                                        <a href="{{ $wa }}?text={{ urlencode('Halo '.$student->parent->name.', paket '.$class->program->name.' an. '.$student->full_name.' tersisa '.$left.' pertemuan lagi. Harga '.$fmt($class->program->price).'. Apakah ingin memperpanjang paket?') }}"
-                                           target="_blank" class="flex items-center justify-center gap-2 bg-[#E8F5E9] text-[#2E7D32] px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all mb-3">
-                                            <span class="material-symbols-outlined text-[16px]">chat</span>
-                                            Konfirmasi via WA
-                                        </a>
-                                    @else
-                                        <p class="font-body-sm text-body-sm text-outline mb-3">No. HP orang tua belum diisi.</p>
-                                    @endif
+                                <div x-show="open" x-cloak x-transition
+                                    @keydown.escape.window="open = false"
+                                    class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                    <div class="w-full max-w-md bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden">
+                                        <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30 bg-surface/50">
+                                            <div>
+                                                <h3 class="font-headline text-headline-sm text-on-surface">{{ $left === 0 ? 'Paket Habis' : 'Sisa '.$left.' Pertemuan' }}</h3>
+                                                <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $student->full_name }}</p>
+                                            </div>
+                                            <button @click="open = false" type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+                                                <span class="material-symbols-outlined text-[20px]">close</span>
+                                            </button>
+                                        </div>
 
-                                    <form action="{{ route('admin.class-students.renew', $pivot->id) }}" method="POST" class="space-y-2">
-                                        @csrf @method('PATCH')
-                                        <x-text-input type="text" name="renewal_note" placeholder="Catatan (opsional)" />
-                                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">Perpanjang Paket</button>
-                                    </form>
+                                        <div class="px-6 py-5 space-y-3">
+                                            <p class="font-body-sm text-body-sm text-outline">Paket: {{ $class->program->name }} — {{ $fmt($class->program->price) }}</p>
+                                            <p class="font-body-sm text-body-sm text-outline">Pertemuan: {{ $pivot->sessions_completed }}/{{ $total }} (sisa {{ $left }}x)</p>
+                                            <p class="font-body-sm text-body-sm text-outline mb-2">Orang Tua: {{ $student->parent->name }} ({{ $student->parent->phone ?? '-' }})</p>
 
-                                    <form action="{{ route('admin.class-students.stop', $pivot->id) }}" method="POST" class="mt-3 space-y-2"
-                                          onsubmit="return confirm('Tandai '.$student->full_name.' sebagai BERHENTI?')">
-                                        @csrf @method('PATCH')
-                                        <x-text-input type="text" name="renewal_note" placeholder="Alasan berhenti (opsional)" />
-                                        <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-error text-on-error px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">Tandai Berhenti</button>
-                                    </form>
+                                            @if ($phone)
+                                                <a href="{{ $wa }}?text={{ urlencode('Halo '.$student->parent->name.', paket '.$class->program->name.' an. '.$student->full_name.' tersisa '.$left.' pertemuan lagi. Harga '.$fmt($class->program->price).'. Apakah ingin memperpanjang paket?') }}"
+                                                   target="_blank" class="flex items-center justify-center gap-2 bg-[#E8F5E9] text-[#2E7D32] px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all">
+                                                    <span class="material-symbols-outlined text-[16px]">chat</span>
+                                                    Konfirmasi via WA
+                                                </a>
+                                            @else
+                                                <p class="font-body-sm text-body-sm text-outline">No. HP orang tua belum diisi.</p>
+                                            @endif
+
+                                            <form action="{{ route('admin.class-students.renew', $pivot->id) }}" method="POST" class="space-y-2">
+                                                @csrf @method('PATCH')
+                                                <x-text-input type="text" name="renewal_note" placeholder="Catatan (opsional)" />
+                                                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">Perpanjang Paket</button>
+                                            </form>
+
+                                            <form action="{{ route('admin.class-students.stop', $pivot->id) }}" method="POST" class="space-y-2"
+                                                  onsubmit="return confirm('Tandai '.$student->full_name.' sebagai BERHENTI?')">
+                                                @csrf @method('PATCH')
+                                                <x-text-input type="text" name="renewal_note" placeholder="Alasan berhenti (opsional)" />
+                                                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-error text-on-error px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">Tandai Berhenti</button>
+                                            </form>
+
+                                            <div class="flex items-center justify-end pt-1">
+                                                <button @click="open = false" type="button" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">
+                                                    Batal
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         @endif
