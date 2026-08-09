@@ -1,10 +1,10 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
+        <h2 class="font-headline text-headline-sm text-on-surface">
             {{ __('Profile Information') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
+        <p class="mt-1 font-body-sm text-body-sm text-outline">
             {{ __("Update your account's profile information and email address.") }}
         </p>
     </header>
@@ -32,17 +32,17 @@
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
                 <div>
-                    <p class="text-sm mt-2 text-gray-800">
+                    <p class="font-body-sm text-body-sm mt-2 text-on-surface-variant">
                         {{ __('Your email address is unverified.') }}
 
                         <button form="send-verification"
-                            class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            class="underline font-body-sm text-body-sm text-primary hover:text-primary/80 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary/50">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
 
                     @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
+                        <p class="mt-2 font-medium text-sm text-[#2E7D32]">
                             {{ __('A new verification link has been sent to your email address.') }}
                         </p>
                     @endif
@@ -59,7 +59,7 @@
 
         <div>
             <x-input-label for="address" value="Alamat" />
-            <textarea id="address" name="address" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">{{ old('address', $user->address) }}</textarea>
+            <textarea id="address" name="address" class="mt-1 block w-full rounded-lg bg-surface-container-low border border-outline-variant/50 text-on-surface placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary/40 font-body-sm text-body-sm transition-all">{{ old('address', $user->address) }}</textarea>
             <x-input-error class="mt-2" :messages="$errors->get('address')" />
         </div>
 
@@ -68,7 +68,7 @@
 
             @if (session('status') === 'profile-updated')
                 <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600">{{ __('Saved.') }}</p>
+                    class="font-body-sm text-body-sm text-[#2E7D32]">{{ __('Saved.') }}</p>
             @endif
         </div>
     </form>

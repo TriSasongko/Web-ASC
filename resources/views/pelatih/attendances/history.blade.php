@@ -1,36 +1,50 @@
 <x-sidebar-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Riwayat Absensi — {{ $class->name }}</h2>
-    </x-slot>
+    <div class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Riwayat Absensi</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-1">{{ $class->name }} — daftar absensi yang telah dicatat.</p>
+            </div>
+            <a href="{{ route('pelatih.attendances.create', $class) }}" class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all hover:scale-[0.98] shadow-sm active:scale-95 shrink-0">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Ambil Absensi
+            </a>
+        </div>
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <table class="w-full text-sm text-left">
-                    <thead class="bg-gray-50">
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)]">
+            <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
+                <h3 class="font-headline text-headline-sm text-on-surface">Riwayat {{ $class->name }}</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-surface-container-low">
                         <tr>
-                            <th class="px-4 py-2">Tanggal</th>
-                            <th class="px-4 py-2">Sesi</th>
-                            <th class="px-4 py-2">Nama Siswa</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-left">Tanggal</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-left">Sesi</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-left">Nama Siswa</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-outline-variant/30">
                         @forelse ($attendances as $a)
-                            <tr class="border-b">
-                                <td class="px-4 py-2">{{ $a->attendance_date->format('d-m-Y') }}</td>
-                                <td class="px-4 py-2">Sesi {{ $a->session_number }}</td>
-                                <td class="px-4 py-2">{{ $a->student->full_name }}</td>
+                            <tr class="hover:bg-surface-container-low/50 transition-colors">
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $a->attendance_date->format('d-m-Y') }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">Sesi {{ $a->session_number }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $a->student->full_name }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="3" class="px-4 py-6 text-center text-gray-500">Belum ada riwayat absensi.</td></tr>
+                            <tr>
+                                <td colspan="3" class="px-4 py-6 text-center font-body-sm text-body-sm text-outline">Belum ada riwayat absensi.</td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
-
-                <div class="mt-4">{{ $attendances->links() }}</div>
             </div>
-
-            <a href="{{ route('pelatih.attendances.index') }}" class="text-gray-600 mt-4 inline-block">← Kembali</a>
+            <div class="p-4 border-t border-outline-variant/30">{{ $attendances->links() }}</div>
         </div>
+
+        <a href="{{ route('pelatih.attendances.index') }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Kembali
+        </a>
     </div>
 </x-sidebar-layout>

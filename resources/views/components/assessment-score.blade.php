@@ -5,7 +5,7 @@
         <label class="cursor-pointer">
             <input type="radio" name="{{ $name }}" value="{{ $scoreKey }}" class="peer sr-only"
                    {{ (old($name) ?? $value) === $scoreKey ? 'checked' : '' }} required>
-            <span class="block rounded-md border border-gray-300 px-3 py-2 text-center text-sm font-medium text-gray-700 transition peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-checked:text-white">
+            <span class="block rounded-lg border border-outline-variant/50 bg-surface-container-low px-3 py-2 text-center font-label-md text-label-md text-on-surface-variant transition peer-checked:border-primary peer-checked:bg-primary peer-checked:text-on-primary peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-primary/50">
                 {{ $loop->iteration }}
             </span>
         </label>

@@ -1,35 +1,44 @@
 <x-sidebar-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Data Siswa</h2>
-    </x-slot>
+    <div class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Data Siswa</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-1">Kelola dan pantau data siswa beserta paketnya.</p>
+            </div>
+        </div>
 
-    <div class="py-12">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-4">
-
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <form method="GET" class="mb-4">
-                    <input type="text" name="search" value="{{ request('search') }}"
-                           placeholder="Cari nama siswa..." class="border-gray-300 rounded-md shadow-sm">
-                    <button type="submit" class="px-4 py-2 bg-gray-600 text-white rounded-md">Cari</button>
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
+            <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
+                <form method="GET" class="flex items-center gap-2">
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                               placeholder="Cari nama siswa..." class="w-full sm:w-64 pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/50 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-body-sm text-body-sm transition-all">
+                    </div>
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">
+                        Cari
+                    </button>
                 </form>
+            </div>
 
-                <table class="w-full text-sm text-left">
-                    <thead class="bg-gray-50">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-surface-container-low">
                         <tr>
-                            <th class="px-4 py-2">Nama Siswa</th>
-                            <th class="px-4 py-2">Orang Tua</th>
-                            <th class="px-4 py-2">No. HP</th>
-                            <th class="px-4 py-2">Paket</th>
-                            <th class="px-4 py-2">Aksi</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nama Siswa</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Orang Tua</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">No. HP</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Paket</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-outline-variant/30">
                         @forelse ($students as $student)
-                            <tr class="border-b">
-                                <td class="px-4 py-2">{{ $student->full_name }}</td>
-                                <td class="px-4 py-2">{{ $student->parent->name }}</td>
-                                <td class="px-4 py-2">{{ $student->parent->phone ?? '-' }}</td>
-                                <td class="px-4 py-2 space-y-1">
+                            <tr class="hover:bg-surface-container-low/50 transition-colors">
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $student->full_name }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $student->parent->name }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $student->parent->phone ?? '-' }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface space-y-1">
                                     @forelse ($student->classes as $class)
                                         @if ($class->pivot->is_active)
                                             @php
@@ -37,37 +46,39 @@
                                                 $left = $total === null ? null : max(0, $total - $class->pivot->sessions_completed);
                                             @endphp
                                             <div class="flex items-center gap-2">
-                                                <span class="text-gray-700">{{ $class->name }}</span>
-                                                <span class="text-gray-500 text-xs">{{ $class->pivot->sessions_completed }}/{{ $total ?? '-' }}</span>
+                                                <span class="font-body-sm text-body-sm text-on-surface">{{ $class->name }}</span>
+                                                <span class="font-body-sm text-body-sm text-outline">{{ $class->pivot->sessions_completed }}/{{ $total ?? '-' }}</span>
                                                 @if ($class->pivot->renewal_status === 'lanjut')
-                                                    <span class="px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700">Lanjut</span>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E6F8FC] text-secondary">Lanjut</span>
                                                 @elseif ($left === null)
-                                                    <span class="px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-600">Bulanan</span>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">Bulanan</span>
                                                 @elseif ($left === 0)
-                                                    <span class="px-2 py-0.5 rounded text-xs bg-red-100 text-red-700">Paket habis</span>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">Paket habis</span>
                                                 @elseif ($left <= 1)
-                                                    <span class="px-2 py-0.5 rounded text-xs bg-yellow-100 text-yellow-700">Sisa {{ $left }}x</span>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#FFF8E1] text-[#B26A00]">Sisa {{ $left }}x</span>
                                                 @else
-                                                    <span class="px-2 py-0.5 rounded text-xs bg-green-100 text-green-700">Sisa {{ $left }}x</span>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E8F5E9] text-[#2E7D32]">Sisa {{ $left }}x</span>
                                                 @endif
                                             </div>
                                         @endif
                                     @empty
-                                        <span class="text-gray-400 text-sm">-</span>
+                                        <span class="font-body-sm text-body-sm text-outline">-</span>
                                     @endforelse
                                 </td>
-                                <td class="px-4 py-2">
-                                    <a href="{{ route('admin.students.show', $student) }}" class="text-indigo-600">Lihat Rekap</a>
+                                <td class="px-4 py-3">
+                                    <a href="{{ route('admin.students.show', $student) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Lihat Rekap</a>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="px-4 py-6 text-center text-gray-500">Belum ada data siswa.</td></tr>
+                            <tr>
+                                <td colspan="5" class="px-4 py-10 text-center font-body-sm text-body-sm text-outline">Belum ada data siswa.</td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
-
-                <div class="mt-4">{{ $students->links() }}</div>
             </div>
+
+            <div class="p-5 border-t border-outline-variant/30">{{ $students->links() }}</div>
         </div>
     </div>
 </x-sidebar-layout>

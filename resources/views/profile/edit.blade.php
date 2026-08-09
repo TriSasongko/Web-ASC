@@ -1,36 +1,32 @@
 <x-sidebar-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-headline text-headline-md text-on-surface">
             {{ __('Profile') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="space-y-6 max-w-4xl">
         @if (session('warning'))
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
-                <div class="bg-yellow-100 text-yellow-800 px-4 py-3 rounded-md">
-                    {{ session('warning') }}
-                </div>
+            <div class="bg-[#FFF8E1] text-[#8D6E00] border border-[#FFB300]/30 px-4 py-3 rounded-lg font-body-sm text-body-sm">
+                {{ session('warning') }}
             </div>
         @endif
 
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
+        <div class="p-4 sm:p-8 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)]">
+            <div class="max-w-xl">
+                @include('profile.partials.update-profile-information-form')
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
+        <div class="p-4 sm:p-8 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)]">
+            <div class="max-w-xl">
+                @include('profile.partials.update-password-form')
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
+        <div class="p-4 sm:p-8 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)]">
+            <div class="max-w-xl">
+                @include('profile.partials.delete-user-form')
             </div>
         </div>
     </div>

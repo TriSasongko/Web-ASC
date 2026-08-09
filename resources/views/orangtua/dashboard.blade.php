@@ -1,100 +1,147 @@
 <x-sidebar-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard Orang Tua</h2>
-    </x-slot>
-
     @php
         $fmt = fn ($n) => 'Rp '.number_format($n ?? 0, 0, ',', '.');
     @endphp
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                Selamat datang, {{ auth()->user()->name }}!
+    <div class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Dashboard Orang Tua</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-1">Selamat datang, {{ auth()->user()->name }}! Pantau perkembangan dan pendaftaran anak Anda.</p>
             </div>
+        </div>
 
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="font-semibold text-gray-700 mb-3">Program & Sisa Pertemuan Anak</h3>
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6 md:p-8">
+            <div class="flex flex-col sm:flex-row items-start gap-4">
+                <div class="p-3 bg-primary-container text-on-primary rounded-xl shrink-0">
+                    <span class="material-symbols-outlined">family_restroom</span>
+                </div>
+                <div>
+                    <h3 class="font-headline text-headline-sm text-on-surface">Selamat datang, {{ auth()->user()->name }}!</h3>
+                    <p class="font-body-sm text-body-sm text-outline mt-1">Pantau program, sisa pertemuan, rekomendasi, dan E-Raport anak Anda.</p>
+                </div>
+            </div>
+        </div>
 
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)]">
+            <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
+                <h3 class="font-headline text-headline-sm text-on-surface">Program & Sisa Pertemuan Anak</h3>
+            </div>
+            <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
                 @forelse ($students as $student)
-                    <div class="border rounded-lg p-3 mb-3">
-                        <p class="font-semibold">{{ $student->full_name }}</p>
-                        @forelse ($student->classes as $enrollment)
-                            @php
-                                $program = $enrollment->program;
-                                $total = $program->total_sessions;
-                                $left = $total === null ? null : max(0, $total - $enrollment->pivot->sessions_completed);
-                            @endphp
-                            <div class="ml-4 mt-1 text-sm flex items-center gap-2">
-                                <span>{{ $enrollment->name }} — {{ $program->name }}</span>
-                                @if ($left === null)
-                                    <span class="text-gray-500">Bulanan</span>
-                                @elseif ($left === 0)
-                                    <span class="px-2 py-0.5 rounded text-xs bg-red-100 text-red-700">Paket habis</span>
-                                @elseif ($left <= 2)
-                                    <span class="px-2 py-0.5 rounded text-xs bg-yellow-100 text-yellow-700">Sisa {{ $left }}x</span>
-                                @else
-                                    <span class="text-gray-500">Sisa {{ $left }}x</span>
-                                @endif
-                                <span class="text-gray-400">{{ $fmt($program->price) }}</span>
+                    <div class="rounded-xl border border-outline-variant/30 p-5 hover:bg-surface-container-low/50 transition-colors">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined">person</span>
                             </div>
-                        @empty
-                            <p class="ml-4 text-sm text-gray-400">Belum ada kelas aktif.</p>
-                        @endforelse
-                    </div>
-                @empty
-                    <p class="text-gray-500 text-sm">Belum ada anak terdaftar.</p>
-                @endforelse
-            </div>
-
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="font-semibold text-gray-700 mb-3">Rekomendasi Naik Kelas</h3>
-
-                @forelse ($pendingRecommendations as $rec)
-                    <div class="border rounded-lg p-3 mb-3">
-                        <p>
-                            <strong>{{ $rec->student->full_name }}</strong>
-                            @if ($rec->currentClass)
-                                — {{ $rec->currentClass->name }} (Level {{ $rec->currentClass->level ?? '-' }})
-                            @endif
-                            → <strong>{{ $rec->recommendedClass->name ?? 'Level '.($rec->recommended_level ?? '-') }}</strong>
-                        </p>
-                        <p class="text-sm text-gray-600 mt-1">Dari: {{ $rec->from->name }} ({{ $rec->from->isAdmin() ? 'Admin' : 'Pelatih' }})</p>
-                        @if ($rec->note)
-                            <p class="text-sm text-gray-500 mt-1">Catatan: {{ $rec->note }}</p>
-                        @endif
-
-                        <div class="mt-2 flex gap-2">
-                            <form action="{{ route('orangtua.recommendations.respond', $rec) }}" method="POST">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="status" value="diterima">
-                                <button type="submit" class="px-3 py-1 bg-green-600 text-white rounded-md text-xs">Setuju</button>
-                            </form>
-                            <form action="{{ route('orangtua.recommendations.respond', $rec) }}" method="POST">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="status" value="ditolak">
-                                <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded-md text-xs">Tidak Setuju</button>
-                            </form>
+                            <div class="min-w-0">
+                                <h4 class="font-headline text-headline-sm text-on-surface truncate">{{ $student->full_name }}</h4>
+                                <p class="font-body-sm text-body-sm text-outline">Anak Anda</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            @forelse ($student->classes as $enrollment)
+                                @php
+                                    $program = $enrollment->program;
+                                    $total = $program->total_sessions;
+                                    $left = $total === null ? null : max(0, $total - $enrollment->pivot->sessions_completed);
+                                @endphp
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="font-label-md text-label-md text-on-surface">{{ $enrollment->name }} — {{ $program->name }}</span>
+                                    @if ($left === null)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">Bulanan</span>
+                                    @elseif ($left === 0)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">Paket habis</span>
+                                    @elseif ($left <= 2)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#FFF8E1] text-[#B26A00]">Sisa {{ $left }}x</span>
+                                    @else
+                                        <span class="font-label-sm text-label-sm text-outline">Sisa {{ $left }}x</span>
+                                    @endif
+                                    <span class="ml-auto font-label-sm text-label-sm text-outline">{{ $fmt($program->price) }}</span>
+                                </div>
+                            @empty
+                                <p class="font-body-sm text-body-sm text-outline">Belum ada kelas aktif.</p>
+                            @endforelse
                         </div>
                     </div>
                 @empty
-                    <p class="text-gray-500 text-sm">Belum ada rekomendasi.</p>
+                    <div class="md:col-span-2 p-6 text-center rounded-lg border border-dashed border-outline-variant/50">
+                        <p class="font-body-sm text-body-sm text-outline">Belum ada anak terdaftar.</p>
+                        <a href="{{ route('orangtua.registrations.create') }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline mt-2">Daftarkan anak sekarang</a>
+                    </div>
                 @endforelse
             </div>
+        </div>
 
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <h3 class="font-semibold text-gray-700 mb-3">E-Raport Anak</h3>
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)]">
+            <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
+                <h3 class="font-headline text-headline-sm text-on-surface">Rekomendasi Naik Kelas</h3>
+            </div>
+            <div class="divide-y divide-outline-variant/30">
+                @forelse ($pendingRecommendations as $rec)
+                    <div class="p-5 hover:bg-surface-container-low/50 transition-colors">
+                        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="font-label-md text-label-md text-on-surface">
+                                    <span class="font-headline text-headline-sm">{{ $rec->student->full_name }}</span>
+                                    @if ($rec->currentClass)
+                                        — {{ $rec->currentClass->name }} (Level {{ $rec->currentClass->level ?? '-' }})
+                                    @endif
+                                    <span class="mx-1 text-outline">→</span>
+                                    <span class="font-headline text-headline-sm text-primary">{{ $rec->recommendedClass->name ?? 'Level '.($rec->recommended_level ?? '-') }}</span>
+                                </p>
+                                <p class="font-body-sm text-body-sm text-outline mt-1">Dari: {{ $rec->from->name }} ({{ $rec->from->isAdmin() ? 'Admin' : 'Pelatih' }})</p>
+                                @if ($rec->note)
+                                    <p class="font-body-sm text-body-sm text-outline mt-1">Catatan: {{ $rec->note }}</p>
+                                @endif
+                            </div>
+                            <div class="flex gap-2 shrink-0">
+                                <form action="{{ route('orangtua.recommendations.respond', $rec) }}" method="POST">
+                                    @csrf @method('PATCH')
+                                    <input type="hidden" name="status" value="diterima">
+                                    <button type="submit" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#E8F5E9] text-[#2E7D32] font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
+                                        <span class="material-symbols-outlined text-[16px]">check</span>
+                                        Setuju
+                                    </button>
+                                </form>
+                                <form action="{{ route('orangtua.recommendations.respond', $rec) }}" method="POST">
+                                    @csrf @method('PATCH')
+                                    <input type="hidden" name="status" value="ditolak">
+                                    <button type="submit" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
+                                        <span class="material-symbols-outlined text-[16px]">close</span>
+                                        Tidak Setuju
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <p class="p-6 text-center font-body-sm text-body-sm text-outline">Belum ada rekomendasi.</p>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)]">
+            <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
+                <h3 class="font-headline text-headline-sm text-on-surface">E-Raport Anak</h3>
+            </div>
+            <div class="divide-y divide-outline-variant/30">
                 @php
                     $myDevelopments = \App\Models\Development::whereHas('student', fn($q) => $q->where('parent_id', auth()->id()))
                         ->with('student')->latest()->get();
                 @endphp
                 @forelse ($myDevelopments as $dev)
-                    <p class="mb-1">
-                        {{ $dev->student->full_name }} — {{ $dev->period }}
-                        <a href="{{ route('eraport.show', [$dev->student, $dev->id]) }}" class="text-indigo-600 ml-2">Lihat →</a>
-                    </p>
+                    <div class="p-5 flex items-center justify-between gap-4 hover:bg-surface-container-low/50 transition-colors">
+                        <p class="font-label-md text-label-md text-on-surface min-w-0 truncate">
+                            {{ $dev->student->full_name }} — {{ $dev->period }}
+                        </p>
+                        <a href="{{ route('eraport.show', [$dev->student, $dev->id]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline shrink-0">
+                            Lihat
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </a>
+                    </div>
                 @empty
-                    <p class="text-gray-500 text-sm">Belum ada E-Raport tersedia.</p>
+                    <p class="p-6 text-center font-body-sm text-body-sm text-outline">Belum ada E-Raport tersedia.</p>
                 @endforelse
             </div>
         </div>

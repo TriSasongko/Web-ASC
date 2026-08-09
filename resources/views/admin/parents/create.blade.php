@@ -1,14 +1,17 @@
 <x-sidebar-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah Orang Tua</h2>
-    </x-slot>
+    <div class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Tambah Orang Tua</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-1">Lengkapi data orang tua baru untuk siswa ASC Academy.</p>
+            </div>
+        </div>
 
-    <div class="py-12">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <form action="{{ route('admin.parents.store') }}" method="POST" class="space-y-4">
-                    @csrf
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6 md:p-8 max-w-3xl">
+            <form action="{{ route('admin.parents.store') }}" method="POST" class="space-y-6">
+                @csrf
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <x-input-label for="name" value="Nama" />
                         <x-text-input id="name" name="name" class="mt-1 block w-full" value="{{ old('name') }}" required />
@@ -28,23 +31,25 @@
                     </div>
 
                     <div>
-                        <x-input-label for="address" value="Alamat" />
-                        <textarea id="address" name="address" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">{{ old('address') }}</textarea>
-                        <x-input-error :messages="$errors->get('address')" class="mt-2" />
-                    </div>
-
-                    <div>
                         <x-input-label for="password" value="Password" />
                         <x-text-input id="password" type="password" name="password" class="mt-1 block w-full" required />
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
                     </div>
 
-                    <div class="flex justify-end gap-2">
-                        <a href="{{ route('admin.parents.index') }}" class="px-4 py-2 bg-gray-200 rounded-md">Batal</a>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md">Simpan</button>
+                    <div class="md:col-span-2">
+                        <x-input-label for="address" value="Alamat" />
+                        <textarea id="address" name="address" class="mt-1 block w-full bg-surface-container-lowest border-outline-variant rounded-lg px-3 py-2 shadow-sm focus:border-primary focus:ring-primary/30">{{ old('address') }}</textarea>
+                        <x-input-error :messages="$errors->get('address')" class="mt-2" />
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <x-primary-button>Simpan</x-primary-button>
+                    <a href="{{ route('admin.parents.index') }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-5 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">
+                        Batal
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </x-sidebar-layout>
