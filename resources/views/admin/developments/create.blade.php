@@ -1,11 +1,17 @@
 <x-sidebar-layout>
+    @php
+        $referer = request()->headers->get('referer');
+        $backUrl = ($referer && parse_url($referer, PHP_URL_HOST) === request()->getHost() && $referer !== url()->current())
+            ? $referer
+            : route('admin.classes.developments.index', $class);
+    @endphp
     <div class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Isi Penilaian — {{ $student->full_name }}</h2>
                 <p class="font-body-sm text-body-sm text-outline mt-1">Isi evaluasi perkembangan untuk periode tertentu.</p>
             </div>
-            <a href="{{ route('admin.classes.developments.index', $class) }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">
+            <a href="{{ $backUrl }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                 Kembali
             </a>

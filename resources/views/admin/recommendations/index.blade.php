@@ -1,4 +1,11 @@
 <x-sidebar-layout>
+    @php
+        $initials = fn ($name) => collect(explode(' ', (string) $name))
+            ->filter()
+            ->map(fn ($word) => mb_substr($word, 0, 1))
+            ->take(2)
+            ->join('');
+    @endphp
     <div class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -15,7 +22,7 @@
         @endif
 
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
-            <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
+            <div class="p-5 border-b border-outline-variant/30 bg-surface/50">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[20px]">north_east</span>
                     <h3 class="font-headline text-headline-sm text-on-surface">Data Rekomendasi</h3>
@@ -27,12 +34,11 @@
                     <thead class="bg-surface-container-low">
                         <tr>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Siswa</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Kelas Saat Ini</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Target</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Dari</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Perpindahan</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Diajukan oleh</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Catatan</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Status</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Aksi</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant/30">
@@ -40,28 +46,56 @@
                             @php
                                 $targetLabel = $rec->recommendedClass?->name
                                     ?? (\App\Models\SchoolClass::levelOptions()[$rec->recommended_level] ?? 'Level '.($rec->recommended_level ?? '-'));
+                                $targetLevel = $rec->recommendedClass?->level
+                                    ?? $rec->recommended_level;
+                                $currentLevel = $rec->currentClass?->level;
                             @endphp
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $rec->student->full_name }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">
-                                    {{ $rec->currentClass->name ?? '-' }}
-                                    @if ($rec->currentClass?->level_label)
-                                        <span class="font-body-sm text-body-sm text-outline">({{ $rec->currentClass->level_label }})</span>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary-container text-on-primary font-label-md text-label-md shrink-0">
+                                            {{ $initials($rec->student?->full_name) }}
+                                        </span>
+                                        <div>
+                                            <p class="font-label-md text-label-md text-on-surface">{{ $rec->student?->full_name }}</p>
+                                            <p class="font-body-sm text-body-sm text-outline">{{ $rec->currentClass?->name ?? 'Tanpa kelas aktif' }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $currentLevel ? $currentLevel.' → ' : '' }}</span>
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container/60 text-on-primary">{{ $targetLabel }}</span>
+                                        @if ($targetLevel !== null && $targetLevel !== $currentLevel)
+                                            <span class="font-body-sm text-body-sm text-outline">(Level {{ $targetLevel }})</span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-body-sm text-body-sm text-on-surface">{{ $rec->from?->name }}</span>
+                                        <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">
+                                            {{ $rec->from?->isAdmin() ? 'Admin' : 'Pelatih' }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    @if ($rec->note)
+                                        <p class="font-body-sm text-body-sm text-on-surface-variant max-w-[220px] truncate" title="{{ $rec->note }}">{{ $rec->note }}</p>
+                                    @else
+                                        <span class="font-body-sm text-body-sm text-outline">-</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $targetLabel }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $rec->from->name }} ({{ $rec->from->isAdmin() ? 'Admin' : 'Pelatih' }})</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-outline max-w-[200px] truncate" title="{{ $rec->note }}">{{ $rec->note ?: '-' }}</td>
                                 <td class="px-4 py-3">
                                     @if ($rec->status === 'pending')
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#FFF8E1] text-[#B26A00]">
                                             <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                            Menunggu persetujuan admin
+                                            Menunggu
                                         </span>
                                     @elseif ($rec->status === 'diterima')
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E8F5E9] text-[#2E7D32]">
                                             <span class="material-symbols-outlined text-[14px]">check_circle</span>
-                                            Disetujui admin
+                                            Disetujui
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">
@@ -71,14 +105,14 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
-                                    <div class="flex flex-wrap items-center gap-4">
+                                    <div class="flex flex-wrap items-center justify-end gap-1.5 whitespace-nowrap">
                                         @if ($rec->currentClass)
-                                            <a href="{{ route('admin.classes.developments.history', [$rec->currentClass, $rec->student]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+                                            <a href="{{ route('admin.classes.developments.history', [$rec->currentClass, $rec->student]) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-label-sm text-label-sm text-primary hover:bg-primary-container/40 transition-all" title="Lihat perkembangan">
                                                 <span class="material-symbols-outlined text-[16px]">assessment</span>
                                                 Perkembangan
                                             </a>
                                         @else
-                                            <a href="{{ route('admin.students.show', $rec->student) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+                                            <a href="{{ route('admin.students.show', $rec->student) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-label-sm text-label-sm text-primary hover:bg-primary-container/40 transition-all" title="Lihat detail siswa">
                                                 <span class="material-symbols-outlined text-[16px]">person</span>
                                                 Detail
                                             </a>
@@ -106,9 +140,8 @@
                                         <form action="{{ route('admin.recommendations.destroy', $rec) }}" method="POST" class="inline"
                                               onsubmit="return confirm('Hapus rekomendasi ini?')">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center gap-1 text-error font-label-md text-label-md hover:underline">
+                                            <button type="submit" class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-error hover:bg-error-container/50 transition-all" title="Hapus">
                                                 <span class="material-symbols-outlined text-[16px]">delete</span>
-                                                Hapus
                                             </button>
                                         </form>
                                     </div>
@@ -116,7 +149,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 py-8 text-center font-body-sm text-body-sm text-outline">Belum ada rekomendasi.</td>
+                                <td colspan="6" class="px-4 py-8 text-center font-body-sm text-body-sm text-outline">Belum ada rekomendasi.</td>
                             </tr>
                         @endforelse
                     </tbody>

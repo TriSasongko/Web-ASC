@@ -15,15 +15,11 @@
         @endif
 
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
-            <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
-                <form method="GET" class="flex items-center gap-2">
-                    <select name="status" onchange="this.form.submit()" class="bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
-                        <option value="">-- Semua Status --</option>
-                        <option value="menunggu_verifikasi" {{ request('status') == 'menunggu_verifikasi' ? 'selected' : '' }}>Menunggu Verifikasi</option>
-                        <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
-                        <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                    </select>
-                </form>
+            <div class="p-5 border-b border-outline-variant/30 bg-surface/50">
+                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    <span class="material-symbols-outlined align-middle text-[18px] mr-1">hourglass_top</span>
+                    Menampilkan pendaftaran yang menunggu verifikasi.
+                </p>
             </div>
 
             <div class="overflow-x-auto">
