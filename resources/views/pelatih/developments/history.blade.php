@@ -34,12 +34,22 @@
                     @endforeach
                 </div>
 
-                <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-2">Penilaian Aspek Khusus</p>
-                <div class="grid grid-cols-2 gap-2 mb-4">
-                    @foreach (\App\Models\Development::khususAspects() as $key => $label)
-                        <div class="bg-surface-container-low rounded-lg px-4 py-3">
-                            <p class="font-body-sm text-body-sm text-outline">{{ $label }}</p>
-                            <p class="font-label-md text-label-md text-on-surface mt-0.5">{{ \App\Models\Development::scoreLabel($dev->$key) }}</p>
+                <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-2">Penilaian Gaya Renang</p>
+                <div class="space-y-3 mb-4">
+                    @foreach (\App\Models\Development::styles() as $style => $styleLabel)
+                        <div class="rounded-xl border border-outline-variant/30 bg-surface-container-low/40 p-3">
+                            <p class="font-label-md text-label-md text-on-surface mb-2">{{ $styleLabel }}</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                @foreach (\App\Models\Development::khususAspects() as $aspect => $label)
+                                    @php
+                                        $key = \App\Models\Development::styleAspectKey($style, $aspect);
+                                    @endphp
+                                    <div class="bg-surface-container-low rounded-lg px-4 py-3">
+                                        <p class="font-body-sm text-body-sm text-outline">{{ $label }}</p>
+                                        <p class="font-label-md text-label-md text-on-surface mt-0.5">{{ \App\Models\Development::scoreLabel($dev->$key) }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     @endforeach
                 </div>

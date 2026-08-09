@@ -49,6 +49,11 @@ class Student extends Model
         return $this->hasMany(ClassStudent::class, 'student_id');
     }
 
+    public function developments()
+    {
+        return $this->hasMany(Development::class);
+    }
+
     public function scopeActiveProgram($query)
     {
         return $query->whereHas('enrollments', fn ($q) => $q->where('is_active', true));

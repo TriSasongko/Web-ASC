@@ -48,12 +48,22 @@
                     </div>
 
                     <div>
-                        <p class="font-label-md text-label-md text-on-surface mb-2">Penilaian Aspek Khusus</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            @foreach (\App\Models\Development::khususAspects() as $key => $label)
-                                <div class="flex items-center justify-between gap-3 bg-surface-container-low rounded-lg px-3 py-2">
-                                    <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $label }}</span>
-                                    <strong class="font-label-md text-label-md text-primary">{{ \App\Models\Development::scoreLabel($dev->$key) }}</strong>
+                        <p class="font-label-md text-label-md text-on-surface mb-2">Penilaian Gaya Renang</p>
+                        <div class="space-y-3">
+                            @foreach (\App\Models\Development::styles() as $style => $styleLabel)
+                                <div class="rounded-xl border border-outline-variant/30 bg-surface-container-low/40 p-3">
+                                    <p class="font-label-md text-label-md text-on-surface mb-2">{{ $styleLabel }}</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        @foreach (\App\Models\Development::khususAspects() as $aspect => $label)
+                                            @php
+                                                $key = \App\Models\Development::styleAspectKey($style, $aspect);
+                                            @endphp
+                                            <div class="flex items-center justify-between gap-3 bg-surface-container-low rounded-lg px-3 py-2">
+                                                <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $label }}</span>
+                                                <strong class="font-label-md text-label-md text-primary">{{ \App\Models\Development::scoreLabel($dev->$key) }}</strong>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             @endforeach
                         </div>

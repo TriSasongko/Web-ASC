@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class StudentController extends Controller
 {
@@ -40,13 +39,25 @@ class StudentController extends Controller
         $attendanceLists = [];
 
         foreach ($student->classes as $class) {
-            $pivot = $class->pivot;
-            $renewedAt = $pivot->renewed_at ? Carbon::parse($pivot->renewed_at) : null;
+            $records = $attendances[$class->id] ?? collect();
+            $total = $class->program->total_sessions;
 
-            $attendanceLists[$class->id] = ($attendances[$class->id] ?? collect())
-                ->filter(fn ($r) => $renewedAt ? $r->attendance_date->gte($renewedAt) : true)
-                ->sortBy('attendance_date')
-                ->values();
+            if ($total === null) {
+                // Billing bulanan (Kompetitif): tampilkan absensi bulan berjalan
+                $records = $records
+                    ->filter(fn ($r) => $r->attendance_date->between(now()->startOfMonth(), now()->endOfMonth()))
+                    ->sortBy('attendance_date')
+                    ->values();
+            } else {
+                // Billing per paket: tampilkan sesuai total sesi paket (mis. 8 atau 4)
+                $records = $records
+                    ->sortByDesc('attendance_date')
+                    ->take($total)
+                    ->sortBy('attendance_date')
+                    ->values();
+            }
+
+            $attendanceLists[$class->id] = $records;
         }
 
         return view('admin.students.show', compact('student', 'attendanceLists'));

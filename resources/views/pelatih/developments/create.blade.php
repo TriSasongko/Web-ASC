@@ -42,17 +42,35 @@
                     </div>
                 </div>
 
-                <div class="border-t border-outline-variant/30 pt-6">
-                    <h3 class="font-headline text-headline-sm text-on-surface mb-4">Penilaian Aspek Khusus</h3>
+                <div class="border-t border-outline-variant/30 pt-6" x-data="{ tab: @js(array_key_first(\App\Models\Development::styles())) }">
+                    <h3 class="font-headline text-headline-sm text-on-surface mb-4">Penilaian Gaya Renang</h3>
 
-                    <div class="space-y-6">
-                        @foreach (\App\Models\Development::khususAspects() as $key => $label)
-                            <div>
-                                <x-input-label :for="$key" :value="$label" />
-                                <x-assessment-score :name="$key" />
-                            </div>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        @foreach (\App\Models\Development::styles() as $style => $styleLabel)
+                            <button type="button" @click="tab = @js($style)"
+                                :class="tab === @js($style) ? 'bg-primary text-on-primary shadow-sm' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container'"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-label-md text-label-md transition-all">
+                                <span class="material-symbols-outlined text-[18px]">pool</span>
+                                {{ $styleLabel }}
+                            </button>
                         @endforeach
                     </div>
+
+                    @foreach (\App\Models\Development::styles() as $style => $styleLabel)
+                        <div x-show="tab === @js($style)" style="{{ $style === array_key_first(\App\Models\Development::styles()) ? '' : 'display: none' }}">
+                            <div class="space-y-6">
+                                @foreach (\App\Models\Development::khususAspects() as $aspect => $label)
+                                    @php
+                                        $key = \App\Models\Development::styleAspectKey($style, $aspect);
+                                    @endphp
+                                    <div>
+                                        <x-input-label :for="$key" :value="$label" />
+                                        <x-assessment-score :name="$key" />
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
 
                 <div>

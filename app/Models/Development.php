@@ -12,8 +12,11 @@ class Development extends Model
     protected $fillable = [
         'class_id', 'student_id', 'coach_id', 'period',
         'adaptasi_lingkungan_baru', 'komunikasi', 'menerima_instruksi', 'disiplin', 'percaya_diri',
-        'daya_tahan', 'recovery', 'water_survive', 'gerakan_kaki', 'gerakan_tangan',
-        'gerakan_nafas', 'koordinasi', 'konsistensi_gerakan', 'coach_note',
+        'daya_tahan', 'recovery', 'water_survive', 'coach_note',
+        'bebas_gerakan_kaki', 'bebas_gerakan_tangan', 'bebas_gerakan_nafas', 'bebas_koordinasi', 'bebas_konsistensi_gerakan',
+        'dada_gerakan_kaki', 'dada_gerakan_tangan', 'dada_gerakan_nafas', 'dada_koordinasi', 'dada_konsistensi_gerakan',
+        'punggung_gerakan_kaki', 'punggung_gerakan_tangan', 'punggung_gerakan_nafas', 'punggung_koordinasi', 'punggung_konsistensi_gerakan',
+        'kupu_kupu_gerakan_kaki', 'kupu_kupu_gerakan_tangan', 'kupu_kupu_gerakan_nafas', 'kupu_kupu_koordinasi', 'kupu_kupu_konsistensi_gerakan',
     ];
 
     // Daftar aspek penilaian umum, dipakai berulang di banyak view
@@ -31,22 +34,46 @@ class Development extends Model
         ];
     }
 
-    // Daftar aspek penilaian khusus
+    // Daftar gaya renang yang dinilai
+    public static function styles(): array
+    {
+        return [
+            'bebas' => 'Gaya Bebas',
+            'dada' => 'Gaya Dada',
+            'punggung' => 'Gaya Punggung',
+            'kupu_kupu' => 'Gaya Kupu-Kupu',
+        ];
+    }
+
+    // Daftar aspek penilaian khusus, diterapkan pada setiap gaya renang
     public static function khususAspects(): array
     {
         return [
             'gerakan_kaki' => 'Gerakan Kaki',
             'gerakan_tangan' => 'Gerakan Tangan',
-            'gerakan_nafas' => 'Gerakan Nafas',
-            'koordinasi' => 'Koordinasi',
+            'gerakan_nafas' => 'Gerakan Napas',
+            'koordinasi' => 'Koordinasi Gerakan',
             'konsistensi_gerakan' => 'Konsistensi Gerakan',
         ];
+    }
+
+    // Kunci kolom untuk aspek khusus: "{gaya}_{aspek}"
+    public static function styleAspectKey(string $style, string $aspect): string
+    {
+        return $style.'_'.$aspect;
     }
 
     // Gabungan semua aspek, dipakai untuk validasi saat menyimpan
     public static function aspects(): array
     {
-        return [...self::umumAspects(), ...self::khususAspects()];
+        $special = [];
+        foreach (self::styles() as $style => $styleLabel) {
+            foreach (self::khususAspects() as $aspect => $label) {
+                $special[self::styleAspectKey($style, $aspect)] = $styleLabel.' — '.$label;
+            }
+        }
+
+        return [...self::umumAspects(), ...$special];
     }
 
     // Daftar opsi penilaian berbasis poin

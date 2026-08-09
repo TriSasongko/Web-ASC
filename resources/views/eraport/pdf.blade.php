@@ -36,15 +36,21 @@
         @endforeach
     </table>
 
-    <h3>Penilaian Aspek Khusus</h3>
-    <table>
-        @foreach (\App\Models\Development::khususAspects() as $key => $label)
-            <tr>
-                <td class="label">{{ $label }}</td>
-                <td>{{ \App\Models\Development::scoreLabel($development->$key) }}</td>
-            </tr>
-        @endforeach
-    </table>
+    <h3>Penilaian Gaya Renang</h3>
+    @foreach (\App\Models\Development::styles() as $style => $styleLabel)
+        <h3>{{ $styleLabel }}</h3>
+        <table>
+            @foreach (\App\Models\Development::khususAspects() as $key => $label)
+                @php
+                    $field = \App\Models\Development::styleAspectKey($style, $key);
+                @endphp
+                <tr>
+                    <td class="label">{{ $label }}</td>
+                    <td>{{ \App\Models\Development::scoreLabel($development->$field) }}</td>
+                </tr>
+            @endforeach
+        </table>
+    @endforeach
 
     @if ($development->coach_note)
         <h2>Catatan Coach</h2>

@@ -67,13 +67,21 @@
                                 </tr>
                             @endforeach
                             <tr>
-                                <td colspan="2" class="py-2 pt-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Penilaian Aspek Khusus</td>
+                                <td colspan="2" class="py-2 pt-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Penilaian Gaya Renang</td>
                             </tr>
-                            @foreach (\App\Models\Development::khususAspects() as $key => $label)
-                                <tr class="border-b border-outline-variant/30">
-                                    <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface-variant">{{ $label }}</td>
-                                    <td class="px-4 py-3 font-label-md text-label-md text-on-surface">{{ \App\Models\Development::scoreLabel($development->$key) }}</td>
+                            @foreach (\App\Models\Development::styles() as $style => $styleLabel)
+                                <tr>
+                                    <td colspan="2" class="py-2 pt-3 font-label-md text-label-md text-on-surface">{{ $styleLabel }}</td>
                                 </tr>
+                                @foreach (\App\Models\Development::khususAspects() as $key => $label)
+                                    @php
+                                        $field = \App\Models\Development::styleAspectKey($style, $key);
+                                    @endphp
+                                    <tr class="border-b border-outline-variant/30">
+                                        <td class="px-4 py-2 font-body-sm text-body-sm text-on-surface-variant">{{ $label }}</td>
+                                        <td class="px-4 py-2 font-label-md text-label-md text-on-surface">{{ \App\Models\Development::scoreLabel($development->$field) }}</td>
+                                    </tr>
+                                @endforeach
                             @endforeach
                         </tbody>
                     </table>

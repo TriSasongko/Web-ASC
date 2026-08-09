@@ -47,20 +47,38 @@
                     </div>
                 </div>
 
-                <div class="border-t border-outline-variant/30 pt-6">
+                <div class="border-t border-outline-variant/30 pt-6" x-data="{ tab: @js(array_key_first(\App\Models\Development::styles())) }">
                     <div class="flex items-center gap-2 mb-4">
                         <span class="material-symbols-outlined text-primary text-[20px]">sports_soccer</span>
-                        <h3 class="font-headline text-headline-sm text-on-surface">Penilaian Aspek Khusus</h3>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Penilaian Gaya Renang</h3>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        @foreach (\App\Models\Development::khususAspects() as $key => $label)
-                            <div>
-                                <x-input-label :for="$key" :value="$label" />
-                                <x-assessment-score :name="$key" />
-                            </div>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        @foreach (\App\Models\Development::styles() as $style => $styleLabel)
+                            <button type="button" @click="tab = @js($style)"
+                                :class="tab === @js($style) ? 'bg-primary text-on-primary shadow-sm' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container'"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-label-md text-label-md transition-all">
+                                <span class="material-symbols-outlined text-[18px]">pool</span>
+                                {{ $styleLabel }}
+                            </button>
                         @endforeach
                     </div>
+
+                    @foreach (\App\Models\Development::styles() as $style => $styleLabel)
+                        <div x-show="tab === @js($style)" style="{{ $style === array_key_first(\App\Models\Development::styles()) ? '' : 'display: none' }}">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                @foreach (\App\Models\Development::khususAspects() as $aspect => $label)
+                                    @php
+                                        $key = \App\Models\Development::styleAspectKey($style, $aspect);
+                                    @endphp
+                                    <div>
+                                        <x-input-label :for="$key" :value="$label" />
+                                        <x-assessment-score :name="$key" />
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
 
                 <div>

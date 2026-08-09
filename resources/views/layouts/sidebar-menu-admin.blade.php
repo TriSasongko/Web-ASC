@@ -13,6 +13,7 @@
         ['label' => 'Absensi', 'icon' => 'event_available', 'route' => 'admin.attendances.index', 'active' => request()->routeIs('admin.attendances.*')],
         ['label' => 'Perkembangan', 'icon' => 'assessment', 'route' => 'admin.developments.index', 'active' => request()->routeIs('admin.developments.*') || request()->routeIs('admin.classes.developments.*')],
         ['label' => 'Rekomendasi', 'icon' => 'star', 'route' => 'admin.recommendations.index', 'active' => request()->routeIs('admin.recommendations.*')],
+        ['label' => 'E-Raport', 'icon' => 'description', 'route' => 'admin.eraports.index', 'active' => request()->routeIs('admin.eraports.*') || request()->routeIs('eraport.*')],
     ];
 @endphp
 

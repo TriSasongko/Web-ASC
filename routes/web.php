@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ClassStudentController;
 use App\Http\Controllers\Admin\CoachController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\DevelopmentController as AdminDevelopment;
+use App\Http\Controllers\Admin\ERaportController as AdminERaport;
 use App\Http\Controllers\Admin\ParentController;
 use App\Http\Controllers\Admin\RecommendationController as AdminRecommendation;
 use App\Http\Controllers\Admin\RegistrationController as AdminRegistration;
@@ -83,6 +84,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('recommendations/{recommendation}/approve', [AdminRecommendation::class, 'approve'])->name('recommendations.approve');
     Route::post('recommendations/{recommendation}/reject', [AdminRecommendation::class, 'reject'])->name('recommendations.reject');
     Route::delete('recommendations/{recommendation}', [AdminRecommendation::class, 'destroy'])->name('recommendations.destroy');
+
+    // Route E-Raport untuk Admin
+    Route::get('eraports', [AdminERaport::class, 'index'])->name('eraports.index');
 });
 
 Route::middleware(['auth', 'role:pelatih'])->prefix('pelatih')->name('pelatih.')->group(function () {
