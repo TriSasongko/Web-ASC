@@ -20,14 +20,9 @@ class DevelopmentController extends Controller
             ->orderBy('full_name')
             ->get();
 
-        $allClasses = SchoolClass::where('is_active', true)
-            ->orderBy('level')
-            ->orderBy('name')
-            ->get();
-
         $levels = SchoolClass::levelOptions();
 
-        return view('pelatih.developments.index', compact('students', 'allClasses', 'levels'));
+        return view('pelatih.developments.index', compact('students', 'levels'));
     }
 
     public function create(SchoolClass $class, Student $student)

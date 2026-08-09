@@ -79,9 +79,6 @@
                                         $total = $primary?->program->total_sessions;
                                         $left = $total === null ? null : max(0, $total - $primary->pivot->sessions_completed);
                                         $studentLevel = $primary?->level;
-                                        $candidateClasses = $primary
-                                            ? $allClasses->filter(fn ($c) => $c->program_id === $primary->program_id && $c->level > $studentLevel)
-                                            : collect();
                                         $availableLevels = $studentLevel
                                             ? array_filter($levels, fn ($l) => $l > $studentLevel, ARRAY_FILTER_USE_KEY)
                                             : [];
@@ -118,30 +115,53 @@
                                                     <a href="{{ route('pelatih.developments.history', [$primary, $student]) }}" class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm hover:underline">Riwayat</a>
 
                                                     <div x-data="{ open: false }" class="relative inline-block">
-                                                        <button @click="open = ! open" type="button"
+                                                        <button @click="open = true" type="button"
                                                             class="inline-flex items-center gap-1 bg-[#FFB300] text-white px-2.5 py-1 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
-                                                            Rekomendasi ↑
+                                                            <span class="material-symbols-outlined text-[16px]">north_east</span>
+                                                            Rekomendasi
                                                         </button>
-                                                        <div x-show="open" @click.outside="open = false" x-transition
-                                                            class="absolute right-0 z-20 mt-2 w-72 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-lg p-4">
-                                                            <p class="font-label-md text-label-md text-on-surface mb-3">Rekomendasi Naik Level — {{ $student->full_name }}</p>
-                                                            <form action="{{ route('pelatih.recommendations.store', [$primary, $student]) }}" method="POST" class="space-y-3">
-                                                                @csrf
-                                                                <select name="recommended_class_id" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
-                                                                    <option value="">-- Kelas target (opsional) --</option>
-                                                                    @foreach ($candidateClasses as $c)
-                                                                        <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->level_label ?? '-' }})</option>
-                                                                    @endforeach
-                                                                </select>
-                                                                <select name="recommended_level" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
-                                                                    <option value="">-- Atau level target (opsional) --</option>
-                                                                    @foreach ($availableLevels as $levelValue => $levelLabel)
-                                                                        <option value="{{ $levelValue }}">{{ $levelLabel }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                                <textarea name="note" rows="2" placeholder="Catatan (opsional)" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"></textarea>
-                                                                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-[#FFB300] text-white px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">Simpan Rekomendasi</button>
-                                                            </form>
+                                                        <div x-show="open" x-cloak x-transition.opacity
+                                                            class="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+                                                            @click="open = false"></div>
+                                                        <div x-show="open" x-cloak x-transition
+                                                            @keydown.escape.window="open = false"
+                                                            class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                                            <div class="w-full max-w-md bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden">
+                                                                <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30 bg-surface/50">
+                                                                    <div>
+                                                                        <h3 class="font-headline text-headline-sm text-on-surface">Rekomendasi Naik Level</h3>
+                                                                        <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $student->full_name }}</p>
+                                                                    </div>
+                                                                    <button @click="open = false" type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+                                                                        <span class="material-symbols-outlined text-[20px]">close</span>
+                                                                    </button>
+                                                                </div>
+                                                                <form action="{{ route('pelatih.recommendations.store', [$primary, $student]) }}" method="POST" class="px-6 py-5 space-y-4">
+                                                                    @csrf
+                                                                    <div>
+                                                                        <x-input-label for="recommended_level" value="Level Target" />
+                                                                        <select name="recommended_level" id="recommended_level" class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                                                            <option value="">-- Pilih level target --</option>
+                                                                            @foreach ($availableLevels as $levelValue => $levelLabel)
+                                                                                <option value="{{ $levelValue }}">{{ $levelLabel }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+                                                                    <div>
+                                                                        <x-input-label for="note" value="Catatan" />
+                                                                        <textarea name="note" id="note" rows="3" placeholder="Catatan (opsional)" class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"></textarea>
+                                                                    </div>
+                                                                    <div class="flex items-center justify-end gap-2 pt-2">
+                                                                        <button @click="open = false" type="button" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">
+                                                                            Batal
+                                                                        </button>
+                                                                        <button type="submit" class="inline-flex items-center justify-center gap-2 bg-[#FFB300] text-white px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
+                                                                            <span class="material-symbols-outlined text-[18px]">north_east</span>
+                                                                            Simpan Rekomendasi
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
