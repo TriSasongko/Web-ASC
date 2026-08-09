@@ -64,18 +64,18 @@ class AttendanceController extends Controller
                 ]);
 
                 if ($status === 'hadir' && $class->program->billing_type === 'per_paket') {
-                    $class->students()->updateExistingPivot($studentId, [
-                        'sessions_completed' => DB::raw('sessions_completed + 1'),
-                    ]);
-
                     $pivot = DB::table('class_student')
                         ->where('class_id', $class->id)
                         ->where('student_id', $studentId)
                         ->first();
 
                     if ($class->program->total_sessions && $pivot->sessions_completed >= $class->program->total_sessions) {
-                        $class->students()->updateExistingPivot($studentId, ['is_active' => false]);
+                        continue;
                     }
+
+                    $class->students()->updateExistingPivot($studentId, [
+                        'sessions_completed' => DB::raw('sessions_completed + 1'),
+                    ]);
                 }
             }
         });

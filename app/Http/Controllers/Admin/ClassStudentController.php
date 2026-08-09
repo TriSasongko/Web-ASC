@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClassStudent;
 use App\Models\Registration;
 use App\Models\SchoolClass;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class ClassStudentController extends Controller
             ->filter(function ($reg) {
                 // Siswa dianggap "belum ditempatkan" untuk program ini jika belum ada baris class_student
                 // yang terhubung ke registration_id ini
-                return !\DB::table('class_student')
+                return ! \DB::table('class_student')
                     ->where('registration_id', $reg->id)
                     ->exists();
             });
@@ -54,6 +55,43 @@ class ClassStudentController extends Controller
     public function remove(SchoolClass $class, $studentId)
     {
         $class->students()->detach($studentId);
+
         return back()->with('success', 'Siswa dikeluarkan dari kelas.');
+    }
+
+    public function renew(Request $request, ClassStudent $enrollment)
+    {
+        abort_unless($enrollment->schoolClass->program->billing_type === 'per_paket', 403);
+
+        $enrollment->update([
+            'sessions_completed' => 0,
+            'is_active' => true,
+            'renewal_status' => 'lanjut',
+            'renewal_note' => $request->renewal_note ?: null,
+            'renewed_at' => now(),
+        ]);
+
+        return back()->with('success', 'Paket '.$enrollment->student->full_name.' berhasil diperpanjang.');
+    }
+
+    public function stop(Request $request, ClassStudent $enrollment)
+    {
+        $enrollment->update([
+            'is_active' => false,
+            'renewal_status' => 'berhenti',
+            'renewal_note' => $request->renewal_note ?: null,
+        ]);
+
+        return back()->with('success', 'Enrolment '.$enrollment->student->full_name.' ditandai berhenti.');
+    }
+
+    public function activate(ClassStudent $enrollment)
+    {
+        $enrollment->update([
+            'is_active' => true,
+            'renewal_status' => 'belum_konfirmasi',
+        ]);
+
+        return back()->with('success', 'Enrolment '.$enrollment->student->full_name.' diaktifkan kembali.');
     }
 }

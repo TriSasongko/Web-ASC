@@ -12,7 +12,7 @@ class SchoolClass extends Model
     protected $table = 'classes'; // wajib, karena nama model ≠ nama tabel
 
     protected $fillable = [
-        'program_id', 'coach_id', 'name', 'capacity', 'is_active',
+        'program_id', 'coach_id', 'name', 'level', 'capacity', 'is_active',
     ];
 
     protected function casts(): array
@@ -40,7 +40,7 @@ class SchoolClass extends Model
     public function students()
     {
         return $this->belongsToMany(Student::class, 'class_student', 'class_id', 'student_id')
-                     ->withPivot(['registration_id', 'sessions_completed', 'is_active'])
-                     ->withTimestamps();
+            ->withPivot(['registration_id', 'sessions_completed', 'is_active'])
+            ->withTimestamps();
     }
 }

@@ -34,6 +34,11 @@
                     </div>
 
                     <div>
+                        <x-input-label for="level" value="Tingkatan (angka, opsional)" />
+                        <x-text-input id="level" type="number" min="1" name="level" class="mt-1 block w-full" value="{{ old('level', $class->level) }}" />
+                    </div>
+
+                    <div>
                         <x-input-label for="capacity" value="Kapasitas" />
                         <x-text-input id="capacity" type="number" name="capacity" class="mt-1 block w-full" value="{{ old('capacity', $class->capacity) }}" />
                     </div>

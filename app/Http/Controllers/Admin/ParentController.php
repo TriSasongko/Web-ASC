@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Scopes\ActiveParentScope;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -13,7 +15,7 @@ class ParentController extends Controller
     public function index(Request $request)
     {
         $parents = User::where('role', 'orang_tua')
-            ->when($request->search, fn($q) => $q->where('name', 'like', '%'.$request->search.'%'))
+            ->when($request->search, fn ($q) => $q->where('name', 'like', '%'.$request->search.'%'))
             ->latest()
             ->paginate(10);
 
@@ -46,7 +48,28 @@ class ParentController extends Controller
     public function edit(User $parent)
     {
         abort_unless($parent->role === 'orang_tua', 404);
+
         return view('admin.parents.edit', compact('parent'));
+    }
+
+    public function show(User $parent)
+    {
+        abort_unless($parent->role === 'orang_tua', 404);
+
+        $students = Student::withoutGlobalScope(ActiveParentScope::class)
+            ->where('parent_id', $parent->id)
+            ->with(['classes.program', 'classes.coach'])
+            ->get();
+
+        return view('admin.parents.show', compact('parent', 'students'));
+    }
+
+    public function toggleActive(User $parent)
+    {
+        abort_unless($parent->role === 'orang_tua', 404);
+        $parent->update(['is_active' => ! $parent->is_active]);
+
+        return back()->with('success', $parent->is_active ? 'Akun orang tua diaktifkan kembali.' : 'Akun orang tua dinonaktifkan.');
     }
 
     public function update(Request $request, User $parent)

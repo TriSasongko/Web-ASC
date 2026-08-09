@@ -28,7 +28,7 @@
                             <th class="px-4 py-2">Nama</th>
                             <th class="px-4 py-2">Email</th>
                             <th class="px-4 py-2">No. HP</th>
-                            <th class="px-4 py-2">Alamat</th>
+                            <th class="px-4 py-2">Status</th>
                             <th class="px-4 py-2">Aksi</th>
                         </tr>
                     </thead>
@@ -38,9 +38,25 @@
                                 <td class="px-4 py-2">{{ $parent->name }}</td>
                                 <td class="px-4 py-2">{{ $parent->email }}</td>
                                 <td class="px-4 py-2">{{ $parent->phone ?? '-' }}</td>
-                                <td class="px-4 py-2">{{ $parent->address ?? '-' }}</td>
+                                <td class="px-4 py-2">
+                                    @if ($parent->is_active)
+                                        <span class="px-2 py-1 rounded text-xs bg-green-100 text-green-700">Aktif</span>
+                                    @else
+                                        <span class="px-2 py-1 rounded text-xs bg-red-100 text-red-700">Nonaktif</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-2 space-x-2">
+                                    <a href="{{ route('admin.parents.show', $parent) }}" class="text-indigo-600">Detail</a>
+
                                     <a href="{{ route('admin.parents.edit', $parent) }}" class="text-indigo-600">Edit</a>
+
+                                    <form action="{{ route('admin.parents.toggle-active', $parent) }}" method="POST" class="inline">
+                                        @csrf @method('PATCH')
+                                        <button type="submit"
+                                            class="{{ $parent->is_active ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ $parent->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                        </button>
+                                    </form>
 
                                     <form action="{{ route('admin.parents.reset-password', $parent) }}" method="POST" class="inline"
                                           onsubmit="return confirm('Reset password ke default?')">

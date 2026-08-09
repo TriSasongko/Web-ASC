@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClassStudent;
 use App\Models\Program;
 use App\Models\SchoolClass;
 use App\Models\User;
@@ -13,7 +14,7 @@ class SchoolClassController extends Controller
     public function index(Request $request)
     {
         $classes = SchoolClass::with(['program', 'coach', 'schedules'])
-            ->when($request->program_id, fn($q) => $q->where('program_id', $request->program_id))
+            ->when($request->program_id, fn ($q) => $q->where('program_id', $request->program_id))
             ->latest()
             ->paginate(10);
 
@@ -36,6 +37,7 @@ class SchoolClassController extends Controller
             'program_id' => ['required', 'exists:programs,id'],
             'coach_id' => ['required', 'exists:users,id'],
             'name' => ['required', 'string', 'max:255'],
+            'level' => ['nullable', 'integer', 'min:1'],
             'capacity' => ['nullable', 'integer', 'min:1'],
         ]);
 
@@ -58,6 +60,7 @@ class SchoolClassController extends Controller
             'program_id' => ['required', 'exists:programs,id'],
             'coach_id' => ['required', 'exists:users,id'],
             'name' => ['required', 'string', 'max:255'],
+            'level' => ['nullable', 'integer', 'min:1'],
             'capacity' => ['nullable', 'integer', 'min:1'],
             'is_active' => ['nullable', 'boolean'],
         ]);
@@ -72,12 +75,28 @@ class SchoolClassController extends Controller
     public function destroy(SchoolClass $class)
     {
         $class->delete();
+
         return back()->with('success', 'Kelas berhasil dihapus.');
     }
 
     public function show(SchoolClass $class)
     {
-        $class->load(['program', 'coach', 'schedules', 'students']);
-        return view('admin.classes.show', compact('class'));
+        $class->load(['program', 'coach', 'schedules']);
+
+        $enrollments = ClassStudent::with(['student.parent', 'schoolClass.program'])
+            ->where('class_id', $class->id)
+            ->where('renewal_status', '!=', 'berhenti')
+            ->orderBy('is_active', 'desc')
+            ->orderBy('student_id')
+            ->get()
+            ->filter(fn ($e) => $e->student !== null)
+            ->values();
+
+        $candidateClasses = SchoolClass::where('is_active', true)
+            ->when($class->level, fn ($q) => $q->where('level', '>', $class->level))
+            ->orderBy('level')
+            ->get();
+
+        return view('admin.classes.show', compact('class', 'enrollments', 'candidateClasses'));
     }
 }

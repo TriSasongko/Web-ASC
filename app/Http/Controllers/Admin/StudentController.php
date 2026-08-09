@@ -12,6 +12,7 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $students = Student::with('parent')
+            ->activeProgram()
             ->whereHas('registrations', fn ($q) => $q->where('status', 'diterima'))
             ->when($request->search, fn ($q) => $q->where('full_name', 'like', '%'.$request->search.'%'))
             ->latest()

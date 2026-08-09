@@ -42,6 +42,12 @@
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
 
+                    <div>
+                        <x-input-label for="level" value="Tingkatan (angka, opsional)" />
+                        <x-text-input id="level" type="number" min="1" name="level" class="mt-1 block w-full" value="{{ old('level') }}" />
+                        <x-input-error :messages="$errors->get('level')" class="mt-2" />
+                    </div>
+
                     {{-- <div>
                         <x-input-label for="capacity" value="Kapasitas (opsional)" />
                         <x-text-input id="capacity" type="number" name="capacity" class="mt-1 block w-full" value="{{ old('capacity') }}" />

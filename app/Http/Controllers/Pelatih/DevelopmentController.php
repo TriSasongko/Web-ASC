@@ -17,7 +17,12 @@ class DevelopmentController extends Controller
 
         $students = $class->students()->wherePivot('is_active', true)->get();
 
-        return view('pelatih.developments.index', compact('class', 'students'));
+        $candidateClasses = SchoolClass::where('is_active', true)
+            ->when($class->level, fn ($q) => $q->where('level', '>', $class->level))
+            ->orderBy('level')
+            ->get();
+
+        return view('pelatih.developments.index', compact('class', 'students', 'candidateClasses'));
     }
 
     public function create(SchoolClass $class, Student $student)
