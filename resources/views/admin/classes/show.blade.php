@@ -35,7 +35,7 @@
                 </div>
                 <div>
                     <dt class="font-label-sm text-label-sm text-outline">Level</dt>
-                    <dd class="font-body-md text-body-md text-on-surface mt-0.5">{{ $class->level ? 'Level '.$class->level : '-' }}</dd>
+                    <dd class="font-body-md text-body-md text-on-surface mt-0.5">{{ $class->level_label ?? '-' }}</dd>
                 </div>
                 <div>
                     <dt class="font-label-sm text-label-sm text-outline">Coach</dt>
@@ -198,13 +198,18 @@
                                                         <select id="recommended_class_id" name="recommended_class_id" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
                                                             <option value="">-- Kelas target (opsional) --</option>
                                                             @foreach ($candidateClasses as $c)
-                                                                <option value="{{ $c->id }}">{{ $c->name }} (Level {{ $c->level ?? '-' }})</option>
+                                                                <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->level_label ?? '-' }})</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
                                                     <div>
                                                         <x-input-label for="recommended_level" value="Level Target (opsional)" />
-                                                        <x-text-input id="recommended_level" type="number" min="1" name="recommended_level" placeholder="Atau level target (opsional)" />
+                                                        <select id="recommended_level" name="recommended_level" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                                            <option value="">-- Level target (opsional) --</option>
+                                                            @foreach (\App\Models\SchoolClass::levelOptions() as $levelValue => $levelLabel)
+                                                                <option value="{{ $levelValue }}">{{ $levelLabel }}</option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
                                                     <div>
                                                         <x-input-label for="recommendation_note" value="Catatan (opsional)" />

@@ -13,7 +13,6 @@ use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\ERaportController;
 use App\Http\Controllers\OrangTua\DashboardController as OrangTuaDashboard;
-use App\Http\Controllers\OrangTua\RecommendationController as OrangTuaRecommendation;
 use App\Http\Controllers\OrangTua\RegistrationController as OrangTuaRegistration;
 use App\Http\Controllers\Pelatih\AttendanceController as PelatihAttendance;
 use App\Http\Controllers\Pelatih\DashboardController as PelatihDashboard;
@@ -81,6 +80,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Route Rekomendasi Naik Kelas untuk Admin
     Route::get('recommendations', [AdminRecommendation::class, 'index'])->name('recommendations.index');
     Route::post('recommendations', [AdminRecommendation::class, 'store'])->name('recommendations.store');
+    Route::post('recommendations/{recommendation}/approve', [AdminRecommendation::class, 'approve'])->name('recommendations.approve');
+    Route::post('recommendations/{recommendation}/reject', [AdminRecommendation::class, 'reject'])->name('recommendations.reject');
     Route::delete('recommendations/{recommendation}', [AdminRecommendation::class, 'destroy'])->name('recommendations.destroy');
 });
 
@@ -110,9 +111,6 @@ Route::middleware(['auth', 'role:orang_tua'])->prefix('orangtua')->name('orangtu
     Route::get('registrations', [OrangTuaRegistration::class, 'index'])->name('registrations.index');
     Route::get('registrations/create', [OrangTuaRegistration::class, 'create'])->name('registrations.create');
     Route::post('registrations', [OrangTuaRegistration::class, 'store'])->name('registrations.store');
-
-    // Route Rekomendasi untuk Orang Tua
-    Route::patch('recommendations/{recommendation}/respond', [OrangTuaRecommendation::class, 'respond'])->name('recommendations.respond');
 });
 
 // Router: arahkan /dashboard sesuai role user yang login

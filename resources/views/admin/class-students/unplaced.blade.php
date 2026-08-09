@@ -20,6 +20,11 @@
             </div>
         @endif
 
+        <div class="flex items-center gap-2 bg-secondary-container/30 text-secondary px-4 py-3 rounded-lg font-body-sm text-body-sm">
+            <span class="material-symbols-outlined text-[18px]">info</span>
+            Siswa baru defaultnya ditempatkan di kelas <strong>Beginner</strong>. Anda dapat memilih kelas lain sesuai kebutuhan.
+        </div>
+
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
@@ -36,12 +41,18 @@
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $reg->student->full_name }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $reg->program->name }}</td>
                                 <td class="px-4 py-3">
+                                    @php
+                                        $classes = $reg->program->classes->where('is_active', true)->sortBy('level');
+                                        $defaultClass = $classes->firstWhere('level', \App\Models\SchoolClass::LEVEL_BEGINNER) ?? $classes->first();
+                                    @endphp
                                     <form action="{{ route('admin.class-students.place', $reg) }}" method="POST" class="flex flex-wrap items-center gap-2">
                                         @csrf
                                         <select name="class_id" class="bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" required>
                                             <option value="">-- Pilih Kelas --</option>
-                                            @foreach ($reg->program->classes as $class)
-                                                <option value="{{ $class->id }}">{{ $class->name }} ({{ $class->coach->name }})</option>
+                                            @foreach ($classes as $class)
+                                                <option value="{{ $class->id }}" {{ old('class_id') ? (old('class_id') == $class->id ? 'selected' : '') : ($defaultClass && $class->id === $defaultClass->id ? 'selected' : '') }}>
+                                                    {{ $class->name }} ({{ $class->level_label }} — {{ $class->coach->name }})
+                                                </option>
                                             @endforeach
                                         </select>
                                         <button type="submit" class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all hover:scale-[0.98] shadow-sm active:scale-95">Tempatkan</button>

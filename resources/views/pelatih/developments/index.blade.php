@@ -8,7 +8,7 @@
             <div>
                 <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Perkembangan Siswa</h2>
                 <p class="font-body-sm text-body-sm text-outline mt-1">
-                    Program: {{ $class->program->name }} ({{ $fmt($class->program->price) }}) · Level {{ $class->level ?? '-' }}
+                    Program: {{ $class->program->name }} ({{ $fmt($class->program->price) }}) · Level {{ $class->level_label ?? '-' }}
                 </p>
             </div>
         </div>
@@ -74,11 +74,15 @@
                                                     <select name="recommended_class_id" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
                                                         <option value="">-- Kelas target (opsional) --</option>
                                                         @foreach ($candidateClasses as $c)
-                                                            <option value="{{ $c->id }}">{{ $c->name }} (Level {{ $c->level ?? '-' }})</option>
+                                                            <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->level_label ?? '-' }})</option>
                                                         @endforeach
                                                     </select>
-                                                    <input type="number" min="1" name="recommended_level" placeholder="Atau level target (opsional)"
-                                                        class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                                    <select name="recommended_level" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                                        <option value="">-- Atau level target (opsional) --</option>
+                                                        @foreach ($availableLevels as $levelValue => $levelLabel)
+                                                            <option value="{{ $levelValue }}">{{ $levelLabel }}</option>
+                                                        @endforeach
+                                                    </select>
                                                     <textarea name="note" rows="2" placeholder="Catatan (opsional)" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"></textarea>
                                                     <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-[#FFB300] text-white px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">Simpan Rekomendasi</button>
                                                 </form>

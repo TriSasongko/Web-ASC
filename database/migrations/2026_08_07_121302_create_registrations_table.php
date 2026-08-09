@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained()->cascadeOnDelete();
             $table->foreignId('program_id')->constrained()->cascadeOnDelete();
             $table->enum('status', ['menunggu_verifikasi', 'diterima', 'ditolak'])
-                  ->default('menunggu_verifikasi');
+                ->default('menunggu_verifikasi');
             $table->text('rejection_reason')->nullable();
             $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('verified_at')->nullable();

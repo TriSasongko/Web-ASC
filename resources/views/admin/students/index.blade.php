@@ -47,6 +47,7 @@
                                             @endphp
                                             <div class="flex items-center gap-2">
                                                 <span class="font-body-sm text-body-sm text-on-surface">{{ $class->name }}</span>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container/60 text-on-primary">{{ $class->level_label ?? '-' }}</span>
                                                 <span class="font-body-sm text-body-sm text-outline">{{ $class->pivot->sessions_completed }}/{{ $total ?? '-' }}</span>
                                                 @if ($class->pivot->renewal_status === 'lanjut')
                                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E6F8FC] text-secondary">Lanjut</span>

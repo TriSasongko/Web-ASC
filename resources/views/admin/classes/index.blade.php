@@ -35,7 +35,7 @@
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Program</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Coach</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Jadwal</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Kapasitas</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Jumlah Murid</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
@@ -43,7 +43,7 @@
                         @forelse ($classes as $class)
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->name }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->level ? 'Level '.$class->level : '-' }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->level_label ?? '-' }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->program->name }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->coach->name }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">
@@ -53,7 +53,7 @@
                                         <span class="font-body-sm text-body-sm text-outline">Belum ada jadwal</span>
                                     @endforelse
                                 </td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->students()->count() }}/{{ $class->capacity ?? '∞' }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->students()->count() }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-3">
                                         <a href="{{ route('admin.classes.show', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Detail</a>

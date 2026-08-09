@@ -37,7 +37,7 @@ class SchoolClassController extends Controller
             'program_id' => ['required', 'exists:programs,id'],
             'coach_id' => ['required', 'exists:users,id'],
             'name' => ['required', 'string', 'max:255'],
-            'level' => ['nullable', 'integer', 'min:1'],
+            'level' => ['required', 'integer', 'min:1', 'max:3'],
             'capacity' => ['nullable', 'integer', 'min:1'],
         ]);
 
@@ -60,7 +60,7 @@ class SchoolClassController extends Controller
             'program_id' => ['required', 'exists:programs,id'],
             'coach_id' => ['required', 'exists:users,id'],
             'name' => ['required', 'string', 'max:255'],
-            'level' => ['nullable', 'integer', 'min:1'],
+            'level' => ['required', 'integer', 'min:1', 'max:3'],
             'capacity' => ['nullable', 'integer', 'min:1'],
             'is_active' => ['nullable', 'boolean'],
         ]);
@@ -93,6 +93,7 @@ class SchoolClassController extends Controller
             ->values();
 
         $candidateClasses = SchoolClass::where('is_active', true)
+            ->where('program_id', $class->program_id)
             ->when($class->level, fn ($q) => $q->where('level', '>', $class->level))
             ->orderBy('level')
             ->get();

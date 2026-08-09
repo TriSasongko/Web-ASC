@@ -26,7 +26,7 @@ class DashboardController extends Controller
             ->where('parents.is_active', true)
             ->where('class_student.renewal_status', '!=', 'berhenti')
             ->select('classes.id as class_id', 'classes.name as class_name', 'coaches.name as coach_name', DB::raw('count(*) as total'))
-            ->groupBy('classes.id', 'classes.name')
+            ->groupBy('classes.id', 'classes.name', 'coaches.name')
             ->orderByDesc('total')
             ->get();
 

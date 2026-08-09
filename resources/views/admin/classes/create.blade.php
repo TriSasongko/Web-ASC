@@ -36,18 +36,18 @@
 
                     <div>
                         <x-input-label for="name" value="Nama Kelas" />
-                        <select id="name" name="name" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" required>
-                            <option value="">-- Pilih Level --</option>
-                            @foreach (['Beginner', 'Advanced', 'Elite'] as $level)
-                                <option value="{{ $level }}" {{ old('name') == $level ? 'selected' : '' }}>{{ $level }}</option>
-                            @endforeach
-                        </select>
+                        <x-text-input id="name" name="name" value="{{ old('name') }}" placeholder="Contoh: Reguler A" required />
                         <x-input-error :messages="$errors->get('name')" class="mt-2" />
                     </div>
 
                     <div>
-                        <x-input-label for="level" value="Tingkatan (angka, opsional)" />
-                        <x-text-input id="level" type="number" min="1" name="level" value="{{ old('level') }}" />
+                        <x-input-label for="level" value="Level Kelas" />
+                        <select id="level" name="level" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" required>
+                            <option value="">-- Pilih Level --</option>
+                            @foreach (\App\Models\SchoolClass::levelOptions() as $levelValue => $levelLabel)
+                                <option value="{{ $levelValue }}" {{ old('level') == $levelValue ? 'selected' : '' }}>{{ $levelLabel }}</option>
+                            @endforeach
+                        </select>
                         <x-input-error :messages="$errors->get('level')" class="mt-2" />
                     </div>
                 </div>

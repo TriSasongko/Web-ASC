@@ -210,7 +210,48 @@ class PackageLifecycleTest extends TestCase
         ]);
     }
 
-    public function test_parent_can_respond_to_recommendation()
+    public function test_admin_can_approve_recommendation_and_move_student()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child);
+
+        $target = SchoolClass::create([
+            'program_id' => $data['class']->program_id,
+            'coach_id' => $data['coach']->id,
+            'name' => 'Reguler B',
+            'level' => 2,
+            'is_active' => true,
+        ]);
+
+        $rec = ClassRecommendation::create([
+            'student_id' => $child->id,
+            'from_user_id' => $data['coach']->id,
+            'current_class_id' => $data['class']->id,
+            'recommended_class_id' => $target->id,
+            'recommended_level' => 2,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($data['admin'])
+            ->post(route('admin.recommendations.approve', $rec))
+            ->assertRedirect();
+
+        $this->assertSame('diterima', $rec->fresh()->status);
+        $this->assertSame($data['admin']->id, $rec->fresh()->approved_by);
+        $this->assertNotNull($rec->fresh()->moved_at);
+
+        $this->assertFalse($data['enrollment']->fresh()->is_active);
+        $this->assertSame('pindah', $data['enrollment']->fresh()->renewal_status);
+
+        $this->assertDatabaseHas('class_student', [
+            'class_id' => $target->id,
+            'student_id' => $child->id,
+            'is_active' => true,
+        ]);
+    }
+
+    public function test_admin_can_reject_recommendation()
     {
         $parent = $this->makeParent();
         $child = $this->makeStudent($parent);
@@ -224,21 +265,37 @@ class PackageLifecycleTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $this->actingAs($parent)
-            ->patch(route('orangtua.recommendations.respond', $rec), ['status' => 'diterima'])
+        $this->actingAs($data['admin'])
+            ->post(route('admin.recommendations.reject', $rec))
             ->assertRedirect();
 
-        $this->assertSame('diterima', $rec->fresh()->status);
+        $this->assertSame('ditolak', $rec->fresh()->status);
+        $this->assertSame($data['admin']->id, $rec->fresh()->approved_by);
+        $this->assertTrue($data['enrollment']->fresh()->is_active);
     }
 
-    public function test_parent_cannot_respond_to_other_parent_recommendation()
+    public function test_coach_cannot_recommend_same_or_lower_level()
     {
         $parent = $this->makeParent();
-        $otherParent = $this->makeParent();
-        $child = $this->makeStudent($otherParent, 'Anak Orang Tua Lain');
+        $child = $this->makeStudent($parent);
         $data = $this->makeEnrollment($child);
 
-        $rec = ClassRecommendation::create([
+        $this->actingAs($data['coach'])
+            ->post(route('pelatih.recommendations.store', [$data['class'], $child]), [
+                'recommended_level' => 1,
+            ])
+            ->assertSessionHasErrors('recommended_level');
+
+        $this->assertDatabaseMissing('class_recommendations', ['student_id' => $child->id]);
+    }
+
+    public function test_duplicate_pending_recommendation_is_rejected()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child);
+
+        ClassRecommendation::create([
             'student_id' => $child->id,
             'from_user_id' => $data['coach']->id,
             'current_class_id' => $data['class']->id,
@@ -246,9 +303,21 @@ class PackageLifecycleTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $this->actingAs($parent)
-            ->patch(route('orangtua.recommendations.respond', $rec), ['status' => 'diterima'])
-            ->assertForbidden();
+        $target = SchoolClass::create([
+            'program_id' => $data['class']->program_id,
+            'coach_id' => $data['coach']->id,
+            'name' => 'Reguler C',
+            'level' => 3,
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($data['coach'])
+            ->post(route('pelatih.recommendations.store', [$data['class'], $child]), [
+                'recommended_class_id' => $target->id,
+            ])
+            ->assertStatus(422);
+
+        $this->assertSame(1, ClassRecommendation::where('student_id', $child->id)->count());
     }
 
     public function test_attendance_does_not_exceed_package_total()

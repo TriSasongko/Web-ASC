@@ -60,7 +60,10 @@
             <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-5">
                     <div>
-                        <h3 class="font-headline text-headline-sm text-on-surface">{{ $class->name }} — {{ $class->program->name }}</h3>
+                        <h3 class="font-headline text-headline-sm text-on-surface">
+                            {{ $class->name }} — {{ $class->program->name }}
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary align-middle ml-1">{{ $class->level_label ?? '-' }}</span>
+                        </h3>
                         <p class="font-body-sm text-body-sm text-outline mt-1">Coach: {{ $class->coach->name }}</p>
                     </div>
                     <div class="text-right">

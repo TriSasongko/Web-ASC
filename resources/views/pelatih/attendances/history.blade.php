@@ -22,6 +22,7 @@
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-left">Tanggal</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-left">Sesi</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-left">Nama Siswa</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-left">Level</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant/30">
@@ -30,10 +31,13 @@
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $a->attendance_date->format('d-m-Y') }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">Sesi {{ $a->session_number }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $a->student->full_name }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary">{{ $a->schoolClass?->level_label ?? '-' }}</span>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="px-4 py-6 text-center font-body-sm text-body-sm text-outline">Belum ada riwayat absensi.</td>
+                                <td colspan="4" class="px-4 py-6 text-center font-body-sm text-body-sm text-outline">Belum ada riwayat absensi.</td>
                             </tr>
                         @endforelse
                     </tbody>

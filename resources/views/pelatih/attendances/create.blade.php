@@ -42,7 +42,10 @@
                                         <span class="material-symbols-outlined text-[20px]">person</span>
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="font-label-md text-label-md text-on-surface truncate">{{ $student->full_name }}</p>
+                                        <div class="flex items-center gap-2">
+                                            <p class="font-label-md text-label-md text-on-surface truncate">{{ $student->full_name }}</p>
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary shrink-0">{{ $class->level_label ?? '-' }}</span>
+                                        </div>
                                         <p class="font-body-sm text-body-sm text-outline">
                                             Pertemuan terhitung: {{ $student->pivot->sessions_completed }}/{{ $class->program->total_sessions ?? '∞' }}
                                         </p>

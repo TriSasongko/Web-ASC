@@ -18,7 +18,10 @@
                 </div>
                 <div>
                     <p class="font-label-sm text-label-sm text-outline">Siswa</p>
-                    <p class="font-label-md text-label-md text-on-surface">{{ $attendance->student->full_name }}</p>
+                    <p class="font-label-md text-label-md text-on-surface">
+                        {{ $attendance->student->full_name }}
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary align-middle ml-1">{{ $attendance->schoolClass?->level_label ?? '-' }}</span>
+                    </p>
                 </div>
             </div>
 

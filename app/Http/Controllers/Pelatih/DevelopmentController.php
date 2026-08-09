@@ -18,11 +18,18 @@ class DevelopmentController extends Controller
         $students = $class->students()->wherePivot('is_active', true)->get();
 
         $candidateClasses = SchoolClass::where('is_active', true)
+            ->where('program_id', $class->program_id)
             ->when($class->level, fn ($q) => $q->where('level', '>', $class->level))
             ->orderBy('level')
             ->get();
 
-        return view('pelatih.developments.index', compact('class', 'students', 'candidateClasses'));
+        $availableLevels = array_filter(
+            SchoolClass::levelOptions(),
+            fn ($label, $level) => $class->level === null || $level > $class->level,
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        return view('pelatih.developments.index', compact('class', 'students', 'candidateClasses', 'availableLevels'));
     }
 
     public function create(SchoolClass $class, Student $student)

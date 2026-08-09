@@ -14,7 +14,7 @@ class CoachController extends Controller
     public function index(Request $request)
     {
         $coaches = User::where('role', 'pelatih')
-            ->when($request->search, fn($q) => $q->where('name', 'like', '%'.$request->search.'%'))
+            ->when($request->search, fn ($q) => $q->where('name', 'like', '%'.$request->search.'%'))
             ->latest()
             ->paginate(10);
 
@@ -52,6 +52,7 @@ class CoachController extends Controller
     public function edit(User $coach)
     {
         abort_unless($coach->role === 'pelatih', 404);
+
         return view('admin.coaches.edit', compact('coach'));
     }
 
@@ -94,7 +95,7 @@ class CoachController extends Controller
     public function toggleActive(User $coach)
     {
         abort_unless($coach->role === 'pelatih', 404);
-        $coach->update(['is_active' => !$coach->is_active]);
+        $coach->update(['is_active' => ! $coach->is_active]);
 
         return back()->with('success', 'Status pelatih diperbarui.');
     }

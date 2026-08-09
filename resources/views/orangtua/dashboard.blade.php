@@ -78,40 +78,40 @@
                 <h3 class="font-headline text-headline-sm text-on-surface">Rekomendasi Naik Kelas</h3>
             </div>
             <div class="divide-y divide-outline-variant/30">
-                @forelse ($pendingRecommendations as $rec)
+                @forelse ($recommendations as $rec)
                     <div class="p-5 hover:bg-surface-container-low/50 transition-colors">
-                        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                             <div class="min-w-0">
                                 <p class="font-label-md text-label-md text-on-surface">
                                     <span class="font-headline text-headline-sm">{{ $rec->student->full_name }}</span>
                                     @if ($rec->currentClass)
-                                        — {{ $rec->currentClass->name }} (Level {{ $rec->currentClass->level ?? '-' }})
+                                        — {{ $rec->currentClass->name }} ({{ $rec->currentClass->level_label ?? '-' }})
                                     @endif
                                     <span class="mx-1 text-outline">→</span>
-                                    <span class="font-headline text-headline-sm text-primary">{{ $rec->recommendedClass->name ?? 'Level '.($rec->recommended_level ?? '-') }}</span>
+                                    <span class="font-headline text-headline-sm text-primary">{{ $rec->recommendedClass->name ?? (\App\Models\SchoolClass::levelOptions()[$rec->recommended_level] ?? 'Level '.($rec->recommended_level ?? '-')) }}</span>
                                 </p>
                                 <p class="font-body-sm text-body-sm text-outline mt-1">Dari: {{ $rec->from->name }} ({{ $rec->from->isAdmin() ? 'Admin' : 'Pelatih' }})</p>
                                 @if ($rec->note)
                                     <p class="font-body-sm text-body-sm text-outline mt-1">Catatan: {{ $rec->note }}</p>
                                 @endif
                             </div>
-                            <div class="flex gap-2 shrink-0">
-                                <form action="{{ route('orangtua.recommendations.respond', $rec) }}" method="POST">
-                                    @csrf @method('PATCH')
-                                    <input type="hidden" name="status" value="diterima">
-                                    <button type="submit" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#E8F5E9] text-[#2E7D32] font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
-                                        <span class="material-symbols-outlined text-[16px]">check</span>
-                                        Setuju
-                                    </button>
-                                </form>
-                                <form action="{{ route('orangtua.recommendations.respond', $rec) }}" method="POST">
-                                    @csrf @method('PATCH')
-                                    <input type="hidden" name="status" value="ditolak">
-                                    <button type="submit" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
+                            <div class="shrink-0">
+                                @if ($rec->status === 'pending')
+                                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#FFF8E1] text-[#B26A00] font-label-sm text-label-sm">
+                                        <span class="material-symbols-outlined text-[16px]">schedule</span>
+                                        Menunggu persetujuan admin
+                                    </span>
+                                @elseif ($rec->status === 'diterima')
+                                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#E8F5E9] text-[#2E7D32] font-label-sm text-label-sm">
+                                        <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                                        Disetujui
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">
                                         <span class="material-symbols-outlined text-[16px]">close</span>
-                                        Tidak Setuju
-                                    </button>
-                                </form>
+                                        Ditolak
+                                    </span>
+                                @endif
                             </div>
                         </div>
                     </div>

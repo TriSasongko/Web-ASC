@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('class_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('class_id')->constrained('classes')->cascadeOnDelete();
-            $table->enum('day', ['senin','selasa','rabu','kamis','jumat','sabtu','minggu']);
+            $table->enum('day', ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu']);
             $table->time('start_time');
             $table->time('end_time');
             $table->string('location')->nullable();

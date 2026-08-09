@@ -9,12 +9,14 @@ class ClassRecommendation extends Model
     protected $fillable = [
         'student_id', 'from_user_id', 'current_class_id',
         'recommended_class_id', 'recommended_level', 'note', 'status',
+        'approved_by', 'moved_at',
     ];
 
     protected function casts(): array
     {
         return [
             'recommended_level' => 'integer',
+            'moved_at' => 'datetime',
         ];
     }
 
@@ -36,5 +38,10 @@ class ClassRecommendation extends Model
     public function recommendedClass()
     {
         return $this->belongsTo(SchoolClass::class, 'recommended_class_id');
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 }

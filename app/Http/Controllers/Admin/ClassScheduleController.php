@@ -29,6 +29,7 @@ class ClassScheduleController extends Controller
     public function destroy(ClassSchedule $schedule)
     {
         $schedule->delete();
+
         return back()->with('success', 'Jadwal berhasil dihapus.');
     }
 }

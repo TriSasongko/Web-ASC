@@ -11,7 +11,7 @@ class RegistrationController extends Controller
     public function index(Request $request)
     {
         $registrations = Registration::with(['student.parent', 'program'])
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
+            ->when($request->status, fn ($q) => $q->where('status', $request->status))
             ->latest()
             ->paginate(10);
 
@@ -21,6 +21,7 @@ class RegistrationController extends Controller
     public function show(Registration $registration)
     {
         $registration->load(['student.parent', 'program']);
+
         return view('admin.registrations.show', compact('registration'));
     }
 
