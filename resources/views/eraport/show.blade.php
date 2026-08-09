@@ -34,10 +34,22 @@
                     <h3 class="font-semibold text-gray-700 mb-2">Penilaian Perkembangan</h3>
                     <table class="w-full text-sm text-left">
                         <tbody>
-                            @foreach (\App\Models\Development::aspects() as $key => $label)
+                            <tr>
+                                <td colspan="2" class="py-2 font-medium text-gray-600">Penilaian Umum</td>
+                            </tr>
+                            @foreach (\App\Models\Development::umumAspects() as $key => $label)
                                 <tr class="border-b">
                                     <td class="px-4 py-2">{{ $label }}</td>
-                                    <td class="px-4 py-2 font-semibold">{{ str_replace('_', ' ', ucfirst($development->$key)) }}</td>
+                                    <td class="px-4 py-2 font-semibold">{{ \App\Models\Development::scoreLabel($development->$key) }}</td>
+                                </tr>
+                            @endforeach
+                            <tr>
+                                <td colspan="2" class="py-2 pt-4 font-medium text-gray-600">Penilaian Aspek Khusus</td>
+                            </tr>
+                            @foreach (\App\Models\Development::khususAspects() as $key => $label)
+                                <tr class="border-b">
+                                    <td class="px-4 py-2">{{ $label }}</td>
+                                    <td class="px-4 py-2 font-semibold">{{ \App\Models\Development::scoreLabel($development->$key) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

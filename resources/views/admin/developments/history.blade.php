@@ -18,9 +18,16 @@
                             </form>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 text-sm">
-                        @foreach (\App\Models\Development::aspects() as $key => $label)
-                            <p>{{ $label }}: <strong>{{ str_replace('_', ' ', ucfirst($dev->$key)) }}</strong></p>
+                    <p class="font-medium text-gray-600 text-sm mt-2">Penilaian Umum</p>
+                    <div class="grid grid-cols-2 gap-2 text-sm mt-1">
+                        @foreach (\App\Models\Development::umumAspects() as $key => $label)
+                            <p>{{ $label }}: <strong>{{ \App\Models\Development::scoreLabel($dev->$key) }}</strong></p>
+                        @endforeach
+                    </div>
+                    <p class="font-medium text-gray-600 text-sm mt-3">Penilaian Aspek Khusus</p>
+                    <div class="grid grid-cols-2 gap-2 text-sm mt-1">
+                        @foreach (\App\Models\Development::khususAspects() as $key => $label)
+                            <p>{{ $label }}: <strong>{{ \App\Models\Development::scoreLabel($dev->$key) }}</strong></p>
                         @endforeach
                     </div>
                     @if ($dev->coach_note)

@@ -37,7 +37,7 @@ class DevelopmentController extends Controller
     {
         $rules = ['period' => ['required', 'string', 'max:255']];
         foreach (Development::aspects() as $key => $label) {
-            $rules[$key] = ['required', 'in:belum,cukup,baik,sangat_baik'];
+            $rules[$key] = ['required', 'in:kurang,cukup,baik,sangat_baik'];
         }
         $rules['coach_note'] = ['nullable', 'string'];
 

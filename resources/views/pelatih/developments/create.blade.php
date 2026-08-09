@@ -16,17 +16,27 @@
                         <x-input-error :messages="$errors->get('period')" class="mt-2" />
                     </div>
 
-                    <hr>
+                    <p class="text-xs text-gray-500">
+                        @foreach (\App\Models\Development::scores() as $scoreKey => $scoreLabel){{ $loop->first ? '' : ', ' }}{{ $loop->iteration }} = {{ $scoreLabel }}@endforeach
+                    </p>
 
-                    @foreach (\App\Models\Development::aspects() as $key => $label)
+                    <h3 class="font-semibold text-gray-700">Penilaian Umum</h3>
+
+                    @foreach (\App\Models\Development::umumAspects() as $key => $label)
                         <div>
                             <x-input-label :for="$key" :value="$label" />
-                            <select id="{{ $key }}" name="{{ $key }}" class="mt-1 block w-full border-gray-300 rounded-md" required>
-                                <option value="belum" {{ old($key) == 'belum' ? 'selected' : '' }}>Belum</option>
-                                <option value="cukup" {{ old($key) == 'cukup' ? 'selected' : '' }}>Cukup</option>
-                                <option value="baik" {{ old($key) == 'baik' ? 'selected' : '' }}>Baik</option>
-                                <option value="sangat_baik" {{ old($key) == 'sangat_baik' ? 'selected' : '' }}>Sangat Baik</option>
-                            </select>
+                            <x-assessment-score :name="$key" />
+                        </div>
+                    @endforeach
+
+                    <hr>
+
+                    <h3 class="font-semibold text-gray-700">Penilaian Aspek Khusus</h3>
+
+                    @foreach (\App\Models\Development::khususAspects() as $key => $label)
+                        <div>
+                            <x-input-label :for="$key" :value="$label" />
+                            <x-assessment-score :name="$key" />
                         </div>
                     @endforeach
 

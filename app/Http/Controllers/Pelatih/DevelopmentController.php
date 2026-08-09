@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pelatih;
 use App\Http\Controllers\Controller;
 use App\Models\Development;
 use App\Models\SchoolClass;
+use App\Models\Student;
 use Illuminate\Http\Request;
 
 class DevelopmentController extends Controller
@@ -19,20 +20,20 @@ class DevelopmentController extends Controller
         return view('pelatih.developments.index', compact('class', 'students'));
     }
 
-    public function create(SchoolClass $class, \App\Models\Student $student)
+    public function create(SchoolClass $class, Student $student)
     {
         abort_unless($class->coach_id === auth()->id(), 403);
 
         return view('pelatih.developments.create', compact('class', 'student'));
     }
 
-    public function store(Request $request, SchoolClass $class, \App\Models\Student $student)
+    public function store(Request $request, SchoolClass $class, Student $student)
     {
         abort_unless($class->coach_id === auth()->id(), 403);
 
         $rules = ['period' => ['required', 'string', 'max:255']];
         foreach (Development::aspects() as $key => $label) {
-            $rules[$key] = ['required', 'in:belum,cukup,baik,sangat_baik'];
+            $rules[$key] = ['required', 'in:kurang,cukup,baik,sangat_baik'];
         }
         $rules['coach_note'] = ['nullable', 'string'];
 
@@ -51,7 +52,7 @@ class DevelopmentController extends Controller
     }
 
     // Riwayat semua periode penilaian untuk 1 siswa
-    public function history(SchoolClass $class, \App\Models\Student $student)
+    public function history(SchoolClass $class, Student $student)
     {
         abort_unless($class->coach_id === auth()->id(), 403);
 
