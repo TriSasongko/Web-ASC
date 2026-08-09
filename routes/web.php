@@ -33,6 +33,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::resource('coaches', CoachController::class)->except(['show']);
     Route::patch('coaches/{coach}/toggle-active', [CoachController::class, 'toggleActive'])->name('coaches.toggle-active');
+    Route::patch('coaches/{coach}/toggle-development', [CoachController::class, 'toggleDevelopmentAccess'])->name('coaches.toggle-development');
     Route::patch('coaches/{coach}/reset-password', [CoachController::class, 'resetPassword'])->name('coaches.reset-password');
 
     Route::resource('parents', ParentController::class)->except(['show']);

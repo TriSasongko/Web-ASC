@@ -100,6 +100,16 @@ class CoachController extends Controller
         return back()->with('success', 'Status pelatih diperbarui.');
     }
 
+    public function toggleDevelopmentAccess(User $coach)
+    {
+        abort_unless($coach->role === 'pelatih', 404);
+        $coach->update(['can_assess_developments' => ! $coach->can_assess_developments]);
+
+        $status = $coach->can_assess_developments ? 'diaktifkan' : 'dinonaktifkan';
+
+        return back()->with('success', 'Izin mengisi penilaian '.$status.' untuk '.$coach->name.'.');
+    }
+
     public function resetPassword(User $coach)
     {
         abort_unless($coach->role === 'pelatih', 404);

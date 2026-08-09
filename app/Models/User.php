@@ -11,7 +11,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'phone', 'address', 'is_active', 'photo',
+        'name', 'email', 'password', 'role', 'phone', 'address', 'is_active', 'photo', 'can_assess_developments',
     ];
 
     protected $hidden = [
@@ -24,6 +24,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'can_assess_developments' => 'boolean',
         ];
     }
 
@@ -41,6 +42,12 @@ class User extends Authenticatable
     public function isOrangTua(): bool
     {
         return $this->role === 'orang_tua';
+    }
+
+    // Helper izin mengisi penilaian perkembangan siswa
+    public function canAssessDevelopments(): bool
+    {
+        return (bool) $this->can_assess_developments;
     }
 
     // Relasi jika role = orang_tua

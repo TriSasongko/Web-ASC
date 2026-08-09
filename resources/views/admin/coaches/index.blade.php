@@ -40,6 +40,7 @@
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Email</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">No. HP</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Status</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Izin Penilaian</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
@@ -62,6 +63,18 @@
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm {{ $coach->is_active ? 'bg-[#E8F5E9] text-[#2E7D32]' : 'bg-error-container text-on-error-container' }}">
                                         {{ $coach->is_active ? 'Aktif' : 'Nonaktif' }}
                                     </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <form action="{{ route('admin.coaches.toggle-development', $coach) }}" method="POST"
+                                          onsubmit="return confirmToggleDevelopment(event, this, '{{ $coach->name }}', {{ $coach->can_assess_developments ? 'true' : 'false' }})">
+                                        @csrf @method('PATCH')
+                                        <button type="submit" class="inline-flex items-center gap-2 group" title="{{ $coach->can_assess_developments ? 'Matikan izin penilaian' : 'Aktifkan izin penilaian' }}">
+                                            <span class="relative inline-flex items-center w-10 h-6 rounded-full transition-colors {{ $coach->can_assess_developments ? 'bg-[#2E7D32]' : 'bg-outline-variant/60' }}">
+                                                <span class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform {{ $coach->can_assess_developments ? 'translate-x-4' : '' }}"></span>
+                                            </span>
+                                            <span class="font-label-sm text-label-sm {{ $coach->can_assess_developments ? 'text-[#2E7D32]' : 'text-on-surface-variant' }}">{{ $coach->can_assess_developments ? 'Boleh' : 'Tidak' }}</span>
+                                        </button>
+                                    </form>
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-1">
@@ -91,7 +104,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-10 text-center font-body-sm text-body-sm text-outline">Belum ada data pelatih.</td>
+                                <td colspan="7" class="px-4 py-10 text-center font-body-sm text-body-sm text-outline">Belum ada data pelatih.</td>
                             </tr>
                         @endforelse
                     </tbody>

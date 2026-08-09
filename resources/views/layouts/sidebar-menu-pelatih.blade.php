@@ -6,8 +6,11 @@
     $items = [
         ['label' => 'Dashboard', 'icon' => 'dashboard', 'route' => 'pelatih.dashboard', 'active' => request()->routeIs('pelatih.dashboard')],
         ['label' => 'Absensi', 'icon' => 'event_available', 'route' => 'pelatih.attendances.index', 'active' => request()->routeIs('pelatih.attendances.*')],
-        ['label' => 'Perkembangan', 'icon' => 'assessment', 'route' => 'pelatih.developments.index', 'active' => request()->routeIs('pelatih.developments.*')],
     ];
+
+    if (auth()->user()->canAssessDevelopments()) {
+        $items[] = ['label' => 'Perkembangan', 'icon' => 'assessment', 'route' => 'pelatih.developments.index', 'active' => request()->routeIs('pelatih.developments.*')];
+    }
 @endphp
 
 @foreach ($items as $item)

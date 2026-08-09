@@ -10,9 +10,16 @@ use Illuminate\Http\Request;
 
 class DevelopmentController extends Controller
 {
+    private function ensureCanAssess(): void
+    {
+        abort_if(! auth()->user()->canAssessDevelopments(), 403, 'Izin untuk mengisi penilaian belum diberikan.');
+    }
+
     // Daftar seluruh siswa aktif dikelompokkan per level, untuk dipilih isi perkembangannya
     public function index()
     {
+        $this->ensureCanAssess();
+
         $students = Student::with(['classes' => function ($q) {
             $q->wherePivot('is_active', true)->with('program');
         }])
@@ -27,11 +34,15 @@ class DevelopmentController extends Controller
 
     public function create(SchoolClass $class, Student $student)
     {
+        $this->ensureCanAssess();
+
         return view('pelatih.developments.create', compact('class', 'student'));
     }
 
     public function store(Request $request, SchoolClass $class, Student $student)
     {
+        $this->ensureCanAssess();
+
         $rules = ['period' => ['required', 'string', 'max:255']];
         foreach (Development::aspects() as $key => $label) {
             $rules[$key] = ['required', 'in:kurang,cukup,baik,sangat_baik'];
