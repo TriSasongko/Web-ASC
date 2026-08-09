@@ -18,7 +18,7 @@ class SchoolClass extends Model
     public const LEVEL_ELITE = 3;
 
     protected $fillable = [
-        'program_id', 'coach_id', 'name', 'level', 'capacity', 'is_active',
+        'program_id', 'name', 'level', 'capacity', 'is_active',
     ];
 
     public static function levelOptions(): array
@@ -45,11 +45,6 @@ class SchoolClass extends Model
     public function program()
     {
         return $this->belongsTo(Program::class);
-    }
-
-    public function coach()
-    {
-        return $this->belongsTo(User::class, 'coach_id');
     }
 
     public function schedules()

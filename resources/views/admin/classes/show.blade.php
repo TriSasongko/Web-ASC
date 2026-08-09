@@ -38,10 +38,6 @@
                     <dd class="font-body-md text-body-md text-on-surface mt-0.5">{{ $class->level_label ?? '-' }}</dd>
                 </div>
                 <div>
-                    <dt class="font-label-sm text-label-sm text-outline">Coach</dt>
-                    <dd class="font-body-md text-body-md text-on-surface mt-0.5">{{ $class->coach->name }}</dd>
-                </div>
-                <div>
                     <dt class="font-label-sm text-label-sm text-outline">Kapasitas</dt>
                     <dd class="font-body-md text-body-md text-on-surface mt-0.5">{{ $enrollments->count() }}/{{ $class->capacity ?? '∞' }}</dd>
                 </div>

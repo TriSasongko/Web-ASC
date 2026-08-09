@@ -11,7 +11,7 @@
         ['label' => 'Siswa', 'icon' => 'school', 'route' => 'admin.students.index', 'active' => request()->routeIs('admin.students.*')],
         ['label' => 'Kelas', 'icon' => 'pool', 'route' => 'admin.classes.index', 'active' => request()->routeIs('admin.classes.*') || request()->routeIs('admin.class-students.*') || request()->routeIs('admin.schedules.*'), 'badge' => $navClassesPending, 'badgeColor' => 'bg-error-container text-on-error-container'],
         ['label' => 'Absensi', 'icon' => 'event_available', 'route' => 'admin.attendances.index', 'active' => request()->routeIs('admin.attendances.*')],
-        ['label' => 'Evaluasi', 'icon' => 'assessment', 'route' => 'admin.developments.index', 'active' => request()->routeIs('admin.developments.*') || request()->routeIs('admin.classes.developments.*')],
+        ['label' => 'Perkembangan', 'icon' => 'assessment', 'route' => 'admin.developments.index', 'active' => request()->routeIs('admin.developments.*') || request()->routeIs('admin.classes.developments.*')],
         ['label' => 'Rekomendasi', 'icon' => 'star', 'route' => 'admin.recommendations.index', 'active' => request()->routeIs('admin.recommendations.*')],
     ];
 @endphp

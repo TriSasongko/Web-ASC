@@ -33,7 +33,6 @@
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nama Kelas</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Level</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Program</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Coach</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Jadwal</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Jumlah Murid</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Aksi</th>
@@ -45,7 +44,6 @@
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->name }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->level_label ?? '-' }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->program->name }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->coach->name }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">
                                     @forelse ($class->schedules as $s)
                                         <div>{{ ucfirst($s->day) }}, {{ \Carbon\Carbon::parse($s->start_time)->format('H:i') }} WIB</div>
@@ -68,7 +66,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 py-10 text-center font-body-sm text-body-sm text-outline">Belum ada kelas.</td>
+                                <td colspan="6" class="px-4 py-10 text-center font-body-sm text-body-sm text-outline">Belum ada kelas.</td>
                             </tr>
                         @endforelse
                     </tbody>

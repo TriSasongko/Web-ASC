@@ -5,7 +5,7 @@
                 <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Koreksi Absensi</h2>
                 <p class="font-body-sm text-body-sm text-outline mt-1">Perbaiki tanggal pencatatan absensi siswa.</p>
             </div>
-            <a href="{{ route('admin.attendances.history', $attendance->class_id) }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">
+            <a href="{{ route('admin.attendances.history') }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">
                 <span class="material-symbols-outlined text-[18px]">arrow_back</span>
                 Kembali
             </a>
@@ -36,9 +36,16 @@
                     <x-input-error :messages="$errors->get('attendance_date')" class="mt-2" />
                 </div>
 
+                <div>
+                    <x-input-label for="location" value="Lokasi" />
+                    <x-text-input id="location" name="location" class="mt-1 block w-full"
+                                  value="{{ old('location', $attendance->location) }}" placeholder="Contoh: Lapangan ASC" />
+                    <x-input-error :messages="$errors->get('location')" class="mt-2" />
+                </div>
+
                 <div class="flex items-center gap-3 pt-2">
                     <x-primary-button>Simpan</x-primary-button>
-                    <a href="{{ route('admin.attendances.history', $attendance->class_id) }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-5 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">Batal</a>
+                    <a href="{{ route('admin.attendances.history') }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-5 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">Batal</a>
                 </div>
             </form>
         </div>

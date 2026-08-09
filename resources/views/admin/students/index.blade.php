@@ -29,6 +29,8 @@
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Orang Tua</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">No. HP</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Paket</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Level</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Status Paket</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
@@ -41,14 +43,34 @@
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface space-y-1">
                                     @forelse ($student->classes as $class)
                                         @if ($class->pivot->is_active)
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-body-sm text-body-sm text-on-surface">{{ $class->name }}</span>
+                                                <span class="font-body-sm text-body-sm text-outline">{{ $class->pivot->sessions_completed }}/{{ $class->program->total_sessions ?? '-' }}</span>
+                                            </div>
+                                        @endif
+                                    @empty
+                                        <span class="font-body-sm text-body-sm text-outline">-</span>
+                                    @endforelse
+                                </td>
+                                <td class="px-4 py-3 space-y-1">
+                                    @forelse ($student->classes as $class)
+                                        @if ($class->pivot->is_active)
+                                            <div>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container/60 text-on-primary">{{ $class->level_label ?? '-' }}</span>
+                                            </div>
+                                        @endif
+                                    @empty
+                                        <span class="font-body-sm text-body-sm text-outline">-</span>
+                                    @endforelse
+                                </td>
+                                <td class="px-4 py-3 space-y-1">
+                                    @forelse ($student->classes as $class)
+                                        @if ($class->pivot->is_active)
                                             @php
                                                 $total = $class->program->total_sessions;
                                                 $left = $total === null ? null : max(0, $total - $class->pivot->sessions_completed);
                                             @endphp
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-body-sm text-body-sm text-on-surface">{{ $class->name }}</span>
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container/60 text-on-primary">{{ $class->level_label ?? '-' }}</span>
-                                                <span class="font-body-sm text-body-sm text-outline">{{ $class->pivot->sessions_completed }}/{{ $total ?? '-' }}</span>
+                                            <div>
                                                 @if ($class->pivot->renewal_status === 'lanjut')
                                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E6F8FC] text-secondary">Lanjut</span>
                                                 @elseif ($left === null)
@@ -72,14 +94,29 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-10 text-center font-body-sm text-body-sm text-outline">Belum ada data siswa.</td>
+                                <td colspan="7" class="px-4 py-10 text-center font-body-sm text-body-sm text-outline">Belum ada data siswa.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
-            <div class="p-5 border-t border-outline-variant/30">{{ $students->links() }}</div>
+            <div class="p-5 border-t border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <form method="GET" class="flex items-center gap-2">
+                    <label for="per_page" class="font-body-sm text-body-sm text-on-surface-variant whitespace-nowrap">Tampilkan</label>
+                    <select name="per_page" id="per_page" onchange="this.form.submit()"
+                            class="bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-1.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                        @foreach ([5, 10, 25, 50] as $p)
+                            <option value="{{ $p }}" {{ request('per_page', 10) == $p ? 'selected' : '' }}>{{ $p }}</option>
+                        @endforeach
+                    </select>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant whitespace-nowrap">per halaman</span>
+                    @if (request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                </form>
+                <div class="w-full">{{ $students->links('vendor.pagination.prevnext') }}</div>
+            </div>
         </div>
     </div>
 </x-sidebar-layout>

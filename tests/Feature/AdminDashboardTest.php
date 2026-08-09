@@ -47,7 +47,6 @@ class AdminDashboardTest extends TestCase
 
         $class = SchoolClass::create([
             'program_id' => $program->id,
-            'coach_id' => $coach->id,
             'name' => 'Reguler A',
             'capacity' => 4,
             'is_active' => true,

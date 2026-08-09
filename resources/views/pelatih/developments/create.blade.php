@@ -5,9 +5,9 @@
                 <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Isi Penilaian</h2>
                 <p class="font-body-sm text-body-sm text-outline mt-1">{{ $student->full_name }} — {{ $class->name }}</p>
             </div>
-            <a href="{{ route('pelatih.developments.index', $class) }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all shrink-0">
-                <span class="material-symbols-outlined text-[18px]">history</span>
-                Riwayat
+            <a href="{{ route('pelatih.developments.index') }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all shrink-0">
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                Kembali
             </a>
         </div>
 
@@ -62,7 +62,7 @@
 
                 <div class="flex items-center gap-3 pt-2">
                     <x-primary-button>Simpan Penilaian</x-primary-button>
-                    <a href="{{ route('pelatih.developments.index', $class) }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-5 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">Batal</a>
+                    <a href="{{ route('pelatih.developments.index') }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-5 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">Batal</a>
                 </div>
             </form>
         </div>

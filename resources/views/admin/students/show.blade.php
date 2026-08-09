@@ -64,7 +64,6 @@
                             {{ $class->name }} — {{ $class->program->name }}
                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary align-middle ml-1">{{ $class->level_label ?? '-' }}</span>
                         </h3>
-                        <p class="font-body-sm text-body-sm text-outline mt-1">Coach: {{ $class->coach->name }}</p>
                     </div>
                     <div class="text-right">
                         <p class="font-label-md text-label-md text-on-surface">
@@ -81,59 +80,39 @@
                 </div>
 
                 @php
-                    $monthNames = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'];
+                    $records = $attendanceLists[$class->id] ?? collect();
                 @endphp
 
-                <div>
-                    @if ($isPaket && $total)
-                        <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-                            @foreach (($classGrids[$class->id] ?? []) as $cell)
-                                @php
-                                    $cellClass = $cell['attended'] ? 'bg-[#E8F5E9] border-[#2E7D32]/30' : 'bg-surface-container-lowest border-dashed border-outline-variant/50';
-                                @endphp
-                                <div class="rounded-xl border p-3 text-center {{ $cellClass }}">
-                                    <p class="font-label-sm text-label-sm text-on-surface-variant">Pert {{ $cell['number'] }}</p>
-                                    @if ($cell['attended'])
-                                        <p class="font-label-sm text-label-sm text-[#2E7D32] mt-1">Hadir</p>
-                                        <p class="font-body-sm text-body-sm text-outline">{{ $cell['date']->format('d/m') }}</p>
-                                    @else
-                                        <p class="font-body-sm text-body-sm text-outline mt-1">Belum</p>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        @foreach (($monthlyGrids[$class->id] ?? []) as $monthly)
-                            <p class="font-label-md text-label-md text-on-surface-variant mb-2">
-                                {{ $monthNames[$monthly['month']->month] }} {{ $monthly['month']->year }}
-                            </p>
-                            <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 mb-3">
-                                @foreach ($monthly['cells'] as $cell)
-                                    @php
-                                        $cellClass = $cell['attended'] ? 'bg-[#E8F5E9] border-[#2E7D32]/30' : 'bg-surface-container-lowest border-dashed border-outline-variant/50';
-                                    @endphp
-                                    <div class="rounded-xl border p-3 text-center {{ $cellClass }}">
-                                        <p class="font-label-sm text-label-sm text-on-surface-variant">{{ $cell['date']->format('d/m') }}</p>
-                                        @if ($cell['attended'])
-                                            <p class="font-label-sm text-label-sm text-[#2E7D32] mt-1">Hadir</p>
-                                        @else
-                                            <p class="font-body-sm text-body-sm text-outline mt-1">Belum</p>
-                                        @endif
-                                    </div>
+                @if ($records->isEmpty())
+                    <p class="font-body-sm text-body-sm text-outline">Belum ada catatan absensi untuk kelas ini.</p>
+                @else
+                    <div class="overflow-x-auto rounded-lg border border-outline-variant/30">
+                        <table class="w-full text-left">
+                            <thead class="bg-surface-container-low">
+                                <tr>
+                                    <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">No</th>
+                                    <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Tanggal</th>
+                                    <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Lokasi</th>
+                                    <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Status</th>
+                                    <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Diabsen Oleh</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-outline-variant/30">
+                                @foreach ($records as $i => $r)
+                                    <tr class="hover:bg-surface-container-low/50 transition-colors">
+                                        <td class="px-4 py-2.5 font-body-sm text-body-sm text-outline">{{ $i + 1 }}</td>
+                                        <td class="px-4 py-2.5 font-body-sm text-body-sm text-on-surface">{{ $r->attendance_date->format('d/m/Y') }}</td>
+                                        <td class="px-4 py-2.5 font-body-sm text-body-sm text-on-surface">{{ $r->location ?? '-' }}</td>
+                                        <td class="px-4 py-2.5">
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-[#E8F5E9] text-[#2E7D32]">Hadir</span>
+                                        </td>
+                                        <td class="px-4 py-2.5 font-body-sm text-body-sm text-on-surface">{{ $r->recorder?->name ?? '-' }}</td>
+                                    </tr>
                                 @endforeach
-                            </div>
-                        @endforeach
-                    @endif
-
-                    <div class="mt-4 flex flex-wrap items-center gap-4 font-body-sm text-body-sm text-outline">
-                        <span class="inline-flex items-center gap-1.5">
-                            <span class="h-3 w-3 rounded-sm bg-[#E8F5E9] border border-[#2E7D32]/30"></span> Hadir
-                        </span>
-                        <span class="inline-flex items-center gap-1.5">
-                            <span class="h-3 w-3 rounded-sm bg-surface-container-lowest border border-dashed border-outline-variant/50"></span> Belum Absen
-                        </span>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
+                @endif
 
                 @if ($isPaket && $total && $left !== null)
                     @php

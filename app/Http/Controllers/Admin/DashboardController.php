@@ -19,14 +19,13 @@ class DashboardController extends Controller
             ->join('users as parents', 'parents.id', '=', 'students.parent_id')
             ->join('classes', 'classes.id', '=', 'class_student.class_id')
             ->join('programs', 'programs.id', '=', 'classes.program_id')
-            ->join('users as coaches', 'coaches.id', '=', 'classes.coach_id')
             ->where('programs.billing_type', 'per_paket')
             ->whereNotNull('programs.total_sessions')
             ->whereColumn('class_student.sessions_completed', '>=', DB::raw('programs.total_sessions - 1'))
             ->where('parents.is_active', true)
             ->where('class_student.renewal_status', '!=', 'berhenti')
-            ->select('classes.id as class_id', 'classes.name as class_name', 'coaches.name as coach_name', DB::raw('count(*) as total'))
-            ->groupBy('classes.id', 'classes.name', 'coaches.name')
+            ->select('classes.id as class_id', 'classes.name as class_name', DB::raw('count(*) as total'))
+            ->groupBy('classes.id', 'classes.name')
             ->orderByDesc('total')
             ->get();
 

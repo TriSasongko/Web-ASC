@@ -62,9 +62,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Route Absensi untuk Admin
     Route::get('attendances', [AdminAttendance::class, 'index'])->name('attendances.index');
-    Route::get('attendances/{class}/create', [AdminAttendance::class, 'create'])->name('attendances.create');
-    Route::post('attendances/{class}', [AdminAttendance::class, 'store'])->name('attendances.store');
-    Route::get('attendances/{class}/history', [AdminAttendance::class, 'history'])->name('attendances.history');
+    Route::get('attendances/create', [AdminAttendance::class, 'create'])->name('attendances.create');
+    Route::post('attendances', [AdminAttendance::class, 'store'])->name('attendances.store');
+    Route::get('attendances/history', [AdminAttendance::class, 'history'])->name('attendances.history');
     Route::get('attendance-records/{attendance}/edit', [AdminAttendance::class, 'edit'])->name('attendances.edit');
     Route::put('attendance-records/{attendance}', [AdminAttendance::class, 'update'])->name('attendances.update');
     Route::delete('attendance-records/{attendance}', [AdminAttendance::class, 'destroy'])->name('attendances.destroy');
@@ -90,12 +90,12 @@ Route::middleware(['auth', 'role:pelatih'])->prefix('pelatih')->name('pelatih.')
 
     // Route Absensi untuk Pelatih
     Route::get('attendances', [PelatihAttendance::class, 'index'])->name('attendances.index');
-    Route::get('attendances/{class}/create', [PelatihAttendance::class, 'create'])->name('attendances.create');
-    Route::post('attendances/{class}', [PelatihAttendance::class, 'store'])->name('attendances.store');
-    Route::get('attendances/{class}/history', [PelatihAttendance::class, 'history'])->name('attendances.history');
+    Route::get('attendances/create', [PelatihAttendance::class, 'create'])->name('attendances.create');
+    Route::post('attendances', [PelatihAttendance::class, 'store'])->name('attendances.store');
+    Route::get('attendances/history', [PelatihAttendance::class, 'history'])->name('attendances.history');
 
     // Route Perkembangan Siswa untuk Pelatih
-    Route::get('classes/{class}/developments', [PelatihDevelopment::class, 'index'])->name('developments.index');
+    Route::get('developments', [PelatihDevelopment::class, 'index'])->name('developments.index');
     Route::get('classes/{class}/developments/{student}/create', [PelatihDevelopment::class, 'create'])->name('developments.create');
     Route::post('classes/{class}/developments/{student}', [PelatihDevelopment::class, 'store'])->name('developments.store');
     Route::get('classes/{class}/developments/{student}/history', [PelatihDevelopment::class, 'history'])->name('developments.history');

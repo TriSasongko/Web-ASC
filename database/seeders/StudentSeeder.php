@@ -28,8 +28,6 @@ class StudentSeeder extends Seeder
     public function run(): void
     {
         $admin = User::where('role', 'admin')->firstOrFail();
-        $coach = User::where('role', 'pelatih')->firstOrFail();
-
         // Paket per_paket: Reguler (8x), Mini Reguler (4x), Private (8x).
         // sessions_completed menentukan sisa paket: 7/8 & 3/4 → hampir habis, 4/8 & 2/4 → setengah jalan.
         $students = [
@@ -135,7 +133,6 @@ class StudentSeeder extends Seeder
                 ['name' => $data['class_name']],
                 [
                     'program_id' => $program->id,
-                    'coach_id' => $coach->id,
                     'capacity' => $program->max_students,
                     'is_active' => true,
                 ]

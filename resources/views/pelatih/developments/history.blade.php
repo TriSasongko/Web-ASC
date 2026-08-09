@@ -57,7 +57,7 @@
             </div>
         @endforelse
 
-        <a href="{{ route('pelatih.developments.index', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+        <a href="{{ route('pelatih.developments.index') }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
             <span class="material-symbols-outlined text-[18px]">arrow_back</span>
             Kembali
         </a>

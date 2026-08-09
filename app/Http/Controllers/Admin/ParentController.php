@@ -14,10 +14,15 @@ class ParentController extends Controller
 {
     public function index(Request $request)
     {
+        $perPage = in_array($request->integer('per_page'), [5, 10, 25, 50], true)
+            ? $request->integer('per_page')
+            : 10;
+
         $parents = User::where('role', 'orang_tua')
             ->when($request->search, fn ($q) => $q->where('name', 'like', '%'.$request->search.'%'))
             ->latest()
-            ->paginate(10);
+            ->paginate($perPage)
+            ->withQueryString();
 
         return view('admin.parents.index', compact('parents'));
     }
@@ -58,7 +63,7 @@ class ParentController extends Controller
 
         $students = Student::withoutGlobalScope(ActiveParentScope::class)
             ->where('parent_id', $parent->id)
-            ->with(['classes.program', 'classes.coach'])
+            ->with(['classes.program'])
             ->get();
 
         return view('admin.parents.show', compact('parent', 'students'));

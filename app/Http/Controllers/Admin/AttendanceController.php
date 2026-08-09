@@ -4,48 +4,52 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\ClassStudent;
 use App\Models\SchoolClass;
-use App\Models\User;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $classes = SchoolClass::with(['program', 'coach'])
-            ->when($request->coach_id, fn ($q) => $q->where('coach_id', $request->coach_id))
+        $recordedCount = Attendance::count();
+
+        return view('admin.attendances.index', compact('recordedCount'));
+    }
+
+    public function create()
+    {
+        $classes = SchoolClass::with('program')
             ->where('is_active', true)
+            ->orderBy('name')
             ->get();
 
-        $coaches = User::where('role', 'pelatih')->get();
+        $students = Student::with(['classes' => function ($q) {
+            $q->wherePivot('is_active', true)->with('program');
+        }])
+            ->whereHas('enrollments', fn ($q) => $q->where('is_active', true))
+            ->orderBy('full_name')
+            ->get();
 
-        return view('admin.attendances.index', compact('classes', 'coaches'));
+        return view('admin.attendances.create', compact('classes', 'students'));
     }
 
-    public function create(SchoolClass $class)
-    {
-        $students = $class->students()->wherePivot('is_active', true)->get();
-
-        return view('admin.attendances.create', compact('class', 'students'));
-    }
-
-    public function store(Request $request, SchoolClass $class)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'attendance_date' => ['required', 'date'],
-            'session_number' => ['nullable', 'integer', 'min:1'],
+            'location' => ['nullable', 'string', 'max:255'],
             'attendance' => ['required', 'array'],
             'attendance.*' => ['integer', 'exists:students,id'],
         ]);
 
         $validated['session_number'] ??= 1;
 
-        DB::transaction(function () use ($validated, $class) {
+        DB::transaction(function () use ($validated) {
             foreach ($validated['attendance'] as $studentId) {
-
-                $exists = Attendance::where('class_id', $class->id)
-                    ->where('student_id', $studentId)
+                $exists = Attendance::where('student_id', $studentId)
                     ->where('attendance_date', $validated['attendance_date'])
                     ->where('session_number', $validated['session_number'])
                     ->exists();
@@ -54,42 +58,47 @@ class AttendanceController extends Controller
                     continue;
                 }
 
+                $activeEnrollment = ClassStudent::with('schoolClass.program')
+                    ->where('student_id', $studentId)
+                    ->where('is_active', true)
+                    ->first();
+
                 Attendance::create([
-                    'class_id' => $class->id,
+                    'class_id' => $activeEnrollment?->class_id,
                     'student_id' => $studentId,
                     'recorded_by' => auth()->id(),
                     'attendance_date' => $validated['attendance_date'],
                     'session_number' => $validated['session_number'],
+                    'location' => $validated['location'] ?? null,
                 ]);
 
-                if ($class->program->billing_type === 'per_paket') {
-                    $pivot = DB::table('class_student')
-                        ->where('class_id', $class->id)
-                        ->where('student_id', $studentId)
-                        ->first();
+                if ($activeEnrollment?->schoolClass?->program?->billing_type === 'per_paket') {
+                    $program = $activeEnrollment->schoolClass->program;
 
-                    if ($class->program->total_sessions && $pivot->sessions_completed >= $class->program->total_sessions) {
+                    if ($program->total_sessions && $activeEnrollment->sessions_completed >= $program->total_sessions) {
                         continue;
                     }
 
-                    $class->students()->updateExistingPivot($studentId, [
-                        'sessions_completed' => DB::raw('sessions_completed + 1'),
-                    ]);
+                    $activeEnrollment->increment('sessions_completed');
                 }
             }
         });
 
-        return redirect()->route('admin.attendances.index')->with('success', 'Absensi berhasil disimpan oleh Admin.');
+        return redirect()->route('admin.attendances.history')
+            ->with('success', 'Absensi berhasil disimpan oleh Admin.');
     }
 
-    public function history(SchoolClass $class)
+    public function history(Request $request)
     {
-        $attendances = Attendance::where('class_id', $class->id)
-            ->with(['student', 'recorder'])
+        $attendances = Attendance::with(['student', 'recorder', 'schoolClass'])
+            ->when($request->student_name, fn ($q) => $q->whereHas('student', fn ($s) => $s->where('full_name', 'like', '%'.$request->student_name.'%')))
+            ->when($request->date_from, fn ($q) => $q->whereDate('attendance_date', '>=', $request->date_from))
+            ->when($request->date_to, fn ($q) => $q->whereDate('attendance_date', '<=', $request->date_to))
             ->orderByDesc('attendance_date')
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
-        return view('admin.attendances.history', compact('class', 'attendances'));
+        return view('admin.attendances.history', compact('attendances'));
     }
 
     public function edit(Attendance $attendance)
@@ -101,10 +110,10 @@ class AttendanceController extends Controller
     {
         $validated = $request->validate([
             'attendance_date' => ['required', 'date'],
+            'location' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $exists = Attendance::where('class_id', $attendance->class_id)
-            ->where('student_id', $attendance->student_id)
+        $exists = Attendance::where('student_id', $attendance->student_id)
             ->where('session_number', $attendance->session_number)
             ->where('attendance_date', $validated['attendance_date'])
             ->where('id', '!=', $attendance->id)
@@ -116,16 +125,14 @@ class AttendanceController extends Controller
 
         $attendance->update($validated);
 
-        return redirect()->route('admin.attendances.history', $attendance->schoolClass)
+        return redirect()->route('admin.attendances.history')
             ->with('success', 'Tanggal absensi berhasil dikoreksi.');
     }
 
     public function destroy(Attendance $attendance)
     {
-        $class = $attendance->schoolClass;
-
-        if ($class->program->billing_type === 'per_paket') {
-            $class->students()->updateExistingPivot($attendance->student_id, [
+        if ($attendance->class_id && $attendance->schoolClass?->program?->billing_type === 'per_paket') {
+            $attendance->schoolClass->students()->updateExistingPivot($attendance->student_id, [
                 'sessions_completed' => DB::raw('GREATEST(0, sessions_completed - 1)'),
             ]);
         }

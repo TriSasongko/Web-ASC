@@ -27,14 +27,11 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.sidebar', function ($view) {
             $role = Auth::check() ? Auth::user()->role : null;
 
-            $view->with('sidebarClasses', $role === 'pelatih'
-                ? SchoolClass::where('coach_id', Auth::id())
-                    ->where('is_active', true)
+            $view->with('sidebarClasses', $role === 'admin' || $role === 'pelatih'
+                ? SchoolClass::where('is_active', true)
                     ->orderBy('name')
                     ->get()
-                : ($role === 'admin'
-                    ? SchoolClass::where('is_active', true)->orderBy('name')->get()
-                    : collect()));
+                : collect());
 
             $view->with('navPendingRegistrations', $role === 'admin'
                 ? Registration::where('status', 'menunggu_verifikasi')->count()

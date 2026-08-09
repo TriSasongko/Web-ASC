@@ -45,17 +45,17 @@
                     <tbody class="divide-y divide-outline-variant/30">
                         @forelse ($parents as $parent)
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $parent->name }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $parent->email }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $parent->phone ?? '-' }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">
+                                <td class="px-4 py-2 font-body-sm text-body-sm text-on-surface">{{ $parent->name }}</td>
+                                <td class="px-4 py-2 font-body-sm text-body-sm text-on-surface">{{ $parent->email }}</td>
+                                <td class="px-4 py-2 font-body-sm text-body-sm text-on-surface">{{ $parent->phone ?? '-' }}</td>
+                                <td class="px-4 py-2 font-body-sm text-body-sm text-on-surface">
                                     @if ($parent->is_active)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E8F5E9] text-[#2E7D32]">Aktif</span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">Nonaktif</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-2">
                                     <div class="flex items-center gap-1">
                                         <a href="{{ route('admin.parents.show', $parent) }}" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Detail">
                                             <span class="material-symbols-outlined text-[20px]">visibility</span>
@@ -93,7 +93,22 @@
                 </table>
             </div>
 
-            <div class="p-5 border-t border-outline-variant/30">{{ $parents->links() }}</div>
+            <div class="p-5 border-t border-outline-variant/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <form method="GET" class="flex items-center gap-2">
+                    <label for="per_page" class="font-body-sm text-body-sm text-on-surface-variant whitespace-nowrap">Tampilkan</label>
+                    <select name="per_page" id="per_page" onchange="this.form.submit()"
+                            class="bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-1.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                        @foreach ([5, 10, 25, 50] as $p)
+                            <option value="{{ $p }}" {{ request('per_page', 10) == $p ? 'selected' : '' }}>{{ $p }}</option>
+                        @endforeach
+                    </select>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant whitespace-nowrap">per halaman</span>
+                    @if (request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                </form>
+                <div class="w-full">{{ $parents->links('vendor.pagination.prevnext') }}</div>
+            </div>
         </div>
     </div>
 </x-sidebar-layout>

@@ -23,15 +23,6 @@
                     </div>
 
                     <div>
-                        <x-input-label for="coach_id" value="Coach" />
-                        <select id="coach_id" name="coach_id" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" required>
-                            @foreach ($coaches as $coach)
-                                <option value="{{ $coach->id }}" {{ old('coach_id', $class->coach_id) == $coach->id ? 'selected' : '' }}>{{ $coach->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
                         <x-input-label for="name" value="Nama Kelas" />
                         <x-text-input id="name" name="name" value="{{ old('name', $class->name) }}" required />
                     </div>

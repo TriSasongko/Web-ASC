@@ -2,12 +2,12 @@
     <div class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Riwayat Absensi — {{ $class->name }}</h2>
-                <p class="font-body-sm text-body-sm text-outline mt-1">Daftar seluruh pencatatan absensi untuk kelas ini.</p>
+                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Riwayat Absensi</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-1">Rekap kehadiran per siswa. Cari nama murid atau filter rentang tanggal.</p>
             </div>
-            <a href="{{ route('admin.attendances.index') }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                Kembali
+            <a href="{{ route('admin.attendances.create') }}" class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all hover:scale-[0.98] shadow-sm active:scale-95 shrink-0">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Input Absensi
             </a>
         </div>
 
@@ -22,8 +22,28 @@
             <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[20px]">history</span>
-                    <h3 class="font-headline text-headline-sm text-on-surface">Data Absensi</h3>
+                    <h3 class="font-headline text-headline-sm text-on-surface">Rekap Absensi</h3>
                 </div>
+            </div>
+
+            <div class="p-5 border-b border-outline-variant/30">
+                <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <input type="text" name="student_name" value="{{ request('student_name') }}" placeholder="Cari nama siswa..."
+                               class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                    </div>
+                    <div>
+                        <input type="date" name="date_from" value="{{ request('date_from') }}"
+                               class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="date" name="date_to" value="{{ request('date_to') }}"
+                               class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                        <button type="submit" class="shrink-0 inline-flex items-center justify-center gap-2 bg-primary text-on-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all">
+                            <span class="material-symbols-outlined text-[18px]">search</span>
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <div class="overflow-x-auto">
@@ -31,8 +51,9 @@
                     <thead class="bg-surface-container-low">
                         <tr>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Tanggal</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Sesi</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Lokasi</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nama Siswa</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Kelas</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Level</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Dicatat Oleh</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Aksi</th>
@@ -42,8 +63,9 @@
                         @forelse ($attendances as $a)
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $a->attendance_date->format('d-m-Y') }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">Sesi {{ $a->session_number }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $a->location ?? '-' }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $a->student->full_name }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $a->schoolClass?->name ?? '-' }}</td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary">{{ $a->schoolClass?->level_label ?? '-' }}</span>
                                 </td>
@@ -67,7 +89,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-8 text-center font-body-sm text-body-sm text-outline">Belum ada riwayat absensi.</td>
+                                <td colspan="7" class="px-4 py-8 text-center font-body-sm text-body-sm text-outline">Belum ada riwayat absensi.</td>
                             </tr>
                         @endforelse
                     </tbody>

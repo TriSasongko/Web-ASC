@@ -12,8 +12,6 @@ class RecommendationController extends Controller
 {
     public function store(Request $request, SchoolClass $class, Student $student)
     {
-        abort_unless($class->coach_id === auth()->id(), 403);
-
         $currentLevel = $class->level;
         $minLevel = ($currentLevel ?? 0) + 1;
 

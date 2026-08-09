@@ -115,7 +115,7 @@
                                     </div>
                                     <div>
                                         <h4 class="font-label-md text-label-md text-on-surface">{{ $alert->class_name }}</h4>
-                                        <p class="font-body-sm text-body-sm text-outline">{{ $alert->coach_name }} • {{ $alert->total }} siswa menunggu konfirmasi</p>
+                                        <p class="font-body-sm text-body-sm text-outline">{{ $alert->total }} siswa menunggu konfirmasi</p>
                                     </div>
                                 </div>
                                 <a href="{{ route('admin.classes.show', $alert->class_id) }}"

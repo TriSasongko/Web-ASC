@@ -10,7 +10,7 @@ class DashboardController extends Controller
     public function index()
     {
         $students = auth()->user()->students()
-            ->with(['classes.program', 'classes.coach'])
+            ->with(['classes.program'])
             ->get();
 
         $recommendations = ClassRecommendation::with(['student', 'recommendedClass', 'currentClass', 'from', 'approver'])

@@ -10,39 +10,33 @@ use Illuminate\Http\Request;
 
 class DevelopmentController extends Controller
 {
-    // Daftar siswa di kelas yang diampu, untuk dipilih isi perkembangannya
-    public function index(SchoolClass $class)
+    // Daftar seluruh siswa aktif dikelompokkan per level, untuk dipilih isi perkembangannya
+    public function index()
     {
-        abort_unless($class->coach_id === auth()->id(), 403);
-
-        $students = $class->students()->wherePivot('is_active', true)->get();
-
-        $candidateClasses = SchoolClass::where('is_active', true)
-            ->where('program_id', $class->program_id)
-            ->when($class->level, fn ($q) => $q->where('level', '>', $class->level))
-            ->orderBy('level')
+        $students = Student::with(['classes' => function ($q) {
+            $q->wherePivot('is_active', true)->with('program');
+        }])
+            ->whereHas('enrollments', fn ($q) => $q->where('is_active', true))
+            ->orderBy('full_name')
             ->get();
 
-        $availableLevels = array_filter(
-            SchoolClass::levelOptions(),
-            fn ($label, $level) => $class->level === null || $level > $class->level,
-            ARRAY_FILTER_USE_BOTH
-        );
+        $allClasses = SchoolClass::where('is_active', true)
+            ->orderBy('level')
+            ->orderBy('name')
+            ->get();
 
-        return view('pelatih.developments.index', compact('class', 'students', 'candidateClasses', 'availableLevels'));
+        $levels = SchoolClass::levelOptions();
+
+        return view('pelatih.developments.index', compact('students', 'allClasses', 'levels'));
     }
 
     public function create(SchoolClass $class, Student $student)
     {
-        abort_unless($class->coach_id === auth()->id(), 403);
-
         return view('pelatih.developments.create', compact('class', 'student'));
     }
 
     public function store(Request $request, SchoolClass $class, Student $student)
     {
-        abort_unless($class->coach_id === auth()->id(), 403);
-
         $rules = ['period' => ['required', 'string', 'max:255']];
         foreach (Development::aspects() as $key => $label) {
             $rules[$key] = ['required', 'in:kurang,cukup,baik,sangat_baik'];
@@ -59,15 +53,13 @@ class DevelopmentController extends Controller
             $validated
         );
 
-        return redirect()->route('pelatih.developments.index', $class)
+        return redirect()->route('pelatih.developments.index')
             ->with('success', 'Perkembangan siswa berhasil disimpan.');
     }
 
     // Riwayat semua periode penilaian untuk 1 siswa
     public function history(SchoolClass $class, Student $student)
     {
-        abort_unless($class->coach_id === auth()->id(), 403);
-
         $developments = Development::where('class_id', $class->id)
             ->where('student_id', $student->id)
             ->latest()

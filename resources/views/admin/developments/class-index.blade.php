@@ -25,10 +25,6 @@
                         <span class="material-symbols-outlined text-[14px]">category</span>
                         {{ $class->program->name }}
                     </span>
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">
-                        <span class="material-symbols-outlined text-[14px]">sports</span>
-                        {{ $class->coach->name }}
-                    </span>
                 </div>
             </div>
 

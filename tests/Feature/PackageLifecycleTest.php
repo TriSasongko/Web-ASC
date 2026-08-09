@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Attendance;
 use App\Models\ClassRecommendation;
 use App\Models\ClassStudent;
 use App\Models\Program;
@@ -47,7 +48,6 @@ class PackageLifecycleTest extends TestCase
 
         $class = SchoolClass::create([
             'program_id' => $program->id,
-            'coach_id' => $coach->id,
             'name' => 'Reguler A',
             'level' => 1,
             'capacity' => 10,
@@ -218,7 +218,6 @@ class PackageLifecycleTest extends TestCase
 
         $target = SchoolClass::create([
             'program_id' => $data['class']->program_id,
-            'coach_id' => $data['coach']->id,
             'name' => 'Reguler B',
             'level' => 2,
             'is_active' => true,
@@ -305,9 +304,8 @@ class PackageLifecycleTest extends TestCase
 
         $target = SchoolClass::create([
             'program_id' => $data['class']->program_id,
-            'coach_id' => $data['coach']->id,
-            'name' => 'Reguler C',
-            'level' => 3,
+            'name' => 'Reguler B',
+            'level' => 2,
             'is_active' => true,
         ]);
 
@@ -327,7 +325,7 @@ class PackageLifecycleTest extends TestCase
         $data = $this->makeEnrollment($child, 8);
 
         $this->actingAs($data['admin'])
-            ->post(route('admin.attendances.store', $data['class']), [
+            ->post(route('admin.attendances.store'), [
                 'attendance_date' => '2026-08-09',
                 'attendance' => [$child->id],
             ])
@@ -335,5 +333,45 @@ class PackageLifecycleTest extends TestCase
 
         $this->assertSame(8, $data['enrollment']->fresh()->sessions_completed);
         $this->assertTrue($data['enrollment']->fresh()->is_active);
+    }
+
+    public function test_attendance_increments_active_package_sessions()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 3);
+
+        $this->actingAs($data['admin'])
+            ->post(route('admin.attendances.store'), [
+                'attendance_date' => '2026-08-09',
+                'attendance' => [$child->id],
+            ])
+            ->assertRedirect();
+
+        $this->assertSame(4, $data['enrollment']->fresh()->sessions_completed);
+    }
+
+    public function test_substitute_coach_can_record_attendance_for_another_coach_class()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 3);
+
+        $substitute = User::factory()->create(['role' => 'pelatih', 'is_active' => true]);
+
+        $this->actingAs($substitute)
+            ->post(route('pelatih.attendances.store'), [
+                'attendance_date' => '2026-08-09',
+                'attendance' => [$child->id],
+            ])
+            ->assertRedirect(route('pelatih.attendances.history'));
+
+        $this->assertTrue(Attendance::where('student_id', $child->id)
+            ->where('recorded_by', $substitute->id)
+            ->whereDate('attendance_date', '2026-08-09')
+            ->where('class_id', $data['class']->id)
+            ->exists());
+
+        $this->assertSame(4, $data['enrollment']->fresh()->sessions_completed);
     }
 }

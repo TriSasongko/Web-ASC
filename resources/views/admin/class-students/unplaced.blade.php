@@ -51,7 +51,7 @@
                                             <option value="">-- Pilih Kelas --</option>
                                             @foreach ($classes as $class)
                                                 <option value="{{ $class->id }}" {{ old('class_id') ? (old('class_id') == $class->id ? 'selected' : '') : ($defaultClass && $class->id === $defaultClass->id ? 'selected' : '') }}>
-                                                    {{ $class->name }} ({{ $class->level_label }} — {{ $class->coach->name }})
+                                                    {{ $class->name }} ({{ $class->level_label }})
                                                 </option>
                                             @endforeach
                                         </select>

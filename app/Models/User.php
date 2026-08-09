@@ -48,10 +48,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Student::class, 'parent_id');
     }
-
-    // Relasi jika role = pelatih
-    public function classes()
-    {
-        return $this->hasMany(SchoolClass::class, 'coach_id');
-    }
 }

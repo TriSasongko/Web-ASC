@@ -2,70 +2,52 @@
     <div class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Absensi — Semua Kelas</h2>
-                <p class="font-body-sm text-body-sm text-outline mt-1">Kelola dan isi absensi latihan untuk setiap kelas.</p>
+                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Absensi</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-1">Catat kehadiran siswa dan lihat rekap absensi.</p>
             </div>
         </div>
 
         @if (session('success'))
             <div class="flex items-center gap-2 bg-[#E8F5E9] text-[#2E7D32] border border-[#2E7D32]/20 px-4 py-3 rounded-lg font-body-sm text-body-sm">
-                <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                {{ session('success') }}
+                <span class="material-symbols-outlined text-[18px]">check_circle</span> {{ session('success') }}
             </div>
         @endif
 
-        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
-            <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary text-[20px]">fact_check</span>
-                    <h3 class="font-headline text-headline-sm text-on-surface">Daftar Kelas</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="{{ route('admin.attendances.create') }}" class="group bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6 transition-all hover:border-primary/40 hover:shadow-lg">
+                <div class="flex items-start gap-4">
+                    <div class="p-3 bg-primary-container text-on-primary rounded-xl shrink-0">
+                        <span class="material-symbols-outlined text-[24px]">fact_check</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Input Absensi</h3>
+                        <p class="font-body-sm text-body-sm text-outline mt-1">Semua siswa langsung tampil — pilih tanggal, cari nama murid, lalu centang siswa yang hadir.</p>
+                    </div>
                 </div>
-                <form method="GET">
-                    <select name="coach_id" onchange="this.form.submit()" class="bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
-                        <option value="">-- Semua Coach --</option>
-                        @foreach ($coaches as $coach)
-                            <option value="{{ $coach->id }}" {{ request('coach_id') == $coach->id ? 'selected' : '' }}>{{ $coach->name }}</option>
-                        @endforeach
-                    </select>
-                </form>
-            </div>
+            </a>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-surface-container-low">
-                        <tr>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nama Kelas</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Program</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Coach</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant/30">
-                        @forelse ($classes as $class)
-                            <tr class="hover:bg-surface-container-low/50 transition-colors">
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->name }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->program->name }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->coach->name }}</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-4">
-                                        <a href="{{ route('admin.attendances.create', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
-                                            <span class="material-symbols-outlined text-[16px]">fact_check</span>
-                                            Input Absensi
-                                        </a>
-                                        <a href="{{ route('admin.attendances.history', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
-                                            <span class="material-symbols-outlined text-[16px]">history</span>
-                                            Riwayat
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="px-4 py-8 text-center font-body-sm text-body-sm text-outline">Belum ada kelas aktif.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <a href="{{ route('admin.attendances.history') }}" class="group bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6 transition-all hover:border-primary/40 hover:shadow-lg">
+                <div class="flex items-start gap-4">
+                    <div class="p-3 bg-secondary-container/30 text-secondary rounded-xl shrink-0">
+                        <span class="material-symbols-outlined text-[24px]">history</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Riwayat Absensi</h3>
+                        <p class="font-body-sm text-body-sm text-outline mt-1">Rekap kehadiran per siswa, cari berdasarkan nama atau rentang tanggal.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6 md:p-8">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-primary-container text-on-primary rounded-xl shrink-0">
+                    <span class="material-symbols-outlined">event_available</span>
+                </div>
+                <div>
+                    <h3 class="font-headline text-headline-sm text-on-surface">{{ $recordedCount }} data absensi</h3>
+                    <p class="font-body-sm text-body-sm text-outline mt-1">Total kehadiran siswa yang tercatat. Data ini juga menjadi dasar perhitungan gaji coach.</p>
+                </div>
             </div>
         </div>
     </div>
