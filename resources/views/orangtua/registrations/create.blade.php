@@ -68,7 +68,7 @@
 
                         <div>
                             <x-input-label for="address" value="Alamat" />
-                            <textarea id="address" name="address" class="mt-1 block w-full border-outline-variant rounded-lg px-3 py-2 bg-surface-container-lowest shadow-sm focus:border-primary focus:ring-primary/30" required>{{ old('address') }}</textarea>
+                            <textarea id="address" name="address" class="mt-1 block w-full border-outline-variant rounded-lg px-3 py-2 bg-surface-container-lowest shadow-sm focus:border-primary focus:ring-primary/30" required>{{ old('address', auth()->user()->address) }}</textarea>
                         </div>
                     </div>
                 </div>

@@ -19,6 +19,7 @@ use App\Http\Controllers\OrangTua\RegistrationController as OrangTuaRegistration
 use App\Http\Controllers\Pelatih\AttendanceController as PelatihAttendance;
 use App\Http\Controllers\Pelatih\DashboardController as PelatihDashboard;
 use App\Http\Controllers\Pelatih\DevelopmentController as PelatihDevelopment;
+use App\Http\Controllers\Pelatih\NoteController as PelatihNote;
 use App\Http\Controllers\Pelatih\RecommendationController as PelatihRecommendation;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -108,6 +109,11 @@ Route::middleware(['auth', 'role:pelatih'])->prefix('pelatih')->name('pelatih.')
 
     // Route Rekomendasi Naik Kelas untuk Pelatih
     Route::post('classes/{class}/students/{student}/recommendations', [PelatihRecommendation::class, 'store'])->name('recommendations.store');
+
+    // Route Catatan Pribadi untuk Pelatih
+    Route::post('notes', [PelatihNote::class, 'store'])->name('notes.store');
+    Route::patch('notes/{note}', [PelatihNote::class, 'update'])->name('notes.update');
+    Route::delete('notes/{note}', [PelatihNote::class, 'destroy'])->name('notes.destroy');
 });
 
 Route::middleware(['auth', 'role:orang_tua'])->prefix('orangtua')->name('orangtua.')->group(function () {

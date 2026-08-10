@@ -33,6 +33,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @if ($role === 'admin')
             @vite(['resources/js/admin.js'])
+        @elseif ($role === 'pelatih')
+            @vite(['resources/js/pelatih.js'])
         @endif
 
         <style>

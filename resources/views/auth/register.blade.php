@@ -1,57 +1,83 @@
-<x-guest-layout>
-    <div class="mb-6">
-        <h2 class="font-headline text-headline-md text-on-surface">Daftar</h2>
-        <p class="font-body-sm text-body-sm text-outline mt-1">Buat akun baru untuk mulai bergabung.</p>
+<x-guest-card-layout>
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="font-headline text-headline-md text-primary mb-2">ASC Academy</h1>
+        <p class="font-body text-body-sm text-on-surface-variant">Buat akun Anda untuk bergabung dengan platform performa elit.</p>
     </div>
 
-    <form method="POST" action="{{ route('register') }}" class="space-y-5">
+    <!-- Form -->
+    <form method="POST" action="{{ route('register') }}" class="flex flex-col gap-5">
         @csrf
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="mt-1 block w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        <!-- Full Name -->
+        <div class="flex flex-col gap-1">
+            <label class="text-label-sm text-on-surface" for="name">Nama Lengkap</label>
+            <input class="w-full rounded-lg border border-outline-variant/50 px-4 py-2 text-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-outline/50" id="name" name="name" type="text" value="{{ old('name') }}" placeholder="John Doe" required autofocus autocomplete="name" />
+            <x-input-error :messages="$errors->get('name')" />
         </div>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="mt-1 block w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <!-- Email -->
+        <div class="flex flex-col gap-1">
+            <label class="text-label-sm text-on-surface" for="email">Email</label>
+            <input class="w-full rounded-lg border border-outline-variant/50 px-4 py-2 text-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-outline/50" id="email" name="email" type="email" value="{{ old('email') }}" placeholder="nama@email.com" required autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" />
         </div>
 
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="mt-1 block w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <!-- Phone -->
+        <div class="flex flex-col gap-1">
+            <label class="text-label-sm text-on-surface" for="phone">No. HP</label>
+            <input class="w-full rounded-lg border border-outline-variant/50 px-4 py-2 text-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-outline/50" id="phone" name="phone" type="tel" value="{{ old('phone') }}" placeholder="08xx xxxx xxxx" />
+            <x-input-error :messages="$errors->get('phone')" />
         </div>
 
-        <!-- Confirm Password -->
-        <div>
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="mt-1 block w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <!-- Full Address -->
+        <div class="flex flex-col gap-1">
+            <label class="text-label-sm text-on-surface" for="address">Alamat Lengkap</label>
+            <input class="w-full rounded-lg border border-outline-variant/50 px-4 py-2 text-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-outline/50" id="address" name="address" type="text" value="{{ old('address') }}" placeholder="Jl. Contoh No. 12, Kecamatan, Kota" />
+            <x-input-error :messages="$errors->get('address')" />
         </div>
 
-        <div class="flex items-center justify-between">
-            <a class="font-label-md text-label-md text-primary hover:text-primary/80 transition-colors" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button>
-                {{ __('Register') }}
-            </x-primary-button>
+        <!-- Passwords -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="flex flex-col gap-1">
+                <label class="text-label-sm text-on-surface" for="password">Password</label>
+                <input class="w-full rounded-lg border border-outline-variant/50 px-4 py-2 text-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-outline/50" id="password" name="password" type="password" placeholder="••••••••" required autocomplete="new-password" />
+                <div class="flex gap-1 mt-1">
+                    <div class="h-1 w-full bg-error rounded-full opacity-30"></div>
+                    <div class="h-1 w-full bg-outline-variant rounded-full"></div>
+                    <div class="h-1 w-full bg-outline-variant rounded-full"></div>
+                </div>
+                <x-input-error :messages="$errors->get('password')" />
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-label-sm text-on-surface" for="password_confirmation">Konfirmasi Password</label>
+                <input class="w-full rounded-lg border border-outline-variant/50 px-4 py-2 text-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-outline/50" id="password_confirmation" name="password_confirmation" type="password" placeholder="••••••••" required autocomplete="new-password" />
+                <x-input-error :messages="$errors->get('password_confirmation')" />
+            </div>
         </div>
+
+        <!-- T&C -->
+        <div class="flex items-start gap-3 mt-2">
+            <div class="flex items-center h-5">
+                <input id="terms" name="terms" type="checkbox" value="1" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary bg-white" {{ old('terms') ? 'checked' : '' }} />
+            </div>
+            <label class="text-body-sm text-on-surface-variant cursor-pointer" for="terms">
+                Saya menyetujui <a class="text-primary hover:underline" href="#">Syarat &amp; Ketentuan</a> dan <a class="text-primary hover:underline" href="#">Kebijakan Privasi</a>.
+            </label>
+        </div>
+        <x-input-error :messages="$errors->get('terms')" />
+
+        <!-- Submit -->
+        <button type="submit" class="w-full bg-primary-container text-white text-label-md py-3 px-6 rounded-lg mt-4 hover:bg-primary transition-colors flex justify-center items-center gap-2 active:scale-[0.98]">
+            Daftar Sekarang
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </button>
     </form>
-</x-guest-layout>
+
+    <!-- Footer Link -->
+    <div class="text-center mt-6 pt-6 border-t border-outline-variant/20">
+        <p class="text-body-sm text-on-surface-variant">
+            Sudah punya akun? <a class="text-primary font-semibold hover:underline" href="{{ route('login') }}">Masuk</a>
+        </p>
+    </div>
+</x-guest-card-layout>
