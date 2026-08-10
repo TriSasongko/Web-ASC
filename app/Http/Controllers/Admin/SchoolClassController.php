@@ -115,7 +115,7 @@ class SchoolClassController extends Controller
 
     public function show(SchoolClass $class)
     {
-        $class->load(['program', 'schedules']);
+        $class->load(['program', 'schedules.students', 'schedules.coaches']);
 
         $enrollments = ClassStudent::with(['student.parent', 'schoolClass.program'])
             ->where('class_id', $class->id)

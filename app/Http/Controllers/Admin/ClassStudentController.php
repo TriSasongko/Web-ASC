@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClassSchedule;
 use App\Models\ClassStudent;
 use App\Models\Registration;
 use App\Models\SchoolClass;
+use App\Models\Student;
 use Illuminate\Http\Request;
 
 class ClassStudentController extends Controller
@@ -13,7 +15,7 @@ class ClassStudentController extends Controller
     // Daftar siswa yang sudah diterima tapi belum ditempatkan di kelas manapun
     public function unplaced()
     {
-        $registrations = Registration::with(['student', 'program'])
+        $registrations = Registration::with(['student', 'program.classes.schedules'])
             ->where('status', 'diterima')
             ->whereDoesntHave('student.classes', function ($q) {
                 $q->where('program_id', '=', 'registrations.program_id'); // fallback, refined below
@@ -34,6 +36,8 @@ class ClassStudentController extends Controller
     {
         $validated = $request->validate([
             'class_id' => ['required', 'exists:classes,id'],
+            'schedule_ids' => ['nullable', 'array'],
+            'schedule_ids.*' => ['integer', 'exists:class_schedules,id'],
         ]);
 
         $class = SchoolClass::findOrFail($validated['class_id']);
@@ -50,12 +54,27 @@ class ClassStudentController extends Controller
             'is_active' => true,
         ]);
 
+        // Penugasan ke sesi latihan (hanya sesi milik kelas terpilih, siswa boleh di beberapa sesi)
+        $scheduleIds = collect($validated['schedule_ids'] ?? [])
+            ->filter(fn ($id) => ClassSchedule::find($id)?->class_id === $class->id)
+            ->values()
+            ->all();
+
+        if ($scheduleIds !== []) {
+            $registration->student->schedules()->syncWithoutDetaching($scheduleIds);
+        }
+
         return back()->with('success', 'Siswa berhasil ditempatkan ke kelas.');
     }
 
     public function remove(SchoolClass $class, $studentId)
     {
         $class->students()->detach($studentId);
+
+        $student = Student::find($studentId);
+        if ($student) {
+            $student->schedules()->detach($class->schedules()->pluck('class_schedules.id'));
+        }
 
         return back()->with('success', 'Siswa dikeluarkan dari kelas.');
     }

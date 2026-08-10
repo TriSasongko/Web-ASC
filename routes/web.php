@@ -21,6 +21,7 @@ use App\Http\Controllers\Pelatih\DashboardController as PelatihDashboard;
 use App\Http\Controllers\Pelatih\DevelopmentController as PelatihDevelopment;
 use App\Http\Controllers\Pelatih\NoteController as PelatihNote;
 use App\Http\Controllers\Pelatih\RecommendationController as PelatihRecommendation;
+use App\Http\Controllers\Pelatih\ScheduleController as PelatihSchedule;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,7 +55,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Route Kelas, Jadwal, Penempatan Siswa
     Route::resource('classes', SchoolClassController::class);
-    Route::post('classes/{class}/schedules', [ClassScheduleController::class, 'store'])->name('classes.schedules.store');
+    Route::get('schedules', [ClassScheduleController::class, 'index'])->name('schedules.index');
+    Route::post('schedules', [ClassScheduleController::class, 'store'])->name('schedules.store');
+    Route::put('schedules/{schedule}', [ClassScheduleController::class, 'assign'])->name('schedules.assign');
     Route::delete('schedules/{schedule}', [ClassScheduleController::class, 'destroy'])->name('schedules.destroy');
 
     Route::get('class-students/unplaced', [ClassStudentController::class, 'unplaced'])->name('class-students.unplaced');
@@ -95,6 +98,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 Route::middleware(['auth', 'role:pelatih'])->prefix('pelatih')->name('pelatih.')->group(function () {
     Route::get('/dashboard', [PelatihDashboard::class, 'index'])->name('dashboard');
+
+    // Route Jadwal Latihan untuk Pelatih
+    Route::get('schedules', [PelatihSchedule::class, 'index'])->name('schedules.index');
 
     // Route Absensi untuk Pelatih
     Route::get('attendances', [PelatihAttendance::class, 'index'])->name('attendances.index');

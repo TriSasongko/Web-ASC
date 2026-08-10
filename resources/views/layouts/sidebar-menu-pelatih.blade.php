@@ -5,6 +5,7 @@
 
     $items = [
         ['label' => 'Dashboard', 'icon' => 'dashboard', 'route' => 'pelatih.dashboard', 'active' => request()->routeIs('pelatih.dashboard')],
+        ['label' => 'Jadwal', 'icon' => 'calendar_month', 'route' => 'pelatih.schedules.index', 'active' => request()->routeIs('pelatih.schedules.*')],
         ['label' => 'Absensi', 'icon' => 'event_available', 'route' => 'pelatih.attendances.index', 'active' => request()->routeIs('pelatih.attendances.*')],
     ];
 

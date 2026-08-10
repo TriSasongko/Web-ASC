@@ -55,4 +55,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Student::class, 'parent_id');
     }
+
+    // Jadwal latihan yang diampu pelatih ini (bisa lebih dari satu pelatih per sesi)
+    public function coachedSchedules()
+    {
+        return $this->belongsToMany(ClassSchedule::class, 'class_schedule_user', 'user_id', 'class_schedule_id')
+            ->withTimestamps();
+    }
 }

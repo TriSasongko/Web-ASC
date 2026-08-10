@@ -51,7 +51,7 @@ class DummyDataSeeder extends Seeder
         $parents = $this->createParents($demoParent);
         $students = $this->createStudents($parents);
         $classes = $this->createClasses();
-        $this->createSchedules($classes);
+        $schedules = $this->createSchedules($classes);
 
         $studentsByName = $students->keyBy('full_name');
 
@@ -69,6 +69,7 @@ class DummyDataSeeder extends Seeder
 
         $this->addKiranaTransfer($studentsByName, $classes, $coaches);
         $this->addTrialAttendances($studentsByName, $coaches);
+        $this->assignSchedules($classes, $schedules, $coaches);
         $this->createRecommendations($studentsByName, $classes, $coaches, $admin);
     }
 
@@ -158,9 +159,9 @@ class DummyDataSeeder extends Seeder
         return $classes;
     }
 
-    private function createSchedules(array $classes): void
+    private function createSchedules(array $classes): array
     {
-        $schedules = [
+        $scheduleConfig = [
             'Private' => [['senin', '15:00', '16:00', 1]],
             'Mini Private' => [['selasa', '15:00', '16:00', 1]],
             'Reguler' => [['rabu', '15:00', '16:30', 1]],
@@ -169,9 +170,11 @@ class DummyDataSeeder extends Seeder
             'Kompetitif B' => [['minggu', '07:00', '09:00', 1]],
         ];
 
-        foreach ($schedules as $className => $items) {
+        $created = [];
+
+        foreach ($scheduleConfig as $className => $items) {
             foreach ($items as [$day, $start, $end, $session]) {
-                ClassSchedule::create([
+                $created[$className][] = ClassSchedule::create([
                     'class_id' => $classes[$className]->id,
                     'day' => $day,
                     'start_time' => $start,
@@ -179,6 +182,23 @@ class DummyDataSeeder extends Seeder
                     'location' => $this->locations[array_rand($this->locations)],
                     'session_number' => $session,
                 ]);
+            }
+        }
+
+        return $created;
+    }
+
+    private function assignSchedules(array $classes, array $schedules, Collection $coaches): void
+    {
+        foreach ($schedules as $className => $items) {
+            $studentIds = $classes[$className]->students()->pluck('students.id');
+            $assignedCoaches = $coaches->random(mt_rand(1, min(2, $coaches->count())));
+
+            foreach ($items as $schedule) {
+                if ($studentIds->isNotEmpty()) {
+                    $schedule->students()->sync($studentIds);
+                }
+                $schedule->coaches()->sync($assignedCoaches->pluck('id'));
             }
         }
     }
