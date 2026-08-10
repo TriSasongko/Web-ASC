@@ -20,9 +20,14 @@ class DevelopmentController extends Controller
     {
         $this->ensureCanAssess();
 
-        $students = Student::with(['classes' => function ($q) {
-            $q->wherePivot('is_active', true)->with('program');
-        }])
+        $students = Student::with([
+            'classes' => function ($q) {
+                $q->wherePivot('is_active', true)->with('program');
+            },
+            'recommendations' => function ($q) {
+                $q->where('status', 'pending');
+            },
+        ])
             ->whereHas('enrollments', fn ($q) => $q->where('is_active', true))
             ->orderBy('full_name')
             ->get();

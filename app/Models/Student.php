@@ -60,6 +60,11 @@ class Student extends Model
         return $this->hasMany(Development::class);
     }
 
+    public function recommendations()
+    {
+        return $this->hasMany(ClassRecommendation::class);
+    }
+
     public function scopeActiveProgram($query)
     {
         return $query->whereHas('enrollments', fn ($q) => $q->where('is_active', true));
