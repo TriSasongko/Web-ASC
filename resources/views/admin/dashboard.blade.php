@@ -1,163 +1,141 @@
 <x-sidebar-layout>
-    @php
-        $growthLast = $growth->last()['count'] ?? 0;
-        $growthPrev = $growth->count() >= 2 ? $growth[$growth->count() - 2]['count'] : 0;
-        $growthTrend = $growthPrev > 0 ? round(($growthLast - $growthPrev) / $growthPrev * 100) : null;
-    @endphp
+    <div class="space-y-6">
 
-    <!-- Dashboard Content -->
-    <div class="space-y-8">
-        <!-- Page Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <!-- Header Title -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Selamat datang kembali, {{ auth()->user()->name }} 👋</h2>
-                <p class="font-body-sm text-body-sm text-outline mt-1">Berikut adalah ringkasan aktivitas ASC Academy hari ini.</p>
+                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Ringkasan Statistik</h2>
+                <p class="font-body-sm text-body-sm text-outline mt-1">Selamat datang kembali! Berikut adalah ikhtisar operasional hari ini.</p>
             </div>
             <a href="{{ route('admin.registrations.index') }}"
                 class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-6 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all hover:scale-[0.98] shadow-sm hover:shadow-md active:scale-95 shrink-0">
-                <span class="material-symbols-outlined text-[18px]">add</span>
-                Kelola Pendaftaran
+                <span class="material-symbols-outlined text-[18px]">person_add</span>
+                Tambah Peserta Baru
             </a>
         </div>
 
-        <!-- Stats Grid (Bento Style) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            <!-- Stat 1: Total Siswa Aktif -->
-            <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] hover:shadow-[0px_4px_20px_rgba(23,32,51,0.08)] transition-shadow relative overflow-hidden group">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-surface-container-low rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
-                <div class="flex justify-between items-start mb-4 relative z-10">
-                    <div class="p-2.5 bg-[#E6F8FC] text-secondary rounded-lg">
-                        <span class="material-symbols-outlined">school</span>
+        <!-- KPI Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <!-- Total Siswa Aktif -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div class="p-3 bg-surface-container-low rounded-lg">
+                        <span class="material-symbols-outlined filled text-primary">group</span>
                     </div>
-                    @if ($growthTrend !== null)
-                        <span class="inline-flex items-center gap-1 text-secondary font-label-sm text-label-sm bg-[#E6F8FC] px-2 py-1 rounded-full">
-                            <span class="material-symbols-outlined text-[14px]">trending_up</span>
-                            +{{ $growthTrend }}%
-                        </span>
-                    @else
-                        <span class="inline-flex items-center text-outline font-label-sm text-label-sm bg-surface-container px-2 py-1 rounded-full">Aktif</span>
-                    @endif
                 </div>
-                <div class="relative z-10">
-                    <p class="font-label-sm text-label-sm text-outline mb-1 uppercase tracking-wider">Total Siswa Aktif</p>
-                    <h3 class="font-headline text-headline-xl text-on-surface">{{ number_format($totalStudents, 0, ',', '.') }}</h3>
+                <div class="mt-4">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Total Siswa Aktif</p>
+                    <h4 class="font-headline text-headline-xl text-on-surface">{{ number_format($totalStudents, 0, ',', '.') }}</h4>
                 </div>
             </div>
 
-            <!-- Stat 2: Total Pelatih -->
-            <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] hover:shadow-[0px_4px_20px_rgba(23,32,51,0.08)] transition-shadow relative overflow-hidden group">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-surface-container-low rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
-                <div class="flex justify-between items-start mb-4 relative z-10">
-                    <div class="p-2.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-lg">
-                        <span class="material-symbols-outlined">sports</span>
+            <!-- Total Pelatih -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div class="p-3 bg-surface-container-low rounded-lg">
+                        <span class="material-symbols-outlined filled text-primary">sports</span>
                     </div>
-                    <span class="inline-flex items-center text-outline font-label-sm text-label-sm bg-surface-container px-2 py-1 rounded-full">Semua Aktif</span>
                 </div>
-                <div class="relative z-10">
-                    <p class="font-label-sm text-label-sm text-outline mb-1 uppercase tracking-wider">Total Pelatih</p>
-                    <h3 class="font-headline text-headline-xl text-on-surface">{{ number_format($totalCoaches, 0, ',', '.') }}</h3>
+                <div class="mt-4">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Total Pelatih</p>
+                    <h4 class="font-headline text-headline-xl text-on-surface">{{ number_format($totalCoaches, 0, ',', '.') }}</h4>
                 </div>
             </div>
 
-            <!-- Stat 3: Pendaftaran Menunggu -->
-            <div class="bg-surface-container-lowest rounded-xl p-5 border border-error/20 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] hover:shadow-[0px_4px_20px_rgba(23,32,51,0.08)] transition-shadow relative overflow-hidden group ring-1 ring-error/10">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-error-container/30 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
-                <div class="flex justify-between items-start mb-4 relative z-10">
-                    <div class="p-2.5 bg-error-container text-on-error-container rounded-lg">
-                        <span class="material-symbols-outlined">how_to_reg</span>
+            <!-- Pendaftaran Menunggu -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div class="p-3 bg-surface-container-low rounded-lg">
+                        <span class="material-symbols-outlined filled text-primary">person_add</span>
                     </div>
-                    <span class="inline-flex items-center gap-1 text-error font-label-sm text-label-sm bg-error-container/50 px-2 py-1 rounded-full animate-pulse">
-                        <span class="material-symbols-outlined text-[14px]">warning</span>
-                        Perlu Review
-                    </span>
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 font-label-sm text-label-sm rounded-md">Perlu Review</span>
                 </div>
-                <div class="relative z-10">
-                    <p class="font-label-sm text-label-sm text-outline mb-1 uppercase tracking-wider">Pendaftaran Menunggu</p>
-                    <h3 class="font-headline text-headline-xl text-error">{{ number_format($pendingRegistrations, 0, ',', '.') }}</h3>
+                <div class="mt-4">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Pendaftaran Menunggu</p>
+                    <h4 class="font-headline text-headline-xl text-on-surface">{{ number_format($pendingRegistrations, 0, ',', '.') }}</h4>
                 </div>
             </div>
 
-            <!-- Stat 4: Paket Perlu Konfirmasi -->
-            <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] hover:shadow-[0px_4px_20px_rgba(23,32,51,0.08)] transition-shadow relative overflow-hidden group">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-surface-container-low rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
-                <div class="flex justify-between items-start mb-4 relative z-10">
-                    <div class="p-2.5 bg-[#FFF3E0] text-[#E65100] rounded-lg">
-                        <span class="material-symbols-outlined">payments</span>
+            <!-- Paket Perlu Konfirmasi -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 border border-error/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div class="p-3 bg-error/10 rounded-lg">
+                        <span class="material-symbols-outlined filled text-error">inventory_2</span>
                     </div>
-                    <span class="inline-flex items-center text-outline font-label-sm text-label-sm bg-surface-container px-2 py-1 rounded-full">Perlu Konfirmasi</span>
+                    <span class="px-2 py-1 bg-error/10 text-error font-label-sm text-label-sm rounded-md">Urgent</span>
                 </div>
-                <div class="relative z-10">
-                    <p class="font-label-sm text-label-sm text-outline mb-1 uppercase tracking-wider">Paket Perlu Konfirmasi</p>
-                    <h3 class="font-headline text-headline-xl text-on-surface">{{ number_format($needConfirmationCount, 0, ',', '.') }}</h3>
+                <div class="mt-4">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Paket Perlu Konfirmasi</p>
+                    <h4 class="font-headline text-headline-xl text-error">{{ number_format($needConfirmationCount, 0, ',', '.') }}</h4>
                 </div>
             </div>
         </div>
 
-        <!-- Today Schedule + Unplaced Students -->
+        <!-- Operational Row -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Today's Schedule (2/3) -->
+            <!-- Jadwal Latihan Hari Ini -->
             <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
-                <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex justify-between items-center">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">today</span>
-                        <h3 class="font-headline text-headline-sm text-on-surface">Jadwal Hari Ini</h3>
-                        <span class="font-label-sm text-label-sm text-outline capitalize">({{ \Carbon\Carbon::now()->translatedFormat('l, d M Y') }})</span>
-                    </div>
+                <div class="px-6 py-5 border-b border-outline-variant/30 bg-surface/50 flex justify-between items-center">
+                    <h5 class="font-headline text-headline-sm text-on-surface">Jadwal Latihan Hari Ini</h5>
                     <a href="{{ route('admin.schedules.index') }}" class="text-primary font-label-sm text-label-sm hover:underline">Kelola Jadwal</a>
                 </div>
                 <div class="overflow-x-auto">
-                    @forelse ($todaySchedules as $s)
-                        <div class="px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-2 hover:bg-surface-container-low/50 transition-colors {{ ! $loop->first ? 'border-t border-outline-variant/30' : '' }}">
-                            <div class="w-16 shrink-0">
-                                <p class="font-label-md text-label-md text-primary">{{ \Carbon\Carbon::parse($s->start_time)->format('H:i') }}</p>
-                                <p class="font-label-sm text-label-sm text-outline">{{ \Carbon\Carbon::parse($s->end_time)->format('H:i') }}</p>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <a href="{{ route('admin.classes.show', $s->schoolClass) }}" class="font-label-md text-label-md text-on-surface hover:text-primary">{{ $s->schoolClass?->name ?? '-' }}</a>
-                                <p class="font-body-sm text-body-sm text-outline">{{ $s->schoolClass?->program?->name }} · {{ $s->schoolClass?->level_label ?? '-' }} · {{ $s->location ?? '-' }}</p>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-1.5 shrink-0">
-                                @forelse ($s->coaches as $c)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">{{ $c->name }}</span>
-                                @empty
-                                    <span class="font-body-sm text-body-sm text-outline">Tanpa pelatih</span>
-                                @endforelse
-                            </div>
-                            <div class="w-20 shrink-0 text-right">
-                                @if ($s->students->isEmpty())
-                                    <span class="font-body-sm text-body-sm text-outline">Belum ada siswa</span>
-                                @else
-                                    <span class="inline-flex items-center gap-1 font-label-md text-label-md text-on-surface">
-                                        <span class="material-symbols-outlined text-[16px] text-outline">groups</span>
-                                        {{ $s->students->count() }}
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                    @empty
-                        <div class="p-6 text-center">
-                            <p class="font-body-sm text-body-sm text-outline">Tidak ada jadwal hari ini.</p>
-                        </div>
-                    @endforelse
+                    <table class="w-full text-left">
+                        <thead class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+                            <tr>
+                                <th class="px-6 py-3">Waktu</th>
+                                <th class="px-6 py-3">Kelas</th>
+                                <th class="px-6 py-3">Lokasi</th>
+                                <th class="px-6 py-3">Pelatih</th>
+                                <th class="px-6 py-3">Jumlah Siswa</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/30">
+                            @forelse ($todaySchedules as $s)
+                                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                                    <td class="px-6 py-3 font-body-sm text-body-sm font-semibold text-on-surface whitespace-nowrap">
+                                        {{ \Carbon\Carbon::parse($s->start_time)->format('H:i') }} – {{ \Carbon\Carbon::parse($s->end_time)->format('H:i') }}
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <a href="{{ route('admin.classes.show', $s->schoolClass) }}" class="font-label-md text-label-md text-on-surface hover:text-primary">{{ $s->schoolClass?->name ?? '-' }}</a>
+                                        <p class="font-body-sm text-body-sm text-outline">{{ $s->schoolClass?->program?->name }} · {{ $s->schoolClass?->level_label ?? '-' }}</p>
+                                    </td>
+                                    <td class="px-6 py-3 font-body-sm text-body-sm text-on-surface">{{ $s->location ?? '-' }}</td>
+                                    <td class="px-6 py-3">
+                                        @forelse ($s->coaches as $c)
+                                            <span class="inline-flex items-center px-2 py-1 bg-primary/10 text-primary font-label-sm text-label-sm rounded-md mr-1">{{ $c->name }}</span>
+                                        @empty
+                                            <span class="font-body-sm text-body-sm text-outline">-</span>
+                                        @endforelse
+                                    </td>
+                                    <td class="px-6 py-3 font-body-sm text-body-sm text-on-surface">{{ $s->students->count() }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center font-body-sm text-body-sm text-outline">Tidak ada jadwal hari ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- Unplaced Students (1/3) -->
-            <div class="lg:col-span-1 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
-                <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex justify-between items-center">
+            <!-- Siswa Belum Ditempatkan -->
+            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] flex flex-col">
+                <div class="px-6 py-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-[#E65100]">how_to_reg</span>
-                        <h3 class="font-headline text-headline-sm text-on-surface">Belum Ditempatkan</h3>
+                        <h5 class="font-headline text-headline-sm text-on-surface">Siswa Belum Ditempatkan</h5>
+                        @if ($unplacedCount > 0)
+                            <span class="inline-flex items-center justify-center min-w-6 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">{{ $unplacedCount }}</span>
+                        @endif
                     </div>
-                    @if ($unplacedCount > 0)
-                        <span class="inline-flex items-center justify-center min-w-6 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">{{ $unplacedCount }}</span>
-                    @endif
+                    <a href="{{ route('admin.schedules.index') }}" class="text-primary font-label-sm text-label-sm hover:underline">Tempatkan Siswa</a>
                 </div>
-                <div class="divide-y divide-outline-variant/30">
+                <div class="p-6 flex-1 space-y-4">
                     @forelse ($unplacedStudents as $st)
-                        <div class="p-4 flex items-center justify-between gap-3 hover:bg-surface-container-low/50 transition-colors">
+                        <div class="flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-label-md text-label-md shrink-0">
+                                <div class="w-10 h-10 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-label-md text-label-md shrink-0">
                                     {{ strtoupper(substr($st->full_name, 0, 1)) }}
                                 </div>
                                 <div class="min-w-0">
@@ -165,128 +143,92 @@
                                     <p class="font-body-sm text-body-sm text-outline truncate">{{ $st->classes->pluck('name')->implode(', ') }}</p>
                                 </div>
                             </div>
+                            <a href="{{ route('admin.schedules.index') }}" class="text-primary font-label-sm text-label-sm hover:bg-primary/10 px-3 py-1.5 rounded-md transition-colors shrink-0">Tempatkan</a>
                         </div>
                     @empty
-                        <div class="p-6 text-center">
-                            <p class="font-body-sm text-body-sm text-outline">Semua siswa sudah ditempatkan. 🎉</p>
-                        </div>
+                        <p class="font-body-sm text-body-sm text-outline text-center py-4">Semua siswa sudah ditempatkan. 🎉</p>
                     @endforelse
-                    @if ($unplacedCount > $unplacedStudents->count())
-                        <div class="p-4 text-center border-t border-outline-variant/30">
-                            <span class="font-body-sm text-body-sm text-outline">+{{ $unplacedCount - $unplacedStudents->count() }} lainnya belum ditampilkan</span>
-                        </div>
-                    @endif
-                    <div class="p-4 border-t border-outline-variant/30 text-center">
-                        <a href="{{ route('admin.schedules.index') }}" class="text-primary font-label-sm text-label-sm hover:underline">Atur ke Sesi Jadwal</a>
-                    </div>
                 </div>
+                @if ($unplacedCount > $unplacedStudents->count())
+                    <div class="px-6 py-3 border-t border-outline-variant/30 text-center">
+                        <span class="font-body-sm text-body-sm text-outline">+{{ $unplacedCount - $unplacedStudents->count() }} lainnya belum ditampilkan</span>
+                    </div>
+                @endif
             </div>
         </div>
 
-        <!-- Main Content Grid -->
+        <!-- Analytics & Action Row -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Column (2/3) -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- Action Items: Package Confirmation -->
-                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
-                    <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex justify-between items-center">
-                        <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-error">notification_important</span>
-                            <h3 class="font-headline text-headline-sm text-on-surface">Action Items: Paket Perlu Konfirmasi</h3>
-                        </div>
-                        <a href="{{ route('admin.classes.index') }}" class="text-primary font-label-sm text-label-sm hover:underline">View All</a>
-                    </div>
-                    <div class="divide-y divide-outline-variant/30">
-                        @forelse ($alerts as $alert)
-                            <div class="p-4 flex items-center justify-between hover:bg-surface-container-low/50 transition-colors">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-lg bg-[#E6F8FC] flex items-center justify-center text-secondary">
-                                        <span class="material-symbols-outlined">pool</span>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-label-md text-label-md text-on-surface">{{ $alert->class_name }}</h4>
-                                        <p class="font-body-sm text-body-sm text-outline">{{ $alert->total }} siswa menunggu konfirmasi</p>
-                                    </div>
-                                </div>
-                                <a href="{{ route('admin.classes.show', $alert->class_id) }}"
-                                    class="px-4 py-1.5 border border-primary text-primary rounded-lg font-label-sm text-label-sm hover:bg-primary-container hover:text-on-primary transition-colors">
-                                    Lihat Kelas
-                                </a>
-                            </div>
-                        @empty
-                            <div class="p-6 text-center">
-                                <p class="font-body-sm text-body-sm text-outline">Tidak ada paket yang perlu dikonfirmasi. 🎉</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-
-                <!-- Charts Row -->
+                <!-- Charts -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Line Chart: Growth -->
                     <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5">
-                        <h3 class="font-headline text-headline-sm text-on-surface mb-1">Tren Pertumbuhan Siswa</h3>
-                        <p class="font-body-sm text-body-sm text-outline mb-4">6 Bulan Terakhir</p>
-                        <div class="relative h-[220px] w-full">
+                        <h5 class="font-headline text-headline-sm text-on-surface mb-4">Tren Pertumbuhan Siswa</h5>
+                        <div class="relative h-[200px] w-full">
                             <canvas id="growthChart"></canvas>
                         </div>
                     </div>
-                    <!-- Bar Chart: Registration Status -->
                     <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5">
-                        <h3 class="font-headline text-headline-sm text-on-surface mb-1">Status Pendaftaran</h3>
-                        <p class="font-body-sm text-body-sm text-outline mb-4">Bulan Ini</p>
-                        <div class="relative h-[220px] w-full">
+                        <h5 class="font-headline text-headline-sm text-on-surface mb-4">Status Pendaftaran</h5>
+                        <div class="relative h-[200px] w-full">
                             <canvas id="statusChart"></canvas>
                         </div>
                     </div>
                 </div>
+
+                <!-- Menunggu Konfirmasi Paket -->
+                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
+                    <div class="px-5 py-4 border-b border-outline-variant/30 bg-surface/50">
+                        <h5 class="font-headline text-headline-sm text-on-surface">Menunggu Konfirmasi Paket</h5>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        @forelse ($alerts as $alert)
+                            <div class="flex items-center justify-between gap-3 bg-surface-container-low p-3 rounded-lg border border-outline-variant/30">
+                                <div class="min-w-0">
+                                    <p class="font-label-md text-label-md text-on-surface truncate">{{ $alert->class_name }}</p>
+                                    <p class="font-body-sm text-body-sm text-outline">{{ $alert->total }} siswa menunggu konfirmasi</p>
+                                </div>
+                                <a href="{{ route('admin.classes.show', $alert->class_id) }}"
+                                    class="px-3 py-1.5 bg-primary-container text-on-primary rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-opacity shrink-0">Lihat Kelas</a>
+                            </div>
+                        @empty
+                            <p class="font-body-sm text-body-sm text-outline text-center py-4">Tidak ada paket yang perlu dikonfirmasi. 🎉</p>
+                        @endforelse
+                    </div>
+                </div>
             </div>
 
-            <!-- Right Column (1/3) -->
-            <div class="lg:col-span-1 space-y-6">
-                <!-- Activity Timeline -->
-                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 h-[400px] flex flex-col">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-headline text-headline-sm text-on-surface">Aktivitas Terbaru</h3>
-                        <button class="p-1 text-outline hover:text-primary transition-colors rounded">
-                            <span class="material-symbols-outlined text-[20px]">refresh</span>
-                        </button>
-                    </div>
-                    <div class="flex-1 overflow-y-auto pr-2 relative">
-                        <!-- Timeline Line -->
-                        <div class="absolute left-[15px] top-2 bottom-2 w-px bg-outline-variant/40"></div>
-                        <div class="space-y-6">
-                            @forelse ($activities as $activity)
-                                <div class="relative pl-10">
-                                    <div class="absolute left-0 top-1 w-8 h-8 rounded-full {{ $activity['iconBg'] }} flex items-center justify-center ring-4 ring-surface-container-lowest">
-                                        <span class="material-symbols-outlined text-[16px] {{ $activity['iconColor'] }}">{{ $activity['icon'] }}</span>
-                                    </div>
-                                    <p class="font-body-sm text-body-sm text-on-surface">
-                                        @if ($activity['subject'])
-                                            <span class="font-label-md text-label-md">{{ $activity['subject'] }}</span>
-                                        @endif
-                                        {{ $activity['text'] }}
-                                    </p>
-                                    <p class="font-label-sm text-label-sm text-outline mt-1">{{ $activity['time']->diffForHumans() }}</p>
+            <!-- Right Sidebar Area -->
+            <div class="space-y-6">
+                <!-- Aktivitas Terbaru -->
+                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5">
+                    <h5 class="font-headline text-headline-sm text-on-surface mb-4">Aktivitas Terbaru</h5>
+                    <div class="space-y-4">
+                        @forelse ($activities as $activity)
+                            <div class="relative pl-9">
+                                <div class="absolute left-0 top-0.5 w-7 h-7 rounded-full {{ $activity['iconBg'] }} flex items-center justify-center ring-4 ring-surface-container-lowest">
+                                    <span class="material-symbols-outlined text-[14px] {{ $activity['iconColor'] }}">{{ $activity['icon'] }}</span>
                                 </div>
-                            @empty
-                                <p class="font-body-sm text-body-sm text-outline">Belum ada aktivitas.</p>
-                            @endforelse
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-outline-variant/30 text-center">
-                        <a href="{{ route('admin.registrations.index') }}" class="text-primary font-label-sm text-label-sm hover:underline">Lihat Semua Aktivitas</a>
+                                <p class="font-body-sm text-body-sm text-on-surface">
+                                    @if ($activity['subject'])
+                                        <span class="font-label-md text-label-md">{{ $activity['subject'] }}</span>
+                                    @endif
+                                    {{ $activity['text'] }}
+                                </p>
+                                <p class="font-label-sm text-label-sm text-outline mt-0.5">{{ $activity['time']->diffForHumans() }}</p>
+                            </div>
+                        @empty
+                            <p class="font-body-sm text-body-sm text-outline">Belum ada aktivitas.</p>
+                        @endforelse
                     </div>
                 </div>
 
-                <!-- Donut Chart: Package Distribution -->
+                <!-- Distribusi Paket -->
                 <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5">
-                    <h3 class="font-headline text-headline-sm text-on-surface mb-1">Distribusi Paket</h3>
-                    <p class="font-body-sm text-body-sm text-outline mb-4">Status paket siswa aktif</p>
-                    <div class="relative h-[200px] w-full flex justify-center">
+                    <h5 class="font-headline text-headline-sm text-on-surface mb-4">Distribusi Paket</h5>
+                    <div class="relative h-[180px] w-full flex justify-center">
                         <canvas id="packageChart"></canvas>
                     </div>
-                    <!-- Custom Legend -->
                     <div class="mt-4 flex justify-center gap-4">
                         <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-full bg-primary-container"></span>
@@ -305,8 +247,10 @@
             </div>
         </div>
 
-        <!-- Bottom spacing -->
-        <div class="h-8"></div>
+        <!-- Footer -->
+        <footer class="py-6 text-center border-t border-outline-variant/50">
+            <p class="font-body-sm text-body-sm text-outline">© {{ date('Y') }} ASC Academy. Seluruh hak cipta dilindungi.</p>
+        </footer>
     </div>
 
     <!-- Chart Initializations -->
@@ -317,16 +261,15 @@
             const statusData = @json($statusData);
             const packageData = @json($packageData);
 
-            // Common Chart Options
             Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
             Chart.defaults.color = '#737785';
             Chart.defaults.scale.grid.color = 'rgba(194, 198, 214, 0.2)';
 
             // 1. Line Chart (Tren Pertumbuhan)
             const growthCtx = document.getElementById('growthChart').getContext('2d');
-            const gradient = growthCtx.createLinearGradient(0, 0, 0, 220);
-            gradient.addColorStop(0, 'rgba(11, 94, 215, 0.2)');
-            gradient.addColorStop(1, 'rgba(11, 94, 215, 0)');
+            const gradient = growthCtx.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(0, 71, 169, 0.15)');
+            gradient.addColorStop(1, 'rgba(0, 71, 169, 0)');
 
             new Chart(growthCtx, {
                 type: 'line',
@@ -335,14 +278,14 @@
                     datasets: [{
                         label: 'Total Siswa',
                         data: growthData,
-                        borderColor: '#0B5ED7',
+                        borderColor: '#0047a9',
                         backgroundColor: gradient,
                         borderWidth: 3,
                         pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#0B5ED7',
+                        pointBorderColor: '#0047a9',
                         pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
                         fill: true,
                         tension: 0.4
                     }]
@@ -388,9 +331,9 @@
                     labels: ['Menunggu', 'Diterima', 'Ditolak'],
                     datasets: [{
                         data: [statusData.menunggu, statusData.diterima, statusData.ditolak],
-                        backgroundColor: ['#FFB300', '#2E7D32', '#ba1a1a'],
+                        backgroundColor: ['#FFB300', '#0047a9', '#ba1a1a'],
                         borderRadius: 6,
-                        barThickness: 24
+                        barThickness: 48
                     }]
                 },
                 options: {
@@ -427,7 +370,7 @@
                     labels: ['Aktif', 'Hampir Habis', 'Habis'],
                     datasets: [{
                         data: [packageData.aktif, packageData.hampir_habis, packageData.habis],
-                        backgroundColor: ['#0B5ED7', '#FFB300', '#ba1a1a'],
+                        backgroundColor: ['#0047a9', '#FFB300', '#ba1a1a'],
                         borderWidth: 0,
                         hoverOffset: 4
                     }]
@@ -435,7 +378,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '75%',
+                    cutout: '70%',
                     plugins: {
                         legend: { display: false },
                         tooltip: {
