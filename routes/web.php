@@ -16,6 +16,7 @@ use App\Http\Controllers\ERaportController;
 use App\Http\Controllers\OrangTua\DashboardController as OrangTuaDashboard;
 use App\Http\Controllers\OrangTua\ERaportController as OrangTuaERaport;
 use App\Http\Controllers\OrangTua\RegistrationController as OrangTuaRegistration;
+use App\Http\Controllers\OrangTua\ScheduleController as OrangTuaSchedule;
 use App\Http\Controllers\Pelatih\AttendanceController as PelatihAttendance;
 use App\Http\Controllers\Pelatih\DashboardController as PelatihDashboard;
 use App\Http\Controllers\Pelatih\DevelopmentController as PelatihDevelopment;
@@ -130,6 +131,9 @@ Route::middleware(['auth', 'role:orang_tua'])->prefix('orangtua')->name('orangtu
     Route::get('registrations', [OrangTuaRegistration::class, 'index'])->name('registrations.index');
     Route::get('registrations/create', [OrangTuaRegistration::class, 'create'])->name('registrations.create');
     Route::post('registrations', [OrangTuaRegistration::class, 'store'])->name('registrations.store');
+
+    // Route Jadwal Latihan Anak untuk Orang Tua
+    Route::get('schedules', [OrangTuaSchedule::class, 'index'])->name('schedules.index');
 
     Route::get('eraports', [OrangTuaERaport::class, 'index'])->name('eraports.index');
 });

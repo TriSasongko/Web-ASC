@@ -215,6 +215,41 @@ class ScheduleTest extends TestCase
         $this->assertFalse($otherSchedule->coaches()->whereKey($coach->id)->exists());
     }
 
+    public function test_parent_sees_only_their_childrens_schedules()
+    {
+        $data = $this->makeClass();
+        $parent = $this->makeParent();
+        $myChild = $this->makeStudent($parent, 'Anak Saya');
+        $otherParent = $this->makeParent();
+        $otherChild = $this->makeStudent($otherParent, 'Anak Orang Lain');
+
+        foreach ([$myChild, $otherChild] as $student) {
+            ClassStudent::create([
+                'class_id' => $data['class']->id,
+                'student_id' => $student->id,
+                'sessions_completed' => 0,
+                'is_active' => true,
+                'renewal_status' => 'belum_konfirmasi',
+            ]);
+        }
+
+        $mySchedule = $this->makeSchedule($data['class'], ['day' => 'senin', 'session_number' => 1]);
+        $otherSchedule = $this->makeSchedule($data['class'], ['day' => 'selasa', 'session_number' => 2]);
+
+        $mySchedule->students()->attach($myChild->id);
+        $otherSchedule->students()->attach($otherChild->id);
+
+        $this->actingAs($parent)
+            ->get(route('orangtua.schedules.index'))
+            ->assertOk()
+            ->assertSee('Jadwal Latihan Anak')
+            ->assertSee('Anak Saya')
+            ->assertDontSee('Anak Orang Lain');
+
+        $this->assertTrue($myChild->schedules()->whereKey($mySchedule->id)->exists());
+        $this->assertFalse($myChild->schedules()->whereKey($otherSchedule->id)->exists());
+    }
+
     public function test_placing_student_can_attach_to_multiple_schedules_of_chosen_class()
     {
         $data = $this->makeClass();

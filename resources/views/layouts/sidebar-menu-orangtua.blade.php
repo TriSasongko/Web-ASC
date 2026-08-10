@@ -6,6 +6,7 @@
     $items = [
         ['label' => 'Dashboard', 'icon' => 'dashboard', 'route' => 'orangtua.dashboard', 'active' => request()->routeIs('orangtua.dashboard')],
         ['label' => 'Pendaftaran Anak', 'icon' => 'app_registration', 'route' => 'orangtua.registrations.index', 'active' => request()->routeIs('orangtua.registrations.*')],
+        ['label' => 'Jadwal Latihan', 'icon' => 'calendar_month', 'route' => 'orangtua.schedules.index', 'active' => request()->routeIs('orangtua.schedules.*')],
         ['label' => 'E-Raport', 'icon' => 'description', 'route' => 'orangtua.eraports.index', 'active' => request()->routeIs('orangtua.eraports.*')],
     ];
 @endphp
