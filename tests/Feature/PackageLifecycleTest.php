@@ -286,6 +286,51 @@ class PackageLifecycleTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_approve_level_based_recommendation_in_same_program()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child);
+
+        $nextClass = SchoolClass::create([
+            'program_id' => $data['class']->program_id,
+            'name' => 'Reguler B',
+            'level' => 2,
+            'capacity' => 10,
+            'is_active' => true,
+        ]);
+
+        $rec = ClassRecommendation::create([
+            'student_id' => $child->id,
+            'from_user_id' => $data['coach']->id,
+            'current_class_id' => $data['class']->id,
+            'recommended_level' => 2,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($data['admin'])
+            ->post(route('admin.recommendations.approve', $rec))
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertSame('menunggu_ortu', $rec->fresh()->status);
+        $this->assertSame($data['admin']->id, $rec->fresh()->approved_by);
+
+        $this->actingAs($data['admin'])
+            ->post(route('admin.recommendations.confirm', $rec))
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertSame('diterima', $rec->fresh()->status);
+        $this->assertFalse($data['enrollment']->fresh()->is_active);
+        $this->assertDatabaseHas('class_student', [
+            'class_id' => $nextClass->id,
+            'student_id' => $child->id,
+            'level' => 2,
+            'is_active' => true,
+        ]);
+    }
+
     public function test_admin_can_reject_recommendation()
     {
         $parent = $this->makeParent();

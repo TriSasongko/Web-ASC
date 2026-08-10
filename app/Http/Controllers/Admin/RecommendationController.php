@@ -159,9 +159,24 @@ class RecommendationController extends Controller
             return null;
         }
 
-        if ($recommendation->recommended_level > SchoolClass::LEVEL_BEGINNER) {
+        $level = $recommendation->recommended_level;
+
+        // Prioritas: kelas aktif di level target dalam program yang sama (naik kelas dalam program).
+        if ($recommendation->currentClass) {
+            $sameProgram = SchoolClass::where('is_active', true)
+                ->where('program_id', $recommendation->currentClass->program_id)
+                ->where('level', $level)
+                ->where('id', '!=', $recommendation->current_class_id)
+                ->first();
+
+            if ($sameProgram) {
+                return $sameProgram;
+            }
+        }
+
+        if ($level > SchoolClass::LEVEL_BEGINNER) {
             return SchoolClass::where('is_active', true)
-                ->where('level', $recommendation->recommended_level)
+                ->where('level', $level)
                 ->whereHas('program', fn ($p) => $p->where('is_kompetitif', true))
                 ->first();
         }

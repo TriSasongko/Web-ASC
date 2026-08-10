@@ -21,6 +21,17 @@
             </div>
         @endif
 
+        @if ($errors->any())
+            <div class="flex items-start gap-2 bg-[#FFEBEE] text-[#C62828] border border-[#C62828]/20 px-4 py-3 rounded-lg font-body-sm text-body-sm">
+                <span class="material-symbols-outlined text-[18px]">error</span>
+                <ul class="list-disc list-inside space-y-0.5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
             <div class="p-5 border-b border-outline-variant/30 bg-surface/50">
                 <div class="flex items-center gap-2">
