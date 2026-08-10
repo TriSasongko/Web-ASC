@@ -1,9 +1,13 @@
 <x-sidebar-layout>
+    @php
+        $selectedProgram = $programs->firstWhere('id', old('program_id'));
+        $initialKompetitif = (bool) ($selectedProgram?->is_kompetitif ?? false);
+    @endphp
     <div class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Tambah Kelas</h2>
-                <p class="font-body-sm text-body-sm text-outline mt-1">Buat kelas baru untuk ASC Academy.</p>
+                <p class="font-body-sm text-body-sm text-outline mt-1">Buat kelas baru untuk ASC Academy. Program selain Kompetitif hanya level Beginner; Kompetitif berisi Advance/Elite.</p>
             </div>
         </div>
 
@@ -11,13 +15,15 @@
             <form action="{{ route('admin.classes.store') }}" method="POST" class="space-y-6">
                 @csrf
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" x-data="{ kompetitif: @js($initialKompetitif) }">
                     <div>
                         <x-input-label for="program_id" value="Program" />
-                        <select id="program_id" name="program_id" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" required>
-                            <option value="">-- Pilih Program --</option>
+                        <select id="program_id" name="program_id" x-ref="programSelect"
+                            @change="kompetitif = ($refs.programSelect.selectedOptions[0].dataset.kompetitif === '1')"
+                            class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" required>
+                            <option value="" data-kompetitif="0">-- Pilih Program --</option>
                             @foreach ($programs as $program)
-                                <option value="{{ $program->id }}" {{ old('program_id') == $program->id ? 'selected' : '' }}>{{ $program->name }}</option>
+                                <option value="{{ $program->id }}" data-kompetitif="{{ $program->is_kompetitif ? '1' : '0' }}" {{ old('program_id') == $program->id ? 'selected' : '' }}>{{ $program->name }}</option>
                             @endforeach
                         </select>
                         <x-input-error :messages="$errors->get('program_id')" class="mt-2" />
@@ -31,11 +37,14 @@
 
                     <div>
                         <x-input-label for="level" value="Level Kelas" />
-                        <select id="level" name="level" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" required>
-                            <option value="">-- Pilih Level --</option>
-                            @foreach (\App\Models\SchoolClass::levelOptions() as $levelValue => $levelLabel)
-                                <option value="{{ $levelValue }}" {{ old('level') == $levelValue ? 'selected' : '' }}>{{ $levelLabel }}</option>
-                            @endforeach
+                        <select id="level" name="level" x-show="!kompetitif" :disabled="kompetitif"
+                            class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" required>
+                            <option value="1" {{ old('level') == 1 ? 'selected' : '' }}>Beginner</option>
+                        </select>
+                        <select id="level" name="level" x-show="kompetitif" :disabled="!kompetitif"
+                            class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" required>
+                            <option value="2" {{ old('level') == 2 ? 'selected' : '' }}>Advance (Kompetitif B)</option>
+                            <option value="3" {{ old('level') == 3 ? 'selected' : '' }}>Elite (Kompetitif A)</option>
                         </select>
                         <x-input-error :messages="$errors->get('level')" class="mt-2" />
                     </div>

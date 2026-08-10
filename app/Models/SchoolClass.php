@@ -30,9 +30,26 @@ class SchoolClass extends Model
         ];
     }
 
+    public static function levelLabel(?int $level): ?string
+    {
+        return self::levelOptions()[$level] ?? null;
+    }
+
     public function getLevelLabelAttribute(): ?string
     {
-        return self::levelOptions()[$this->level] ?? null;
+        return self::levelLabel($this->level);
+    }
+
+    public static function programAllowsLevel(Program $program, ?int $level): bool
+    {
+        return $program->isKompetitif()
+            ? in_array($level, [self::LEVEL_ADVANCE, self::LEVEL_ELITE], true)
+            : $level === self::LEVEL_BEGINNER;
+    }
+
+    public function isKompetitif(): bool
+    {
+        return (bool) $this->program?->is_kompetitif;
     }
 
     protected function casts(): array
@@ -55,7 +72,7 @@ class SchoolClass extends Model
     public function students()
     {
         return $this->belongsToMany(Student::class, 'class_student', 'class_id', 'student_id')
-            ->withPivot(['registration_id', 'sessions_completed', 'is_active'])
+            ->withPivot(['level', 'registration_id', 'sessions_completed', 'is_active'])
             ->withTimestamps();
     }
 }

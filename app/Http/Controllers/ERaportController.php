@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Development;
+use App\Models\SchoolClass;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -46,10 +47,13 @@ class ERaportController extends Controller
         $totalSessions = $program?->total_sessions;
         $attendancePercent = $totalSessions ? (int) round($attendanceCount / $totalSessions * 100) : null;
 
+        $studentLevel = $development->schoolClass?->level;
+
         return [
             'attendanceCount' => $attendanceCount,
             'totalSessions' => $totalSessions,
             'attendancePercent' => $attendancePercent,
+            'studentLevel' => SchoolClass::levelLabel($studentLevel),
             'scheduleLabel' => $this->scheduleLabel($development->schoolClass->schedules),
             'overallScore' => $this->overallScore($development),
             'radarData' => $this->radarData($development),

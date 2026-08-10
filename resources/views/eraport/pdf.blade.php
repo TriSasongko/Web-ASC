@@ -56,7 +56,7 @@
         <div class="profile">
             <table>
                 <tr><td class="label">Nama Siswa</td><td>{{ $student->full_name }}</td></tr>
-                <tr><td class="label">Kelas / Level</td><td>{{ $development->schoolClass->name }}{{ $development->schoolClass->level_label ? ' · '.$development->schoolClass->level_label : '' }}</td></tr>
+                <tr><td class="label">Kelas / Level</td><td>{{ $development->schoolClass->name }}{{ $studentLevel ? ' · '.$studentLevel : '' }}</td></tr>
                 <tr><td class="label">Program</td><td>{{ $development->schoolClass->program->name }}</td></tr>
                 <tr><td class="label">Coach</td><td>{{ $development->coach->name }}</td></tr>
                 @if ($scheduleLabel)

@@ -9,13 +9,14 @@ class ClassStudent extends Model
     protected $table = 'class_student';
 
     protected $fillable = [
-        'class_id', 'student_id', 'registration_id', 'sessions_completed',
+        'class_id', 'student_id', 'level', 'registration_id', 'sessions_completed',
         'is_active', 'renewal_status', 'renewal_note', 'renewed_at',
     ];
 
     protected function casts(): array
     {
         return [
+            'level' => 'integer',
             'sessions_completed' => 'integer',
             'is_active' => 'boolean',
             'renewed_at' => 'datetime',

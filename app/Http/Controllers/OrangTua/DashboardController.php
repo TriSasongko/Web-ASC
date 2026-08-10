@@ -13,7 +13,7 @@ class DashboardController extends Controller
             ->with(['classes.program'])
             ->get();
 
-        $recommendations = ClassRecommendation::with(['student', 'recommendedClass', 'currentClass', 'from', 'approver'])
+        $recommendations = ClassRecommendation::with(['student.enrollments', 'recommendedClass', 'currentClass', 'from', 'approver'])
             ->whereHas('student', fn ($q) => $q->where('parent_id', auth()->id()))
             ->latest()
             ->get();

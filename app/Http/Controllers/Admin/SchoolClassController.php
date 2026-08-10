@@ -7,6 +7,7 @@ use App\Models\ClassStudent;
 use App\Models\Program;
 use App\Models\SchoolClass;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class SchoolClassController extends Controller
 {
@@ -38,6 +39,9 @@ class SchoolClassController extends Controller
             'capacity' => ['nullable', 'integer', 'min:1'],
         ]);
 
+        $this->validateLevelProgram($validated['program_id'], $validated['level']);
+        $this->validateUniqueClass($validated['program_id'], $validated['level']);
+
         SchoolClass::create($validated);
 
         return redirect()->route('admin.classes.index')->with('success', 'Kelas berhasil dibuat.');
@@ -62,9 +66,44 @@ class SchoolClassController extends Controller
 
         $validated['is_active'] = $request->has('is_active');
 
+        $this->validateLevelProgram($validated['program_id'], $validated['level']);
+        $this->validateUniqueClass($validated['program_id'], $validated['level'], $class);
+
         $class->update($validated);
 
         return redirect()->route('admin.classes.index')->with('success', 'Kelas berhasil diperbarui.');
+    }
+
+    private function validateUniqueClass(int $programId, int $level, ?SchoolClass $except = null): void
+    {
+        $exists = SchoolClass::where('program_id', $programId)
+            ->where('level', $level)
+            ->when($except, fn ($q) => $q->where('id', '!=', $except->id))
+            ->exists();
+
+        if ($exists) {
+            throw ValidationException::withMessages([
+                'level' => 'Level '.($this->levelLabel($level) ?? $level).' pada program ini sudah memiliki kelas.',
+            ]);
+        }
+    }
+
+    private function levelLabel(int $level): string
+    {
+        return SchoolClass::levelOptions()[$level] ?? 'tersebut';
+    }
+
+    private function validateLevelProgram(int $programId, int $level): void
+    {
+        $program = Program::findOrFail($programId);
+
+        if (! SchoolClass::programAllowsLevel($program, $level)) {
+            $rule = $program->isKompetitif()
+                ? 'Kelas Kompetitif hanya boleh berisi level Advance atau Elite.'
+                : 'Program '.$program->name.' hanya boleh memiliki kelas level Beginner.';
+
+            throw ValidationException::withMessages(['level' => $rule]);
+        }
     }
 
     public function destroy(SchoolClass $class)
@@ -88,8 +127,12 @@ class SchoolClassController extends Controller
             ->values();
 
         $candidateClasses = SchoolClass::where('is_active', true)
-            ->where('program_id', $class->program_id)
-            ->when($class->level, fn ($q) => $q->where('level', '>', $class->level))
+            ->where('id', '!=', $class->id)
+            ->where(function ($q) use ($class) {
+                $q->where('program_id', $class->program_id)
+                    ->orWhereHas('program', fn ($p) => $p->where('is_kompetitif', true));
+            })
+            ->when($class->level !== null, fn ($q) => $q->where('level', '>', $class->level))
             ->orderBy('level')
             ->get();
 

@@ -11,15 +11,21 @@ class Program extends Model
 
     protected $fillable = [
         'name', 'slug', 'description', 'max_students',
-        'total_sessions', 'price', 'billing_type', 'is_active',
+        'total_sessions', 'price', 'billing_type', 'is_kompetitif', 'is_active',
     ];
 
     protected function casts(): array
     {
         return [
             'price' => 'decimal:2',
+            'is_kompetitif' => 'boolean',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function isKompetitif(): bool
+    {
+        return (bool) $this->is_kompetitif;
     }
 
     public function registrations()

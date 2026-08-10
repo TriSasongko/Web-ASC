@@ -101,6 +101,11 @@
                                         <span class="material-symbols-outlined text-[16px]">schedule</span>
                                         Menunggu persetujuan admin
                                     </span>
+                                @elseif ($rec->status === 'menunggu_ortu')
+                                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#E3F2FD] text-[#1565C0] font-label-sm text-label-sm">
+                                        <span class="material-symbols-outlined text-[16px]">forum</span>
+                                        Menunggu konfirmasi Anda
+                                    </span>
                                 @elseif ($rec->status === 'diterima')
                                     <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#E8F5E9] text-[#2E7D32] font-label-sm text-label-sm">
                                         <span class="material-symbols-outlined text-[16px]">check_circle</span>

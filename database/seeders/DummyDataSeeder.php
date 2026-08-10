@@ -137,17 +137,12 @@ class DummyDataSeeder extends Seeder
     {
         $classes = [];
         $configs = [
-            ['name' => 'Private A', 'program' => 'private', 'level' => 1, 'capacity' => 3],
-            ['name' => 'Private B', 'program' => 'private', 'level' => 2, 'capacity' => 3],
-            ['name' => 'Mini Private A', 'program' => 'mini-private', 'level' => 1, 'capacity' => 3],
-            ['name' => 'Mini Private B', 'program' => 'mini-private', 'level' => 2, 'capacity' => 3],
-            ['name' => 'Reguler A', 'program' => 'reguler', 'level' => 1, 'capacity' => 4],
-            ['name' => 'Reguler B', 'program' => 'reguler', 'level' => 2, 'capacity' => 4],
-            ['name' => 'Reguler C', 'program' => 'reguler', 'level' => 1, 'capacity' => 4],
-            ['name' => 'Mini Reguler A', 'program' => 'mini-reguler', 'level' => 1, 'capacity' => 4],
-            ['name' => 'Mini Reguler B', 'program' => 'mini-reguler', 'level' => 2, 'capacity' => 4],
-            ['name' => 'Kompetitif A', 'program' => 'kompetitif', 'level' => 3, 'capacity' => 10],
-            ['name' => 'Kompetitif B', 'program' => 'kompetitif', 'level' => 3, 'capacity' => 10],
+            ['name' => 'Private', 'program' => 'private', 'level' => 1, 'capacity' => 5],
+            ['name' => 'Mini Private', 'program' => 'mini-private', 'level' => 1, 'capacity' => 6],
+            ['name' => 'Reguler', 'program' => 'reguler', 'level' => 1, 'capacity' => 15],
+            ['name' => 'Mini Reguler', 'program' => 'mini-reguler', 'level' => 1, 'capacity' => 15],
+            ['name' => 'Kompetitif A', 'program' => 'kompetitif', 'level' => 3, 'capacity' => 12],
+            ['name' => 'Kompetitif B', 'program' => 'kompetitif', 'level' => 2, 'capacity' => 12],
         ];
 
         foreach ($configs as $config) {
@@ -166,17 +161,12 @@ class DummyDataSeeder extends Seeder
     private function createSchedules(array $classes): void
     {
         $schedules = [
-            'Private A' => [['senin', '15:00', '16:00', 1]],
-            'Private B' => [['senin', '16:00', '17:00', 1]],
-            'Mini Private A' => [['selasa', '15:00', '16:00', 1]],
-            'Mini Private B' => [['selasa', '16:00', '17:00', 1]],
-            'Reguler A' => [['rabu', '15:00', '16:30', 1]],
-            'Reguler B' => [['rabu', '16:30', '18:00', 1]],
-            'Reguler C' => [['kamis', '15:00', '16:30', 1]],
-            'Mini Reguler A' => [['jumat', '15:00', '16:30', 1]],
-            'Mini Reguler B' => [['jumat', '16:30', '18:00', 1]],
-            'Kompetitif A' => [['sabtu', '07:00', '09:00', 1], ['minggu', '07:00', '09:00', 2]],
-            'Kompetitif B' => [['sabtu', '09:00', '11:00', 1], ['minggu', '09:00', '11:00', 2]],
+            'Private' => [['senin', '15:00', '16:00', 1]],
+            'Mini Private' => [['selasa', '15:00', '16:00', 1]],
+            'Reguler' => [['rabu', '15:00', '16:30', 1]],
+            'Mini Reguler' => [['jumat', '15:00', '16:30', 1]],
+            'Kompetitif A' => [['sabtu', '07:00', '09:00', 1]],
+            'Kompetitif B' => [['minggu', '07:00', '09:00', 1]],
         ];
 
         foreach ($schedules as $className => $items) {
@@ -213,6 +203,7 @@ class DummyDataSeeder extends Seeder
         $enrollment = ClassStudent::create([
             'class_id' => $classes[$data['class']]->id,
             'student_id' => $student->id,
+            'level' => $data['level'] ?? null,
             'registration_id' => $student->registrations()->first()?->id,
             'sessions_completed' => $data['completed'],
             'is_active' => $data['is_active'],
@@ -281,6 +272,7 @@ class DummyDataSeeder extends Seeder
         ClassStudent::create([
             'class_id' => $classes['Kompetitif A']->id,
             'student_id' => $kirana->id,
+            'level' => 3,
             'registration_id' => null,
             'sessions_completed' => 1,
             'is_active' => true,
@@ -320,13 +312,13 @@ class DummyDataSeeder extends Seeder
     private function createRecommendations(Collection $studentsByName, array $classes, Collection $coaches, User $admin): void
     {
         $recommendations = [
-            ['name' => 'Fajar Ramadhan', 'current' => 'Reguler A', 'target' => 'Reguler B', 'level' => 2, 'status' => 'pending'],
-            ['name' => 'Ahmad Fauzi', 'current' => 'Private A', 'target' => 'Private B', 'level' => 2, 'status' => 'pending'],
-            ['name' => 'Bella Septiana', 'current' => 'Mini Reguler A', 'target' => 'Mini Reguler B', 'level' => 2, 'status' => 'pending'],
-            ['name' => 'Mutiara Hati', 'current' => 'Kompetitif A', 'target' => 'Kompetitif B', 'level' => 3, 'status' => 'pending'],
-            ['name' => 'Kirana Ayu', 'current' => 'Mini Reguler B', 'target' => 'Kompetitif A', 'level' => 3, 'status' => 'diterima'],
-            ['name' => 'Naila Safitri', 'current' => 'Reguler B', 'target' => 'Kompetitif A', 'level' => 3, 'status' => 'ditolak'],
-            ['name' => 'Bintang Mahesa', 'current' => 'Reguler A', 'target' => 'Reguler B', 'level' => 2, 'status' => 'ditolak'],
+            ['name' => 'Fajar Ramadhan', 'current' => 'Reguler', 'target' => 'Kompetitif B', 'level' => 2, 'status' => 'pending'],
+            ['name' => 'Ahmad Fauzi', 'current' => 'Private', 'target' => 'Kompetitif B', 'level' => 2, 'status' => 'pending'],
+            ['name' => 'Bella Septiana', 'current' => 'Mini Reguler', 'target' => 'Kompetitif B', 'level' => 2, 'status' => 'pending'],
+            ['name' => 'Mutiara Hati', 'current' => 'Kompetitif B', 'target' => 'Kompetitif A', 'level' => 3, 'status' => 'pending'],
+            ['name' => 'Kirana Ayu', 'current' => 'Mini Reguler', 'target' => 'Kompetitif A', 'level' => 3, 'status' => 'diterima'],
+            ['name' => 'Naila Safitri', 'current' => 'Reguler', 'target' => 'Kompetitif A', 'level' => 3, 'status' => 'ditolak'],
+            ['name' => 'Bintang Mahesa', 'current' => 'Reguler', 'target' => 'Kompetitif B', 'level' => 2, 'status' => 'ditolak'],
         ];
 
         foreach ($recommendations as $rec) {
@@ -371,33 +363,33 @@ class DummyDataSeeder extends Seeder
     private function studentData(): array
     {
         return collect([
-            ['name' => 'Ahmad Fauzi', 'gender' => 'L', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private A', 'completed' => 7, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Salsabila Putri', 'gender' => 'P', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private A', 'completed' => 8, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Raka Pratama', 'gender' => 'L', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private B', 'completed' => 5, 'renewal' => 'berhenti', 'is_active' => false],
-            ['name' => 'Nadia Aulia', 'gender' => 'P', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private A', 'completed' => 3, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Dimas Anggara', 'gender' => 'L', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private A', 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Keysha Ramadhani', 'gender' => 'P', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private B', 'completed' => 1, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
-            ['name' => 'Fajar Ramadhan', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler A', 'completed' => 7, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Aisyah Nur', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler A', 'completed' => 6, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Bintang Mahesa', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler A', 'completed' => 8, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
-            ['name' => 'Zahra Amalia', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler B', 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Rizky Ardiansyah', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler B', 'completed' => 2, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
-            ['name' => 'Naila Safitri', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler B', 'completed' => 8, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Yoga Saputra', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler C', 'completed' => 1, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Ahmad Fauzi', 'gender' => 'L', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 7, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Salsabila Putri', 'gender' => 'P', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 8, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Raka Pratama', 'gender' => 'L', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 5, 'renewal' => 'berhenti', 'is_active' => false],
+            ['name' => 'Nadia Aulia', 'gender' => 'P', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 3, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Dimas Anggara', 'gender' => 'L', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Keysha Ramadhani', 'gender' => 'P', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 1, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
+            ['name' => 'Fajar Ramadhan', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 7, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Aisyah Nur', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 6, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Bintang Mahesa', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 8, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
+            ['name' => 'Zahra Amalia', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Rizky Ardiansyah', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 2, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
+            ['name' => 'Naila Safitri', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 8, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Yoga Saputra', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 1, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Citra Lestari', 'gender' => 'P', 'program' => 'reguler', 'status' => 'menunggu_verifikasi', 'class' => null, 'completed' => 0, 'renewal' => null, 'is_active' => true],
             ['name' => 'Aldi Firmansyah', 'gender' => 'L', 'program' => 'reguler', 'status' => 'ditolak', 'class' => null, 'completed' => 0, 'renewal' => null, 'is_active' => true, 'rejection_reason' => 'Dokumen pendaftaran tidak lengkap'],
-            ['name' => 'Bella Septiana', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler A', 'completed' => 3, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Gilang Pratama', 'gender' => 'L', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler A', 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Talitha Azzahra', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler A', 'completed' => 1, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
-            ['name' => 'Hafiz Ramadhan', 'gender' => 'L', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler B', 'completed' => 4, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
-            ['name' => 'Kirana Ayu', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler B', 'completed' => 2, 'renewal' => 'pindah', 'is_active' => false],
+            ['name' => 'Bella Septiana', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 3, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Gilang Pratama', 'gender' => 'L', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Talitha Azzahra', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 1, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
+            ['name' => 'Hafiz Ramadhan', 'gender' => 'L', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 4, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
+            ['name' => 'Kirana Ayu', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 2, 'renewal' => 'pindah', 'is_active' => false],
             ['name' => 'Tegar Setiawan', 'gender' => 'L', 'program' => 'mini-reguler', 'status' => 'ditolak', 'class' => null, 'completed' => 0, 'renewal' => null, 'is_active' => true, 'rejection_reason' => 'Kuota kelas penuh'],
-            ['name' => 'Mutiara Hati', 'gender' => 'P', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif A', 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Wildan Hakim', 'gender' => 'L', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif A', 'completed' => 2, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Alya Ramadhani', 'gender' => 'P', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif A', 'completed' => 6, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Satrio Wibowo', 'gender' => 'L', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif A', 'completed' => 3, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Dinda Permata', 'gender' => 'P', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif B', 'completed' => 5, 'renewal' => 'lanjut', 'is_active' => true],
-            ['name' => 'Evan Kurniawan', 'gender' => 'L', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif B', 'completed' => 2, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Mutiara Hati', 'gender' => 'P', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif B', 'level' => 2, 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Wildan Hakim', 'gender' => 'L', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif B', 'level' => 2, 'completed' => 2, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Alya Ramadhani', 'gender' => 'P', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif B', 'level' => 2, 'completed' => 6, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Satrio Wibowo', 'gender' => 'L', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif B', 'level' => 2, 'completed' => 3, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Dinda Permata', 'gender' => 'P', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif A', 'level' => 3, 'completed' => 5, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Evan Kurniawan', 'gender' => 'L', 'program' => 'kompetitif', 'status' => 'diterima', 'class' => 'Kompetitif A', 'level' => 3, 'completed' => 2, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Syifa Nabila', 'gender' => 'P', 'program' => 'kompetitif', 'status' => 'menunggu_verifikasi', 'class' => null, 'completed' => 0, 'renewal' => null, 'is_active' => true],
             ['name' => 'Luthfi Maulana', 'gender' => 'L', 'program' => 'kompetitif', 'status' => 'menunggu_verifikasi', 'class' => null, 'completed' => 0, 'renewal' => null, 'is_active' => true],
             ['name' => 'Anindya Putri', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'ditolak', 'class' => null, 'completed' => 0, 'renewal' => null, 'is_active' => true, 'rejection_reason' => 'Usia belum memenuhi syarat'],

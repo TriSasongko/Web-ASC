@@ -49,6 +49,25 @@
                                 $targetLevel = $rec->recommendedClass?->level
                                     ?? $rec->recommended_level;
                                 $currentLevel = $rec->currentClass?->level;
+                                $parentPhone = $rec->student?->parent?->phone;
+                                $targetProgram = $rec->recommendedClass?->program;
+                                $waMessage = rawurlencode(
+                                    'Halo, kami dari ASC Academy ingin mengonfirmasi kenaikan level anak Anda '
+                                    .($rec->student?->full_name ?? 'Ananda')
+                                    .' dari '
+                                    .(($rec->currentClass?->name ?? 'Kelas') . ($currentLevel ? ' (Level '.$currentLevel.')' : ''))
+                                    .' ke '
+                                    .$targetLabel.($targetLevel ? ' (Level '.$targetLevel.')' : '')
+                                    .'. Karena naik level berarti berpindah ke program '
+                                    .($targetProgram?->name ?? 'Kompetitif')
+                                    .($targetProgram
+                                        ? ' dengan biaya '.($targetProgram->billing_type === 'per_bulan' ? 'bulanan' : 'per paket').' Rp '.number_format((float) $targetProgram->price, 0, ',', '.')
+                                        : '')
+                                    .', mohon konfirmasi persetujuan Anda. Terima kasih.'
+                                );
+                                $waUrl = $parentPhone
+                                    ? 'https://wa.me/'.preg_replace('/\D/', '', $parentPhone).'?text='.$waMessage
+                                    : null;
                             @endphp
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
                                 <td class="px-4 py-3">
@@ -92,6 +111,11 @@
                                             <span class="material-symbols-outlined text-[14px]">schedule</span>
                                             Menunggu
                                         </span>
+                                    @elseif ($rec->status === 'menunggu_ortu')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E3F2FD] text-[#1565C0]">
+                                            <span class="material-symbols-outlined text-[14px]">forum</span>
+                                            Menunggu konfirmasi ortu
+                                        </span>
                                     @elseif ($rec->status === 'diterima')
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E8F5E9] text-[#2E7D32]">
                                             <span class="material-symbols-outlined text-[14px]">check_circle</span>
@@ -120,7 +144,7 @@
 
                                         @if ($rec->status === 'pending')
                                             <form action="{{ route('admin.recommendations.approve', $rec) }}" method="POST" class="inline"
-                                                  onsubmit="return confirm('Setujui rekomendasi dan pindahkan siswa ke kelas target?')">
+                                                  onsubmit="return confirm('Setujui rekomendasi? Siswa dipindahkan setelah orang tua mengonfirmasi.')">
                                                 @csrf
                                                 <button type="submit" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-label-sm text-label-sm bg-[#E8F5E9] text-[#2E7D32] hover:opacity-90 transition-all active:scale-95">
                                                     <span class="material-symbols-outlined text-[16px]">check_circle</span>
@@ -133,6 +157,29 @@
                                                 <button type="submit" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-label-sm text-label-sm bg-error-container text-on-error-container hover:opacity-90 transition-all active:scale-95">
                                                     <span class="material-symbols-outlined text-[16px]">block</span>
                                                     Tolak
+                                                </button>
+                                            </form>
+                                        @elseif ($rec->status === 'menunggu_ortu')
+                                            @if ($waUrl)
+                                                <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-label-sm text-label-sm bg-[#25D366] text-white hover:opacity-90 transition-all active:scale-95" title="Konfirmasi ke orang tua via WhatsApp">
+                                                    <span class="material-symbols-outlined text-[16px]">chat</span>
+                                                    Konfirmasi WA
+                                                </a>
+                                            @endif
+                                            <form action="{{ route('admin.recommendations.confirm', $rec) }}" method="POST" class="inline"
+                                                  onsubmit="return confirm('Orang tua sudah konfirmasi? Siswa akan dipindahkan ke kelas target.')">
+                                                @csrf
+                                                <button type="submit" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-label-sm text-label-sm bg-[#E8F5E9] text-[#2E7D32] hover:opacity-90 transition-all active:scale-95">
+                                                    <span class="material-symbols-outlined text-[16px]">verified</span>
+                                                    Selesaikan
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('admin.recommendations.reject', $rec) }}" method="POST" class="inline"
+                                                  onsubmit="return confirm('Tandai bahwa orang tua menolak? Siswa tetap di kelas sekarang.')">
+                                                @csrf
+                                                <button type="submit" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-label-sm text-label-sm bg-error-container text-on-error-container hover:opacity-90 transition-all active:scale-95">
+                                                    <span class="material-symbols-outlined text-[16px]">block</span>
+                                                    Ortu menolak
                                                 </button>
                                             </form>
                                         @endif

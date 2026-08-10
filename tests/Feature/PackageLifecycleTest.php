@@ -164,10 +164,20 @@ class PackageLifecycleTest extends TestCase
         $child = $this->makeStudent($parent);
         $data = $this->makeEnrollment($child);
 
+        $kompetitif = Program::firstOrCreate([
+            'slug' => 'kompetitif',
+        ], [
+            'name' => 'Kompetitif',
+            'total_sessions' => null,
+            'price' => 300000,
+            'billing_type' => 'per_bulan',
+            'is_kompetitif' => true,
+            'is_active' => true,
+        ]);
+
         $target = SchoolClass::create([
-            'program_id' => $data['class']->program_id,
-            'coach_id' => $data['coach']->id,
-            'name' => 'Reguler B',
+            'program_id' => $kompetitif->id,
+            'name' => 'Kompetitif B',
             'level' => 2,
             'is_active' => true,
         ]);
@@ -216,9 +226,20 @@ class PackageLifecycleTest extends TestCase
         $child = $this->makeStudent($parent);
         $data = $this->makeEnrollment($child);
 
+        $kompetitif = Program::firstOrCreate([
+            'slug' => 'kompetitif',
+        ], [
+            'name' => 'Kompetitif',
+            'total_sessions' => null,
+            'price' => 300000,
+            'billing_type' => 'per_bulan',
+            'is_kompetitif' => true,
+            'is_active' => true,
+        ]);
+
         $target = SchoolClass::create([
-            'program_id' => $data['class']->program_id,
-            'name' => 'Reguler B',
+            'program_id' => $kompetitif->id,
+            'name' => 'Kompetitif B',
             'level' => 2,
             'is_active' => true,
         ]);
@@ -236,8 +257,16 @@ class PackageLifecycleTest extends TestCase
             ->post(route('admin.recommendations.approve', $rec))
             ->assertRedirect();
 
-        $this->assertSame('diterima', $rec->fresh()->status);
+        $this->assertSame('menunggu_ortu', $rec->fresh()->status);
         $this->assertSame($data['admin']->id, $rec->fresh()->approved_by);
+        $this->assertNull($rec->fresh()->moved_at);
+        $this->assertTrue($data['enrollment']->fresh()->is_active);
+
+        $this->actingAs($data['admin'])
+            ->post(route('admin.recommendations.confirm', $rec))
+            ->assertRedirect();
+
+        $this->assertSame('diterima', $rec->fresh()->status);
         $this->assertNotNull($rec->fresh()->moved_at);
 
         $this->assertFalse($data['enrollment']->fresh()->is_active);
@@ -246,7 +275,14 @@ class PackageLifecycleTest extends TestCase
         $this->assertDatabaseHas('class_student', [
             'class_id' => $target->id,
             'student_id' => $child->id,
+            'level' => 2,
             'is_active' => true,
+        ]);
+
+        $this->assertDatabaseHas('registrations', [
+            'student_id' => $child->id,
+            'program_id' => $kompetitif->id,
+            'status' => 'diterima',
         ]);
     }
 
@@ -302,9 +338,20 @@ class PackageLifecycleTest extends TestCase
             'status' => 'pending',
         ]);
 
+        $kompetitif = Program::firstOrCreate([
+            'slug' => 'kompetitif',
+        ], [
+            'name' => 'Kompetitif',
+            'total_sessions' => null,
+            'price' => 300000,
+            'billing_type' => 'per_bulan',
+            'is_kompetitif' => true,
+            'is_active' => true,
+        ]);
+
         $target = SchoolClass::create([
-            'program_id' => $data['class']->program_id,
-            'name' => 'Reguler B',
+            'program_id' => $kompetitif->id,
+            'name' => 'Kompetitif B',
             'level' => 2,
             'is_active' => true,
         ]);

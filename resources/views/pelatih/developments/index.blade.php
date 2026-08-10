@@ -114,6 +114,7 @@
                                                     <a href="{{ route('pelatih.developments.create', [$primary, $student]) }}" class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm hover:underline">Isi Penilaian</a>
                                                     <a href="{{ route('pelatih.developments.history', [$primary, $student]) }}" class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm hover:underline">Riwayat</a>
 
+                                                    @if ($studentLevel !== null && $studentLevel < \App\Models\SchoolClass::LEVEL_ELITE)
                                                     <div x-data="{ open: false }" class="relative inline-block">
                                                         <button @click="open = true" type="button"
                                                             class="inline-flex items-center gap-1 bg-[#FFB300] text-white px-2.5 py-1 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
@@ -164,6 +165,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    @endif
                                                 </div>
                                             @else
                                                 <span class="font-body-sm text-body-sm text-outline">-</span>

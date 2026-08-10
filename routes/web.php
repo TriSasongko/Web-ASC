@@ -85,6 +85,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('recommendations', [AdminRecommendation::class, 'index'])->name('recommendations.index');
     Route::post('recommendations', [AdminRecommendation::class, 'store'])->name('recommendations.store');
     Route::post('recommendations/{recommendation}/approve', [AdminRecommendation::class, 'approve'])->name('recommendations.approve');
+    Route::post('recommendations/{recommendation}/confirm', [AdminRecommendation::class, 'confirm'])->name('recommendations.confirm');
     Route::post('recommendations/{recommendation}/reject', [AdminRecommendation::class, 'reject'])->name('recommendations.reject');
     Route::delete('recommendations/{recommendation}', [AdminRecommendation::class, 'destroy'])->name('recommendations.destroy');
 

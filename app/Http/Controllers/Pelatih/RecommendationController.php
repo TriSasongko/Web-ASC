@@ -13,6 +13,9 @@ class RecommendationController extends Controller
     public function store(Request $request, SchoolClass $class, Student $student)
     {
         $currentLevel = $class->level;
+
+        abort_if($currentLevel >= SchoolClass::LEVEL_ELITE, 422, 'Siswa level Elite tidak dapat direkomendasikan naik kelas.');
+
         $minLevel = ($currentLevel ?? 0) + 1;
 
         $validated = $request->validate([
@@ -24,8 +27,13 @@ class RecommendationController extends Controller
         $targetClass = null;
         if ($validated['recommended_class_id'] ?? null) {
             $targetClass = SchoolClass::find($validated['recommended_class_id']);
-            abort_unless($targetClass && $targetClass->program_id === $class->program_id, 422, 'Kelas target harus satu program.');
-            abort_unless($currentLevel === null || $targetClass->level > $currentLevel, 422, 'Kelas target harus level lebih tinggi.');
+            abort_unless($targetClass, 422, 'Kelas target tidak ditemukan.');
+            abort_unless(
+                $targetClass->program_id === $class->program_id || $targetClass->program?->isKompetitif(),
+                422,
+                'Kelas target harus satu program atau berada di program Kompetitif.'
+            );
+            abort_unless($targetClass->level > $currentLevel, 422, 'Kelas target harus level lebih tinggi.');
         }
 
         $alreadyPending = ClassRecommendation::where('student_id', $student->id)

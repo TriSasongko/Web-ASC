@@ -176,6 +176,7 @@
                                             <a href="{{ route('admin.students.show', $student) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Kelola Paket</a>
                                         @endif
 
+                                        @if ($class->level !== null && $class->level < \App\Models\SchoolClass::LEVEL_ELITE)
                                         <div x-data="{ open: false }" class="relative inline-block">
                                             <button @click="open = ! open" type="button"
                                                 class="inline-flex items-center justify-center gap-1.5 bg-[#FFF3E0] text-[#E65100] px-3 py-1.5 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
@@ -215,6 +216,7 @@
                                                 </form>
                                             </div>
                                         </div>
+                                        @endif
 
                                         <a href="{{ route('admin.classes.developments.history', [$class, $student]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Perkembangan</a>
                                     </div>

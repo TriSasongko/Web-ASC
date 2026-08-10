@@ -45,6 +45,7 @@ class ClassStudentController extends Controller
 
         $class->students()->attach($registration->student_id, [
             'registration_id' => $registration->id,
+            'level' => $class->level,
             'sessions_completed' => 0,
             'is_active' => true,
         ]);

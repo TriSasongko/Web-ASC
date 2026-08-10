@@ -14,7 +14,7 @@ class ProgramSeeder extends Seeder
             ['name' => 'Mini Private', 'slug' => 'mini-private', 'max_students' => 3, 'total_sessions' => 4, 'price' => 300000, 'billing_type' => 'per_paket'],
             ['name' => 'Reguler', 'slug' => 'reguler', 'max_students' => 4, 'total_sessions' => 8, 'price' => 350000, 'billing_type' => 'per_paket'],
             ['name' => 'Mini Reguler', 'slug' => 'mini-reguler', 'max_students' => 4, 'total_sessions' => 4, 'price' => 200000, 'billing_type' => 'per_paket'],
-            ['name' => 'Kompetitif', 'slug' => 'kompetitif', 'max_students' => null, 'total_sessions' => null, 'price' => 300000, 'billing_type' => 'per_bulan'],
+            ['name' => 'Kompetitif', 'slug' => 'kompetitif', 'max_students' => null, 'total_sessions' => null, 'price' => 300000, 'billing_type' => 'per_bulan', 'is_kompetitif' => true],
         ];
 
         foreach ($programs as $program) {
