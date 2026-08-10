@@ -63,7 +63,7 @@
         </style>
     </head>
     <body class="bg-surface text-on-surface font-body antialiased">
-        <div x-data="{ sidebarOpen: false }" class="flex h-screen overflow-hidden">
+        <div x-data="{ sidebarOpen: false, sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === '1' }" class="flex h-screen overflow-hidden">
 
             <!-- Mobile overlay -->
             <div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition:opacity
@@ -71,8 +71,13 @@
             </div>
 
             <!-- Sidebar -->
-            <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-                class="fixed left-0 top-0 z-50 h-screen w-sidebar_width bg-surface flex flex-col py-8 px-4 border-r border-outline-variant/30 transition-transform duration-300 ease-in-out md:translate-x-0 md:flex">
+            <aside :class="{
+                    'translate-x-0': sidebarOpen,
+                    '-translate-x-full': !sidebarOpen,
+                    'md:translate-x-0': !sidebarCollapsed,
+                    'md:-translate-x-full': sidebarCollapsed,
+                }"
+                class="fixed left-0 top-0 z-50 h-screen w-sidebar_width bg-surface flex flex-col py-8 px-4 border-r border-outline-variant/30 transition-transform duration-300 ease-in-out md:flex">
                 <!-- Brand -->
                 <div class="flex items-center gap-4 px-4 mb-10">
                     <div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary font-bold text-xl shadow-md">
@@ -108,13 +113,19 @@
             </aside>
 
             <!-- Main Content Wrapper -->
-            <main class="flex-1 md:ml-sidebar_width h-screen overflow-y-auto flex flex-col bg-surface-bright">
+            <main :class="!sidebarCollapsed ? 'md:ml-sidebar_width' : ''" class="flex-1 h-screen overflow-y-auto flex flex-col bg-surface-bright">
                 <!-- TopAppBar -->
                 <header class="sticky top-0 z-30 w-full bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
                     <div class="flex justify-between items-center gap-3 h-16 px-gutter max-w-container_max_width mx-auto w-full">
                         <!-- Mobile Menu Button -->
                         <button @click="sidebarOpen = !sidebarOpen" class="md:hidden p-2 text-on-surface -ml-2 shrink-0">
                             <span class="material-symbols-outlined">menu</span>
+                        </button>
+
+                        <!-- Desktop Collapse Button -->
+                        <button @click="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('sidebarCollapsed', sidebarCollapsed ? '1' : '0')"
+                            class="hidden md:inline-flex items-center justify-center p-2 text-on-surface -ml-2 shrink-0 rounded-lg hover:bg-surface-container-low transition-colors" title="Tutup / buka sidebar">
+                            <span class="material-symbols-outlined" :class="sidebarCollapsed ? 'menu' : 'menu_open'">menu_open</span>
                         </button>
 
                         <!-- Page Title -->
