@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pelatih;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\ClassRecommendation;
+use App\Models\ClassSchedule;
 use App\Models\CoachNote;
 use App\Models\Development;
 use Illuminate\Support\Carbon;
@@ -37,6 +38,13 @@ class DashboardController extends Controller
             ->latest('id')
             ->get();
 
+        $todayDay = ClassSchedule::DAYS[now()->dayOfWeek - 1];
+        $todaySchedules = ClassSchedule::with(['schoolClass.program', 'students'])
+            ->where('day', $todayDay)
+            ->whereHas('coaches', fn ($q) => $q->where('users.id', $userId))
+            ->orderBy('start_time')
+            ->get();
+
         $days = collect(range(6, 0))->map(function ($offset) {
             return today()->subDays($offset);
         });
@@ -58,6 +66,8 @@ class DashboardController extends Controller
             'totalRecommendations',
             'recentAttendances',
             'notes',
+            'todayDay',
+            'todaySchedules',
             'attendanceChart',
             'canAssess'
         ));

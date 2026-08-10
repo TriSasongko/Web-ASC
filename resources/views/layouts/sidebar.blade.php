@@ -62,7 +62,7 @@
             }
         </style>
     </head>
-    <body class="bg-surface text-on-surface font-body antialiased">
+    <body class="antialiased bg-surface text-on-surface font-body">
         <div x-data="{ sidebarOpen: false, sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === '1' }" class="flex h-screen overflow-hidden">
 
             <!-- Mobile overlay -->
@@ -77,35 +77,34 @@
                     'md:translate-x-0': !sidebarCollapsed,
                     'md:-translate-x-full': sidebarCollapsed,
                 }"
-                class="fixed left-0 top-0 z-50 h-screen w-sidebar_width bg-surface flex flex-col py-8 px-4 border-r border-outline-variant/30 transition-transform duration-300 ease-in-out md:flex">
+                class="fixed top-0 left-0 z-50 flex flex-col h-screen px-4 py-8 transition-transform duration-300 ease-in-out border-r w-sidebar_width bg-surface border-outline-variant/30 md:flex">
                 <!-- Brand -->
                 <div class="flex items-center gap-4 px-4 mb-10">
-                    <div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary font-bold text-xl shadow-md">
-                        A
-                    </div>
+                    <img src="{{ asset('images/Logo_ASR.png') }}" alt="ASC Academy"
+                        class="object-contain w-14 h-14 shrink-0">
                     <div>
-                        <h1 class="font-headline text-headline-md font-extrabold text-primary">ASC Academy</h1>
+                        <h1 class="font-extrabold font-headline text-headline-md text-primary">ASC Academy</h1>
                         <p class="font-label-sm text-label-sm text-outline">Elite Performance</p>
                     </div>
                 </div>
 
                 <!-- Navigation Tabs -->
-                <nav class="flex-1 space-y-2 overflow-y-auto pr-2">
+                <nav class="flex-1 pr-2 space-y-2 overflow-y-auto">
                     @include('layouts.'.$menu)
                 </nav>
 
                 <!-- Footer Tabs -->
-                <div class="mt-auto pt-6 border-t border-outline-variant/30 space-y-2">
+                <div class="pt-6 mt-auto space-y-2 border-t border-outline-variant/30">
                     <a href="{{ route('profile.edit') }}"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors group">
-                        <span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">settings</span>
+                        class="flex items-center gap-3 px-4 py-3 transition-colors rounded-lg text-on-surface-variant hover:bg-surface-container-low group">
+                        <span class="transition-colors material-symbols-outlined text-outline group-hover:text-primary">settings</span>
                         <span class="font-label-md text-label-md">Pengaturan</span>
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
-                            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors group">
-                            <span class="material-symbols-outlined text-outline group-hover:text-error transition-colors">logout</span>
+                            class="flex items-center w-full gap-3 px-4 py-3 transition-colors rounded-lg text-on-surface-variant hover:bg-surface-container-low group">
+                            <span class="transition-colors material-symbols-outlined text-outline group-hover:text-error">logout</span>
                             <span class="font-label-md text-label-md">Keluar</span>
                         </button>
                     </form>
@@ -113,35 +112,35 @@
             </aside>
 
             <!-- Main Content Wrapper -->
-            <main :class="!sidebarCollapsed ? 'md:ml-sidebar_width' : ''" class="flex-1 h-screen overflow-y-auto flex flex-col bg-surface-bright">
+            <main :class="!sidebarCollapsed ? 'md:ml-sidebar_width' : ''" class="flex flex-col flex-1 h-screen overflow-y-auto bg-surface-bright">
                 <!-- TopAppBar -->
-                <header class="sticky top-0 z-30 w-full bg-surface/80 backdrop-blur-md border-b border-outline-variant/30">
-                    <div class="flex justify-between items-center gap-3 h-16 px-gutter max-w-container_max_width mx-auto w-full">
+                <header class="sticky top-0 z-30 w-full border-b bg-surface/80 backdrop-blur-md border-outline-variant/30">
+                    <div class="flex items-center justify-between w-full h-16 gap-3 mx-auto px-gutter max-w-container_max_width">
                         <!-- Mobile Menu Button -->
-                        <button @click="sidebarOpen = !sidebarOpen" class="md:hidden p-2 text-on-surface -ml-2 shrink-0">
+                        <button @click="sidebarOpen = !sidebarOpen" class="p-2 -ml-2 md:hidden text-on-surface shrink-0">
                             <span class="material-symbols-outlined">menu</span>
                         </button>
 
                         <!-- Desktop Collapse Button -->
                         <button @click="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('sidebarCollapsed', sidebarCollapsed ? '1' : '0')"
-                            class="hidden md:inline-flex items-center justify-center p-2 text-on-surface -ml-2 shrink-0 rounded-lg hover:bg-surface-container-low transition-colors" title="Tutup / buka sidebar">
+                            class="items-center justify-center hidden p-2 -ml-2 transition-colors rounded-lg md:inline-flex text-on-surface shrink-0 hover:bg-surface-container-low" title="Tutup / buka sidebar">
                             <span class="material-symbols-outlined" :class="sidebarCollapsed ? 'menu' : 'menu_open'">menu_open</span>
                         </button>
 
                         <!-- Page Title -->
                         @isset($header)
-                            <div class="hidden md:block min-w-0 truncate shrink-0">
+                            <div class="hidden min-w-0 truncate md:block shrink-0">
                                 {{ $header }}
                             </div>
                         @endisset
 
                         <!-- Search Bar (Admin only) -->
                         @if ($role === 'admin')
-                            <form action="{{ route('admin.students.index') }}" method="GET" class="flex-1 max-w-md hidden sm:block">
+                            <form action="{{ route('admin.students.index') }}" method="GET" class="flex-1 hidden max-w-md sm:block">
                                 <div class="relative">
                                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
                                     <input name="search" type="text"
-                                        class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/50 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary font-body-sm text-body-sm transition-all shadow-sm"
+                                        class="w-full py-2 pl-10 pr-4 transition-all border rounded-full shadow-sm bg-surface-container-low border-outline-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary font-body-sm text-body-sm"
                                         placeholder="Cari siswa, kelas, atau pelatih...">
                                 </div>
                             </form>
@@ -150,43 +149,43 @@
                         <!-- Actions & Profile -->
                         <div class="flex items-center gap-4 ml-auto shrink-0">
                             @if ($role === 'admin')
-                                <button class="relative p-2 text-outline hover:text-primary transition-colors rounded-full hover:bg-surface-container-low" title="Notifikasi">
+                                <button class="relative p-2 transition-colors rounded-full text-outline hover:text-primary hover:bg-surface-container-low" title="Notifikasi">
                                     <span class="material-symbols-outlined">notifications</span>
                                     @if ($navPendingRegistrations > 0)
                                         <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
                                     @endif
                                 </button>
-                                <div class="h-8 w-px bg-outline-variant/30 hidden sm:block"></div>
+                                <div class="hidden w-px h-8 bg-outline-variant/30 sm:block"></div>
                             @endif
                             <!-- Profile Dropdown -->
                             <div x-data="{ open: false }" class="relative">
-                                <button @click="open = ! open" class="flex items-center gap-3 p-1 rounded-full hover:bg-surface-container-low transition-colors group">
+                                <button @click="open = ! open" class="flex items-center gap-3 p-1 transition-colors rounded-full hover:bg-surface-container-low group">
                                     @if (Auth::user()->photo)
                                         <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="{{ Auth::user()->name }}"
-                                            class="w-8 h-8 rounded-full object-cover border border-outline-variant/30">
+                                            class="object-cover w-8 h-8 border rounded-full border-outline-variant/30">
                                     @else
-                                        <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-md text-label-md border border-outline-variant/30">
+                                        <div class="flex items-center justify-center w-8 h-8 border rounded-full bg-primary-container text-on-primary font-label-md text-label-md border-outline-variant/30">
                                             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                         </div>
                                     @endif
-                                    <div class="hidden sm:block text-left mr-2">
-                                        <p class="font-label-sm text-label-sm text-on-surface group-hover:text-primary transition-colors">{{ Auth::user()->name }}</p>
+                                    <div class="hidden mr-2 text-left sm:block">
+                                        <p class="transition-colors font-label-sm text-label-sm text-on-surface group-hover:text-primary">{{ Auth::user()->name }}</p>
                                         <p class="font-label-sm text-label-sm text-outline text-[10px]">{{ $roleLabel }}</p>
                                     </div>
                                     <span class="material-symbols-outlined text-outline hidden sm:block text-[20px]">expand_more</span>
                                 </button>
 
                                 <div x-show="open" @click.outside="open = false" x-transition
-                                    class="absolute right-0 mt-2 w-48 py-2 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-lg z-50" style="display: none;">
+                                    class="absolute right-0 z-50 w-48 py-2 mt-2 border shadow-lg bg-surface-container-lowest border-outline-variant/30 rounded-xl" style="display: none;">
                                     <a href="{{ route('profile.edit') }}"
-                                        class="flex items-center gap-2 px-4 py-2 text-body-sm text-body-sm text-on-surface hover:bg-surface-container-low transition-colors">
+                                        class="flex items-center gap-2 px-4 py-2 transition-colors text-body-sm text-on-surface hover:bg-surface-container-low">
                                         <span class="material-symbols-outlined text-[18px] text-outline">person</span>
                                         Profil
                                     </a>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
                                         <button type="submit"
-                                            class="w-full flex items-center gap-2 px-4 py-2 text-body-sm text-body-sm text-on-surface hover:bg-surface-container-low transition-colors">
+                                            class="flex items-center w-full gap-2 px-4 py-2 transition-colors text-body-sm text-on-surface hover:bg-surface-container-low">
                                             <span class="material-symbols-outlined text-[18px] text-outline">logout</span>
                                             Keluar
                                         </button>
@@ -198,7 +197,7 @@
                 </header>
 
                 <!-- Page Content -->
-                <div class="flex-1 p-margin_mobile md:p-margin_desktop max-w-container_max_width mx-auto w-full">
+                <div class="flex-1 w-full mx-auto p-margin_mobile md:p-margin_desktop max-w-container_max_width">
                     {{ $slot }}
                 </div>
             </main>

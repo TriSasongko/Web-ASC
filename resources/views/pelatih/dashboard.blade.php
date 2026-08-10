@@ -33,15 +33,17 @@
             </div>
         @endif
 
-        <!-- Catatan Pribadi (Fitur Utama) -->
-        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
-            <div class="flex items-start justify-between gap-3 mb-4">
-                <div>
-                    <h3 class="font-headline text-headline-sm text-on-surface">Catatan Pribadi</h3>
-                    <p class="font-body-sm text-body-sm text-outline mt-0.5">Catatan ini hanya dapat dilihat oleh Anda.</p>
+        <!-- Catatan Pribadi + Jadwal Hari Ini -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Catatan Pribadi (Fitur Utama) -->
+            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <div>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Catatan Pribadi</h3>
+                        <p class="font-body-sm text-body-sm text-outline mt-0.5">Catatan ini hanya dapat dilihat oleh Anda.</p>
+                    </div>
+                    <span class="material-symbols-outlined text-outline text-[24px]">sticky_note_2</span>
                 </div>
-                <span class="material-symbols-outlined text-outline text-[24px]">sticky_note_2</span>
-            </div>
 
             <form action="{{ route('pelatih.notes.store') }}" method="POST" class="mb-5">
                 @csrf
@@ -147,6 +149,58 @@
                         <p class="font-body-sm text-body-sm text-outline mt-2">Belum ada catatan. Tambahkan catatan pertama Anda di atas.</p>
                     </div>
                 @endforelse
+            </div>
+        </div>
+
+            <!-- Jadwal Hari Ini -->
+            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <div>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Jadwal Hari Ini</h3>
+                        <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ ucfirst($todayDay) }}, {{ now()->format('d M Y') }}</p>
+                    </div>
+                    <a href="{{ route('pelatih.schedules.index') }}" class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm hover:underline shrink-0">
+                        Lihat Semua
+                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </a>
+                </div>
+
+                <div class="space-y-3">
+                    @forelse ($todaySchedules as $schedule)
+                        @php
+                            $start = $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '-';
+                            $end = $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '-';
+                        @endphp
+                        <div class="flex items-start gap-3 border border-outline-variant/30 rounded-lg p-3">
+                            <div class="p-2 bg-primary-container/60 rounded-lg shrink-0">
+                                <span class="material-symbols-outlined text-[18px] text-on-primary">event</span>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <p class="font-label-md text-label-md text-on-surface truncate">{{ $schedule->schoolClass?->name ?? 'Tanpa Kelas' }}</p>
+                                    <span class="font-label-sm text-label-sm text-primary whitespace-nowrap">{{ $start }}–{{ $end }}</span>
+                                </div>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">
+                                    @if ($schedule->schoolClass)
+                                        {{ $schedule->schoolClass->level_label }}
+                                    @endif
+                                    @if ($schedule->location)
+                                        · {{ $schedule->location }}
+                                    @endif
+                                    @if ($schedule->session_number)
+                                        · Sesi {{ $schedule->session_number }}
+                                    @endif
+                                </p>
+                                <p class="font-label-sm text-label-sm text-outline mt-1">{{ $schedule->students->count() }} siswa</p>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-6">
+                            <span class="material-symbols-outlined text-outline text-[32px]">event_busy</span>
+                            <p class="font-body-sm text-body-sm text-outline mt-2">Tidak ada jadwal latihan hari ini.</p>
+                        </div>
+                    @endforelse
+                </div>
             </div>
         </div>
 
