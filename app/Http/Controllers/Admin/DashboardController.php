@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\ClassRecommendation;
+use App\Models\ClassSchedule;
 use App\Models\Registration;
 use App\Models\Student;
 use App\Models\User;
@@ -34,6 +35,26 @@ class DashboardController extends Controller
         $totalCoaches = User::where('role', 'pelatih')->where('is_active', true)->count();
 
         $pendingRegistrations = Registration::where('status', 'menunggu_verifikasi')->count();
+
+        $todayDay = ClassSchedule::DAYS[now()->dayOfWeek - 1];
+        $todaySchedules = ClassSchedule::where('day', $todayDay)
+            ->with(['schoolClass.program', 'coaches', 'students'])
+            ->orderBy('start_time')
+            ->get();
+
+        $unplacedStudents = Student::whereHas('classes', function ($q) {
+            $q->where('class_student.is_active', true)
+                ->where('class_student.renewal_status', '!=', 'berhenti');
+        })
+            ->whereDoesntHave('schedules')
+            ->with(['classes' => function ($q) {
+                $q->where('class_student.is_active', true)
+                    ->where('class_student.renewal_status', '!=', 'berhenti');
+            }, 'parent'])
+            ->orderBy('full_name')
+            ->get();
+        $unplacedCount = $unplacedStudents->count();
+        $unplacedStudents = $unplacedStudents->take(6)->values();
 
         $needConfirmationCount = $alerts->sum('total');
 
@@ -121,6 +142,9 @@ class DashboardController extends Controller
             'totalCoaches',
             'pendingRegistrations',
             'needConfirmationCount',
+            'todaySchedules',
+            'unplacedStudents',
+            'unplacedCount',
             'growth',
             'statusData',
             'packageData',

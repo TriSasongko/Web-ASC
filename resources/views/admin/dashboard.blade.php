@@ -93,6 +93,96 @@
             </div>
         </div>
 
+        <!-- Today Schedule + Unplaced Students -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Today's Schedule (2/3) -->
+            <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
+                <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">today</span>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Jadwal Hari Ini</h3>
+                        <span class="font-label-sm text-label-sm text-outline capitalize">({{ \Carbon\Carbon::now()->translatedFormat('l, d M Y') }})</span>
+                    </div>
+                    <a href="{{ route('admin.schedules.index') }}" class="text-primary font-label-sm text-label-sm hover:underline">Kelola Jadwal</a>
+                </div>
+                <div class="overflow-x-auto">
+                    @forelse ($todaySchedules as $s)
+                        <div class="px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-2 hover:bg-surface-container-low/50 transition-colors {{ ! $loop->first ? 'border-t border-outline-variant/30' : '' }}">
+                            <div class="w-16 shrink-0">
+                                <p class="font-label-md text-label-md text-primary">{{ \Carbon\Carbon::parse($s->start_time)->format('H:i') }}</p>
+                                <p class="font-label-sm text-label-sm text-outline">{{ \Carbon\Carbon::parse($s->end_time)->format('H:i') }}</p>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <a href="{{ route('admin.classes.show', $s->schoolClass) }}" class="font-label-md text-label-md text-on-surface hover:text-primary">{{ $s->schoolClass?->name ?? '-' }}</a>
+                                <p class="font-body-sm text-body-sm text-outline">{{ $s->schoolClass?->program?->name }} · {{ $s->schoolClass?->level_label ?? '-' }} · {{ $s->location ?? '-' }}</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-1.5 shrink-0">
+                                @forelse ($s->coaches as $c)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">{{ $c->name }}</span>
+                                @empty
+                                    <span class="font-body-sm text-body-sm text-outline">Tanpa pelatih</span>
+                                @endforelse
+                            </div>
+                            <div class="w-20 shrink-0 text-right">
+                                @if ($s->students->isEmpty())
+                                    <span class="font-body-sm text-body-sm text-outline">Belum ada siswa</span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 font-label-md text-label-md text-on-surface">
+                                        <span class="material-symbols-outlined text-[16px] text-outline">groups</span>
+                                        {{ $s->students->count() }}
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center">
+                            <p class="font-body-sm text-body-sm text-outline">Tidak ada jadwal hari ini.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Unplaced Students (1/3) -->
+            <div class="lg:col-span-1 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
+                <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[#E65100]">how_to_reg</span>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Belum Ditempatkan</h3>
+                    </div>
+                    @if ($unplacedCount > 0)
+                        <span class="inline-flex items-center justify-center min-w-6 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">{{ $unplacedCount }}</span>
+                    @endif
+                </div>
+                <div class="divide-y divide-outline-variant/30">
+                    @forelse ($unplacedStudents as $st)
+                        <div class="p-4 flex items-center justify-between gap-3 hover:bg-surface-container-low/50 transition-colors">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-9 h-9 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-label-md text-label-md shrink-0">
+                                    {{ strtoupper(substr($st->full_name, 0, 1)) }}
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="font-label-md text-label-md text-on-surface truncate">{{ $st->full_name }}</p>
+                                    <p class="font-body-sm text-body-sm text-outline truncate">{{ $st->classes->pluck('name')->implode(', ') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center">
+                            <p class="font-body-sm text-body-sm text-outline">Semua siswa sudah ditempatkan. 🎉</p>
+                        </div>
+                    @endforelse
+                    @if ($unplacedCount > $unplacedStudents->count())
+                        <div class="p-4 text-center border-t border-outline-variant/30">
+                            <span class="font-body-sm text-body-sm text-outline">+{{ $unplacedCount - $unplacedStudents->count() }} lainnya belum ditampilkan</span>
+                        </div>
+                    @endif
+                    <div class="p-4 border-t border-outline-variant/30 text-center">
+                        <a href="{{ route('admin.schedules.index') }}" class="text-primary font-label-sm text-label-sm hover:underline">Atur ke Sesi Jadwal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Content Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Left Column (2/3) -->
