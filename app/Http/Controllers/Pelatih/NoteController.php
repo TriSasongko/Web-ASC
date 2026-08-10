@@ -12,11 +12,13 @@ class NoteController extends Controller
     {
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:5000'],
+            'note_date' => ['required', 'date'],
         ]);
 
         CoachNote::create([
             'coach_id' => auth()->id(),
             'content' => $validated['content'],
+            'note_date' => $validated['note_date'],
         ]);
 
         return redirect()->route('pelatih.dashboard')->with('success', 'Catatan berhasil ditambahkan.');
@@ -28,6 +30,7 @@ class NoteController extends Controller
 
         $validated = $request->validate([
             'content' => ['required', 'string', 'max:5000'],
+            'note_date' => ['required', 'date'],
         ]);
 
         $note->update($validated);

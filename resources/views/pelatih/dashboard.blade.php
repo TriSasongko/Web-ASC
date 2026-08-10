@@ -45,8 +45,18 @@
 
             <form action="{{ route('pelatih.notes.store') }}" method="POST" class="mb-5">
                 @csrf
+                <div class="flex flex-col sm:flex-row gap-3 mb-3">
+                    <div class="w-full sm:w-44">
+                        <x-input-label for="note_date" value="Tanggal Catatan" />
+                        <input type="date" name="note_date" id="note_date" value="{{ old('note_date', now()->format('Y-m-d')) }}" required
+                            class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                        @error('note_date')
+                            <p class="font-body-sm text-body-sm text-error mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
                 <textarea name="content" rows="2" placeholder="Tulis catatan Anda di sini..." required
-                    class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all resize-none"></textarea>
+                    class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all resize-none">{{ old('content') }}</textarea>
                 @error('content')
                     <p class="font-body-sm text-body-sm text-error mt-1">{{ $message }}</p>
                 @enderror
@@ -64,6 +74,11 @@
                         <template x-if="editing === {{ $note->id }}">
                             <form action="{{ route('pelatih.notes.update', $note) }}" method="POST">
                                 @csrf @method('PATCH')
+                                <div class="w-full sm:w-44 mb-3">
+                                    <x-input-label for="note_date_{{ $note->id }}" value="Tanggal Catatan" />
+                                    <input type="date" name="note_date" id="note_date_{{ $note->id }}" value="{{ $note->note_date?->format('Y-m-d') }}" required
+                                        class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                </div>
                                 <textarea name="content" rows="2" required
                                     class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all resize-none">{{ $note->content }}</textarea>
                                 <div class="flex justify-end gap-2 mt-2">
@@ -76,17 +91,51 @@
                             <div>
                                 <p class="font-body-sm text-body-sm text-on-surface whitespace-pre-wrap">{{ $note->content }}</p>
                                 <div class="flex items-center justify-between gap-2 mt-3">
-                                    <p class="font-label-sm text-label-sm text-outline">{{ $note->created_at->format('d M Y, H:i') }}</p>
+                                    <p class="font-label-sm text-label-sm text-outline">{{ $note->note_date?->format('d M Y') ?? $note->created_at->format('d M Y') }}</p>
                                     <div class="flex items-center gap-1">
                                         <button type="button" @click="editing = {{ $note->id }}" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit Catatan">
                                             <span class="material-symbols-outlined text-[20px]">edit</span>
                                         </button>
-                                        <form action="{{ route('pelatih.notes.destroy', $note) }}" method="POST" onsubmit="return confirm('Hapus catatan ini?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus Catatan">
+                                        <div x-data="{ open: false }" class="relative inline-block">
+                                            <button @click="open = true" type="button" class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus Catatan">
                                                 <span class="material-symbols-outlined text-[20px]">delete</span>
                                             </button>
-                                        </form>
+
+                                            <div x-show="open" x-cloak x-transition.opacity
+                                                class="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+                                                @click="open = false"></div>
+
+                                            <div x-show="open" x-cloak x-transition
+                                                @keydown.escape.window="open = false"
+                                                class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                                <div class="w-full max-w-sm bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden">
+                                                    <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30 bg-surface/50">
+                                                        <div>
+                                                            <h3 class="font-headline text-headline-sm text-on-surface">Hapus Catatan</h3>
+                                                            <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $note->note_date?->format('d M Y') }}</p>
+                                                        </div>
+                                                        <button @click="open = false" type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+                                                            <span class="material-symbols-outlined text-[20px]">close</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="px-6 py-5">
+                                                        <p class="font-body-sm text-body-sm text-on-surface-variant">Yakin ingin menghapus catatan ini? Tindakan ini tidak dapat dibatalkan.</p>
+                                                        <div class="flex items-center justify-end gap-2 mt-4">
+                                                            <button @click="open = false" type="button" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">
+                                                                Batal
+                                                            </button>
+                                                            <form action="{{ route('pelatih.notes.destroy', $note) }}" method="POST">
+                                                                @csrf @method('DELETE')
+                                                                <button type="submit" class="inline-flex items-center justify-center gap-2 bg-error text-on-error px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
+                                                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                                    Hapus
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

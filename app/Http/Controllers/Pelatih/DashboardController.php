@@ -33,7 +33,8 @@ class DashboardController extends Controller
             ->get();
 
         $notes = CoachNote::where('coach_id', $userId)
-            ->latest()
+            ->latest('note_date')
+            ->latest('id')
             ->get();
 
         $days = collect(range(6, 0))->map(function ($offset) {

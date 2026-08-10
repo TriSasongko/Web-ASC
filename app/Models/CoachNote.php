@@ -12,8 +12,15 @@ class CoachNote extends Model
     use HasFactory;
 
     protected $fillable = [
-        'coach_id', 'content',
+        'coach_id', 'content', 'note_date',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'note_date' => 'date',
+        ];
+    }
 
     public function coach(): BelongsTo
     {

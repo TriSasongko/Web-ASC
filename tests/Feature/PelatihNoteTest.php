@@ -21,12 +21,13 @@ class PelatihNoteTest extends TestCase
         $coach = $this->makeCoach();
 
         $this->actingAs($coach)
-            ->post(route('pelatih.notes.store'), ['content' => 'Catatan rahasia saya'])
+            ->post(route('pelatih.notes.store'), ['content' => 'Catatan rahasia saya', 'note_date' => '2026-08-01 00:00:00'])
             ->assertRedirect(route('pelatih.dashboard'));
 
         $this->assertDatabaseHas('coach_notes', [
             'coach_id' => $coach->id,
             'content' => 'Catatan rahasia saya',
+            'note_date' => '2026-08-01 00:00:00',
         ]);
 
         $this->actingAs($coach)
@@ -66,10 +67,10 @@ class PelatihNoteTest extends TestCase
         ]);
 
         $this->actingAs($coach)
-            ->patch(route('pelatih.notes.update', $note), ['content' => 'Versi baru'])
+            ->patch(route('pelatih.notes.update', $note), ['content' => 'Versi baru', 'note_date' => '2026-08-02 00:00:00'])
             ->assertRedirect(route('pelatih.dashboard'));
 
-        $this->assertDatabaseHas('coach_notes', ['id' => $note->id, 'content' => 'Versi baru']);
+        $this->assertDatabaseHas('coach_notes', ['id' => $note->id, 'content' => 'Versi baru', 'note_date' => '2026-08-02 00:00:00']);
 
         $this->actingAs($coach)
             ->delete(route('pelatih.notes.destroy', $note))
