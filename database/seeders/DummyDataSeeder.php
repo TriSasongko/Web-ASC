@@ -375,6 +375,7 @@ class DummyDataSeeder extends Seeder
     {
         return match ($status) {
             'lanjut' => 'Lanjut ke paket berikutnya.',
+            'perlu_konfirmasi' => 'Menunggu konfirmasi perpanjangan paket dari orang tua.',
             'berhenti' => 'Mengakhiri paket dan tidak melanjutkan.',
             'pindah' => 'Pindah kelas/level atas rekomendasi pelatih.',
             default => null,
@@ -384,13 +385,13 @@ class DummyDataSeeder extends Seeder
     private function studentData(): array
     {
         return collect([
-            ['name' => 'Ahmad Fauzi', 'gender' => 'L', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 7, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Ahmad Fauzi', 'gender' => 'L', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 7, 'renewal' => 'perlu_konfirmasi', 'is_active' => true],
             ['name' => 'Salsabila Putri', 'gender' => 'P', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 8, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Raka Pratama', 'gender' => 'L', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 5, 'renewal' => 'berhenti', 'is_active' => false],
-            ['name' => 'Nadia Aulia', 'gender' => 'P', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 3, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Nadia Aulia', 'gender' => 'P', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 3, 'renewal' => 'perlu_konfirmasi', 'is_active' => true],
             ['name' => 'Dimas Anggara', 'gender' => 'L', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Keysha Ramadhani', 'gender' => 'P', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 1, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
-            ['name' => 'Fajar Ramadhan', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 7, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Fajar Ramadhan', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 7, 'renewal' => 'perlu_konfirmasi', 'is_active' => true],
             ['name' => 'Aisyah Nur', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 6, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Bintang Mahesa', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 8, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
             ['name' => 'Zahra Amalia', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
@@ -399,7 +400,7 @@ class DummyDataSeeder extends Seeder
             ['name' => 'Yoga Saputra', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 1, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Citra Lestari', 'gender' => 'P', 'program' => 'reguler', 'status' => 'menunggu_verifikasi', 'class' => null, 'completed' => 0, 'renewal' => null, 'is_active' => true],
             ['name' => 'Aldi Firmansyah', 'gender' => 'L', 'program' => 'reguler', 'status' => 'ditolak', 'class' => null, 'completed' => 0, 'renewal' => null, 'is_active' => true, 'rejection_reason' => 'Dokumen pendaftaran tidak lengkap'],
-            ['name' => 'Bella Septiana', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 3, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Bella Septiana', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 3, 'renewal' => 'perlu_konfirmasi', 'is_active' => true],
             ['name' => 'Gilang Pratama', 'gender' => 'L', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Talitha Azzahra', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 1, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
             ['name' => 'Hafiz Ramadhan', 'gender' => 'L', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 4, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
