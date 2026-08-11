@@ -99,32 +99,7 @@
                             $records = $attendanceLists[$class->pivot->id] ?? collect();
                         @endphp
 
-                        @if ($records->isEmpty())
-                            <p class="font-body-sm text-body-sm text-outline">Belum ada catatan absensi untuk periode ini.</p>
-                        @else
-                            <div class="overflow-x-auto rounded-lg border border-outline-variant/30">
-                                <table class="w-full text-left">
-                                    <thead class="bg-surface-container-low">
-                                        <tr>
-                                            <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">No</th>
-                                            <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Tanggal</th>
-                                            <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Lokasi</th>
-                                            <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Diabsen Oleh</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-outline-variant/30">
-                                        @foreach ($records as $i => $r)
-                                            <tr class="hover:bg-surface-container-low/50 transition-colors">
-                                                <td class="px-4 py-2.5 font-body-sm text-body-sm text-outline">{{ $i + 1 }}</td>
-                                                <td class="px-4 py-2.5 font-body-sm text-body-sm text-on-surface">{{ $r->attendance_date->format('d/m/Y') }}</td>
-                                                <td class="px-4 py-2.5 font-body-sm text-body-sm text-on-surface">{{ $r->location ?? '-' }}</td>
-                                                <td class="px-4 py-2.5 font-body-sm text-body-sm text-on-surface">{{ $r->recorder?->name ?? '-' }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endif
+                        @include('admin.students._attendance-grid', ['records' => $records, 'total' => $total])
                     </div>
                 </div>
             @else
@@ -166,7 +141,9 @@
                     $records = $attendanceLists[$class->pivot->id] ?? collect();
                 @endphp
 
-                @if ($records->isEmpty())
+                @if ($isPaket && $total)
+                    @include('admin.students._attendance-grid', ['records' => $records, 'total' => $total])
+                @elseif ($records->isEmpty())
                     <p class="font-body-sm text-body-sm text-outline">Belum ada catatan absensi untuk kelas ini.</p>
                 @else
                     <div class="overflow-x-auto rounded-lg border border-outline-variant/30">
