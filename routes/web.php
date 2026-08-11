@@ -67,6 +67,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('class-students/{enrollment}/renew', [ClassStudentController::class, 'renew'])->name('class-students.renew');
     Route::patch('class-students/{enrollment}/stop', [ClassStudentController::class, 'stop'])->name('class-students.stop');
     Route::patch('class-students/{enrollment}/activate', [ClassStudentController::class, 'activate'])->name('class-students.activate');
+    Route::post('class-students/{enrollment}/move', [ClassStudentController::class, 'move'])->name('class-students.move');
 
     // Route Absensi untuk Admin
     Route::get('attendances', [AdminAttendance::class, 'index'])->name('attendances.index');

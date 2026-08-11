@@ -8,7 +8,9 @@ use App\Models\ClassStudent;
 use App\Models\Registration;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use App\Services\StudentPromotionService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ClassStudentController extends Controller
 {
@@ -77,6 +79,24 @@ class ClassStudentController extends Controller
         }
 
         return back()->with('success', 'Siswa dikeluarkan dari kelas.');
+    }
+
+    // Naikkan kelas siswa secara langsung oleh admin, tanpa melalui rekomendasi pelatih.
+    public function move(Request $request, ClassStudent $enrollment)
+    {
+        $validated = $request->validate([
+            'target_class_id' => ['required', 'exists:classes,id'],
+        ]);
+
+        $target = SchoolClass::findOrFail($validated['target_class_id']);
+
+        try {
+            app(StudentPromotionService::class)->promote($enrollment->student_id, $enrollment, $target);
+        } catch (ValidationException $e) {
+            return back()->with('error', $e->validator->errors()->first());
+        }
+
+        return back()->with('success', $enrollment->student->full_name.' berhasil dinaikkan ke kelas '.$target->name.'.');
     }
 
     public function renew(Request $request, ClassStudent $enrollment)

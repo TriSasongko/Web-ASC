@@ -23,6 +23,24 @@
             </div>
         @endif
 
+        @if (session('error'))
+            <div class="flex items-center gap-2 bg-[#FFEBEE] text-[#C62828] border border-[#C62828]/20 px-4 py-3 rounded-lg font-body-sm text-body-sm">
+                <span class="material-symbols-outlined text-[18px]">error</span>
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="flex items-start gap-2 bg-[#FFEBEE] text-[#C62828] border border-[#C62828]/20 px-4 py-3 rounded-lg font-body-sm text-body-sm">
+                <span class="material-symbols-outlined text-[18px]">error</span>
+                <ul class="list-disc list-inside space-y-0.5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6">
             <div class="flex items-center gap-2 mb-5">
                 <span class="material-symbols-outlined text-primary">info</span>
@@ -144,42 +162,114 @@
 
                                         @if ($class->level !== null && $class->level < \App\Models\SchoolClass::LEVEL_ELITE)
                                         <div x-data="{ open: false }" class="relative inline-block">
-                                            <button @click="open = ! open" type="button"
-                                                class="inline-flex items-center justify-center gap-1.5 bg-[#FFF3E0] text-[#E65100] px-3 py-1.5 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
+                                            <button @click="open = true" type="button"
+                                                class="inline-flex items-center gap-1 bg-[#FFF3E0] text-[#E65100] px-2.5 py-1 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
                                                 <span class="material-symbols-outlined text-[16px]">trending_up</span>
                                                 Rekomendasi
                                             </button>
-                                            <div x-show="open" @click.outside="open = false" x-transition
-                                                class="absolute right-0 z-20 mt-2 w-80 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-[0px_16px_48px_rgba(23,32,51,0.16)] p-5">
-                                                <p class="font-label-md text-label-md text-on-surface mb-3">Rekomendasi Naik Kelas â€” {{ $student->full_name }}</p>
-                                                <form action="{{ route('admin.recommendations.store') }}" method="POST" class="space-y-3">
-                                                    @csrf
-                                                    <input type="hidden" name="student_id" value="{{ $student->id }}">
-                                                    <input type="hidden" name="current_class_id" value="{{ $class->id }}">
-                                                    <div>
-                                                        <x-input-label for="recommended_class_id" value="Kelas Target (opsional)" />
-                                                        <select id="recommended_class_id" name="recommended_class_id" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
-                                                            <option value="">-- Kelas target (opsional) --</option>
-                                                            @foreach ($candidateClasses as $c)
-                                                                <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->level_label ?? '-' }})</option>
-                                                            @endforeach
-                                                        </select>
+                                            <div x-show="open" x-cloak x-transition.opacity
+                                                class="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+                                                @click="open = false"></div>
+                                            <div x-show="open" x-cloak x-transition
+                                                @keydown.escape.window="open = false"
+                                                class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                                <div class="w-full max-w-md bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden">
+                                                    <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30 bg-surface/50">
+                                                        <div>
+                                                            <h3 class="font-headline text-headline-sm text-on-surface">Rekomendasi Naik Kelas</h3>
+                                                            <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $student->full_name }}</p>
+                                                        </div>
+                                                        <button @click="open = false" type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+                                                            <span class="material-symbols-outlined text-[20px]">close</span>
+                                                        </button>
                                                     </div>
-                                                    <div>
-                                                        <x-input-label for="recommended_level" value="Level Target (opsional)" />
-                                                        <select id="recommended_level" name="recommended_level" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
-                                                            <option value="">-- Level target (opsional) --</option>
-                                                            @foreach (\App\Models\SchoolClass::levelOptions() as $levelValue => $levelLabel)
-                                                                <option value="{{ $levelValue }}">{{ $levelLabel }}</option>
-                                                            @endforeach
-                                                        </select>
+                                                    <form action="{{ route('admin.recommendations.store') }}" method="POST" class="px-6 py-5 space-y-4">
+                                                        @csrf
+                                                        <input type="hidden" name="student_id" value="{{ $student->id }}">
+                                                        <input type="hidden" name="current_class_id" value="{{ $class->id }}">
+                                                        <div>
+                                                            <x-input-label for="recommended_class_id" value="Kelas Target (opsional)" />
+                                                            <select id="recommended_class_id" name="recommended_class_id" class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                                                <option value="">-- Kelas target (opsional) --</option>
+                                                                @foreach ($candidateClasses as $c)
+                                                                    <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->level_label ?? '-' }})</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <x-input-label for="recommended_level" value="Level Target (opsional)" />
+                                                            <select id="recommended_level" name="recommended_level" class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                                                <option value="">-- Level target (opsional) --</option>
+                                                                @foreach (\App\Models\SchoolClass::levelOptions() as $levelValue => $levelLabel)
+                                                                    <option value="{{ $levelValue }}">{{ $levelLabel }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <x-input-label for="recommendation_note" value="Catatan (opsional)" />
+                                                            <textarea id="recommendation_note" name="note" rows="3" placeholder="Catatan (opsional)" class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"></textarea>
+                                                        </div>
+                                                        <div class="flex items-center justify-end gap-2 pt-2">
+                                                            <button @click="open = false" type="button" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">
+                                                                Batal
+                                                            </button>
+                                                            <button type="submit" class="inline-flex items-center justify-center gap-2 bg-[#FFF3E0] text-[#E65100] px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
+                                                                <span class="material-symbols-outlined text-[18px]">trending_up</span>
+                                                                Simpan Rekomendasi
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+
+                                        @if ($class->level !== null && $class->level < \App\Models\SchoolClass::LEVEL_ELITE && $candidateClasses->isNotEmpty())
+                                        <div x-data="{ open: false }" class="relative inline-block">
+                                            <button @click="open = true" type="button"
+                                                class="inline-flex items-center gap-1 bg-[#E8F5E9] text-[#2E7D32] px-2.5 py-1 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
+                                                <span class="material-symbols-outlined text-[16px]">north_east</span>
+                                                Naik Kelas
+                                            </button>
+                                            <div x-show="open" x-cloak x-transition.opacity
+                                                class="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+                                                @click="open = false"></div>
+                                            <div x-show="open" x-cloak x-transition
+                                                @keydown.escape.window="open = false"
+                                                class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                                <div class="w-full max-w-md bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden">
+                                                    <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30 bg-surface/50">
+                                                        <div>
+                                                            <h3 class="font-headline text-headline-sm text-on-surface">Naik Kelas Langsung</h3>
+                                                            <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $student->full_name }}</p>
+                                                        </div>
+                                                        <button @click="open = false" type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+                                                            <span class="material-symbols-outlined text-[20px]">close</span>
+                                                        </button>
                                                     </div>
-                                                    <div>
-                                                        <x-input-label for="recommendation_note" value="Catatan (opsional)" />
-                                                        <textarea id="recommendation_note" name="note" rows="2" placeholder="Catatan (opsional)" class="w-full border-outline-variant rounded-lg px-3 py-2 bg-surface-container-lowest shadow-sm focus:border-primary focus:ring-primary/30 font-body-sm text-body-sm"></textarea>
-                                                    </div>
-                                                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-[#FFF3E0] text-[#E65100] px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">Simpan Rekomendasi</button>
-                                                </form>
+                                                    <form action="{{ route('admin.class-students.move', $e->id) }}" method="POST" class="px-6 py-5 space-y-4"
+                                                          onsubmit="return confirm('Naikkan {{ $student->full_name }} ke kelas terpilih secara langsung?')">
+                                                        @csrf
+                                                        <div>
+                                                            <x-input-label for="target_class_id" value="Kelas Target" />
+                                                            <select id="target_class_id" name="target_class_id" required class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                                                <option value="">-- Pilih kelas target --</option>
+                                                                @foreach ($candidateClasses as $c)
+                                                                    <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->level_label ?? '-' }})</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="flex items-center justify-end gap-2 pt-2">
+                                                            <button @click="open = false" type="button" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">
+                                                                Batal
+                                                            </button>
+                                                            <button type="submit" class="inline-flex items-center justify-center gap-2 bg-[#E8F5E9] text-[#2E7D32] px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
+                                                                <span class="material-symbols-outlined text-[18px]">north_east</span>
+                                                                Naikkan Kelas
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                         @endif

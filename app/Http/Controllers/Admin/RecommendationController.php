@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ClassRecommendation;
 use App\Models\ClassStudent;
-use App\Models\Registration;
 use App\Models\SchoolClass;
+use App\Services\StudentPromotionService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -73,38 +73,17 @@ class RecommendationController extends Controller
             throw ValidationException::withMessages(['recommended_class_id' => 'Kelas target tidak ditemukan.']);
         }
 
-        if ($target->capacity && $target->students()->count() >= $target->capacity) {
-            return back()->with('error', 'Kapasitas kelas target sudah penuh.');
-        }
-
         $current = $recommendation->current_class_id
             ? ClassStudent::where('class_id', $recommendation->current_class_id)
                 ->where('student_id', $recommendation->student_id)
                 ->first()
             : null;
 
-        if ($current) {
-            $current->update(['is_active' => false, 'renewal_status' => 'pindah']);
+        try {
+            app(StudentPromotionService::class)->promote($recommendation->student_id, $current, $target);
+        } catch (ValidationException $e) {
+            return back()->with('error', $e->validator->errors()->first());
         }
-
-        // Naik level = pindah program, siswa diarahkan ke program kelas target (registrasi baru).
-        $newRegistration = Registration::create([
-            'student_id' => $recommendation->student_id,
-            'program_id' => $target->program_id,
-            'status' => 'diterima',
-            'verified_by' => auth()->id(),
-            'verified_at' => now(),
-        ]);
-
-        ClassStudent::create([
-            'class_id' => $target->id,
-            'student_id' => $recommendation->student_id,
-            'level' => $target->level,
-            'registration_id' => $newRegistration->id,
-            'sessions_completed' => 0,
-            'is_active' => true,
-            'renewal_status' => 'belum_konfirmasi',
-        ]);
 
         $recommendation->update([
             'status' => 'diterima',
