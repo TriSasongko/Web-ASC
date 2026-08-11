@@ -97,9 +97,17 @@
                     <div x-show="open" x-cloak class="mt-5">
                         @php
                             $records = $attendanceLists[$class->pivot->id] ?? collect();
+                            $slots = $total
+                                ? collect(range(1, $total))->map(fn ($i) => [
+                                    'label' => 'Sesi '.$i,
+                                    'dateLabel' => $records->firstWhere('session_number', $i)?->attendance_date->format('d/m/Y') ?? '-',
+                                    'recorder' => $records->firstWhere('session_number', $i)?->recorder?->name,
+                                    'attended' => (bool) $records->firstWhere('session_number', $i),
+                                ])
+                                : collect();
                         @endphp
 
-                        @include('admin.students._attendance-grid', ['records' => $records, 'total' => $total])
+                        @include('admin.students._attendance-grid', ['slots' => $slots])
                     </div>
                 </div>
             @else
@@ -142,7 +150,38 @@
                 @endphp
 
                 @if ($isPaket && $total)
-                    @include('admin.students._attendance-grid', ['records' => $records, 'total' => $total])
+                    @php
+                        $slots = collect(range(1, $total))->map(fn ($i) => [
+                            'label' => 'Sesi '.$i,
+                            'dateLabel' => $records->firstWhere('session_number', $i)?->attendance_date->format('d/m/Y') ?? '-',
+                            'recorder' => $records->firstWhere('session_number', $i)?->recorder?->name,
+                            'attended' => (bool) $records->firstWhere('session_number', $i),
+                        ]);
+                    @endphp
+                    @include('admin.students._attendance-grid', ['slots' => $slots])
+                @elseif (! $isPaket)
+                    @php
+                        $slots = collect();
+                        $date = now()->startOfMonth();
+                        $monthEnd = now()->endOfMonth();
+
+                        while ($date->lte($monthEnd)) {
+                            $slots->push($date->copy());
+                            $date->addDay();
+                        }
+
+                        $slots = $slots->map(function ($date) use ($records) {
+                            $rec = $records->first(fn ($r) => $r->attendance_date->format('Y-m-d') === $date->format('Y-m-d'));
+
+                            return [
+                                'dateLabel' => $date->format('d/m/Y'),
+                                'dayNumber' => (int) $date->format('d'),
+                                'recorder' => $rec?->recorder?->name,
+                                'attended' => (bool) $rec,
+                            ];
+                        });
+                    @endphp
+                    @include('admin.students._attendance-grid', ['slots' => $slots, 'calendar' => true])
                 @elseif ($records->isEmpty())
                     <p class="font-body-sm text-body-sm text-outline">Belum ada catatan absensi untuk kelas ini.</p>
                 @else
