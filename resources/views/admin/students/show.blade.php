@@ -41,12 +41,24 @@
             </dl>
         </div>
 
+        @php
+            $activeClassIds = $student->classes->filter(fn ($c) => (bool) $c->pivot->is_active)->pluck('id')->flip();
+        @endphp
+
         @forelse ($student->classes as $class)
             @php
                 $completed = $class->pivot->sessions_completed;
                 $total = $class->program->total_sessions;
                 $isPaket = $class->program->billing_type === 'per_paket';
                 $left = $total === null ? null : max(0, $total - $completed);
+                $isHistory = ! (bool) $class->pivot->is_active && $activeClassIds->has($class->id);
+                $historyStatus = match ($class->pivot->renewal_status) {
+                    'selesai' => 'Selesai',
+                    'berhenti' => 'Berhenti',
+                    'pindah' => 'Pindah',
+                    'lanjut' => 'Lanjut',
+                    default => 'Riwayat',
+                };
                 $status = null;
                 if ($isPaket && $total) {
                     if ($completed >= $total) {
@@ -57,7 +69,66 @@
                 }
             @endphp
 
-            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6">
+            @if ($isHistory)
+                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6" x-data="{ open: false }">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <span class="material-symbols-outlined text-[#00687A]">history</span>
+                            <div class="min-w-0">
+                                <h3 class="font-headline text-headline-sm text-on-surface truncate">{{ $class->name }} — {{ $class->program->name }}</h3>
+                                <p class="font-body-sm text-body-sm text-outline mt-0.5">
+                                    Riwayat paket · {{ $completed }}{{ $total ? '/'.$total : '' }} pertemuan
+                                    @if ($class->pivot->started_at)
+                                        · {{ \Illuminate\Support\Carbon::parse($class->pivot->started_at)->format('d/m/Y') }}
+                                        s.d. {{ $class->pivot->ended_at ? \Illuminate\Support\Carbon::parse($class->pivot->ended_at)->format('d/m/Y') : '-' }}
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">{{ $historyStatus }}</span>
+                            <button @click="open = !open" type="button" class="inline-flex items-center justify-center gap-1 border border-outline-variant/50 text-on-surface-variant px-3 py-1.5 rounded-lg font-label-sm text-label-sm hover:bg-surface-container transition-all">
+                                <span x-text="open ? 'Tutup' : 'Lihat'">Lihat</span>
+                                <span class="material-symbols-outlined text-[16px] transition-transform" :class="open ? 'rotate-180' : ''">expand_more</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div x-show="open" x-cloak class="mt-5">
+                        @php
+                            $records = $attendanceLists[$class->pivot->id] ?? collect();
+                        @endphp
+
+                        @if ($records->isEmpty())
+                            <p class="font-body-sm text-body-sm text-outline">Belum ada catatan absensi untuk periode ini.</p>
+                        @else
+                            <div class="overflow-x-auto rounded-lg border border-outline-variant/30">
+                                <table class="w-full text-left">
+                                    <thead class="bg-surface-container-low">
+                                        <tr>
+                                            <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">No</th>
+                                            <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Tanggal</th>
+                                            <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Lokasi</th>
+                                            <th class="px-4 py-2.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Diabsen Oleh</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-outline-variant/30">
+                                        @foreach ($records as $i => $r)
+                                            <tr class="hover:bg-surface-container-low/50 transition-colors">
+                                                <td class="px-4 py-2.5 font-body-sm text-body-sm text-outline">{{ $i + 1 }}</td>
+                                                <td class="px-4 py-2.5 font-body-sm text-body-sm text-on-surface">{{ $r->attendance_date->format('d/m/Y') }}</td>
+                                                <td class="px-4 py-2.5 font-body-sm text-body-sm text-on-surface">{{ $r->location ?? '-' }}</td>
+                                                <td class="px-4 py-2.5 font-body-sm text-body-sm text-on-surface">{{ $r->recorder?->name ?? '-' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @else
+                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6">
                 <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-5">
                     <div>
                         <h3 class="font-headline text-headline-sm text-on-surface">
@@ -81,7 +152,9 @@
 
                 @if (! $isPaket)
                     @php
-                        $start = $class->pivot->started_at ?? $class->pivot->created_at;
+                        $start = $class->pivot->started_at
+                            ? \Illuminate\Support\Carbon::parse($class->pivot->started_at)
+                            : ($class->pivot->created_at ? \Illuminate\Support\Carbon::parse($class->pivot->created_at) : null);
                     @endphp
                     <div class="mb-4 flex flex-wrap gap-x-6 gap-y-1 font-body-sm text-body-sm text-outline">
                         <span>Mulai periode: {{ $start?->format('d/m/Y') ?? '-' }}</span>
@@ -211,6 +284,7 @@
                     </div>
                 @endif
             </div>
+            @endif
         @empty
             <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-10 text-center">
                 <span class="material-symbols-outlined text-outline text-[32px]">school</span>

@@ -52,6 +52,7 @@
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">Bulanan</span>
                                         @php
                                             $start = $enrollment->pivot->started_at ?? $enrollment->pivot->created_at;
+                                            $start = $start ? \Illuminate\Support\Carbon::parse($start) : null;
                                         @endphp
                                         <span class="font-label-sm text-label-sm text-outline">Periode: {{ $start?->format('d/m/Y') ?? '-' }} s.d. {{ $start?->copy()->addMonth()?->format('d/m/Y') ?? '-' }}</span>
                                     @elseif ($left === 0)

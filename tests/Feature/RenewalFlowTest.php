@@ -453,7 +453,8 @@ class RenewalFlowTest extends TestCase
 
         $this->assertSame(1, substr_count($content, '01/08/2026'));
         $this->assertSame(1, substr_count($content, '02/08/2026'));
-        $this->assertStringContainsString('Selesai — sudah lanjut ke periode baru', $content);
+        $this->assertStringContainsString('Riwayat paket', $content);
+        $this->assertStringContainsString('Selesai', $content);
         $this->assertStringNotContainsString('Paket habis — Konfirmasi', $content);
     }
 
