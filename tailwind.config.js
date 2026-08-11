@@ -18,6 +18,12 @@ export default {
             },
 
             colors: {
+                orange: {
+                    DEFAULT: '#fd8b00',
+                    light: '#ffb77d',
+                    lighter: '#ffdcc3',
+                    dark: '#603100',
+                },
                 'secondary-fixed': '#acedff',
                 'tertiary-fixed': '#d7e2ff',
                 'surface-container': '#e9edff',

@@ -15,6 +15,8 @@ class RoleUserSeeder extends Seeder
             'email' => 'admin@asc.test',
             'password' => Hash::make('password'),
             'role' => 'admin',
+            'phone' => '6281234567890',
+            'address' => 'Jl. Prof. Dr. Ir. Sumantri Brojonegoro No.1, Gedong Meneng, Kec. Rajabasa, Kota Bandar Lampung, Lampung 35145',
         ]);
 
         User::create([

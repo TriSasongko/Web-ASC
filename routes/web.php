@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\RecommendationController as AdminRecommendation;
 use App\Http\Controllers\Admin\RegistrationController as AdminRegistration;
 use App\Http\Controllers\Admin\RenewalController as AdminRenewal;
 use App\Http\Controllers\Admin\SchoolClassController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\ERaportController;
 use App\Http\Controllers\OrangTua\DashboardController as OrangTuaDashboard;
@@ -29,6 +30,26 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/tentang', function () {
+    return view('tentang');
+});
+
+Route::get('/program', function () {
+    return view('program');
+});
+
+Route::get('/galeri', function () {
+    return view('galeri');
+});
+
+Route::get('/faq', function () {
+    return view('faq');
+});
+
+Route::get('/kontak', function () {
+    return view('kontak');
 });
 
 // Route dashboard & fitur khusus Admin
@@ -102,6 +123,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Route E-Raport untuk Admin
     Route::get('eraports', [AdminERaport::class, 'index'])->name('eraports.index');
+
+    // Route Pengaturan untuk Admin
+    Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
+    Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
 });
 
 Route::middleware(['auth', 'role:pelatih'])->prefix('pelatih')->name('pelatih.')->group(function () {

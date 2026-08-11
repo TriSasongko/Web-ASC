@@ -24,6 +24,9 @@
             ['label' => 'Rekomendasi', 'icon' => 'star', 'route' => 'admin.recommendations.index', 'active' => request()->routeIs('admin.recommendations.*')],
             ['label' => 'E-Raport', 'icon' => 'description', 'route' => 'admin.eraports.index', 'active' => request()->routeIs('admin.eraports.*') || request()->routeIs('eraport.*')],
         ],
+        'PENGATURAN' => [
+            ['label' => 'Pengaturan', 'icon' => 'settings', 'route' => 'admin.settings.edit', 'active' => request()->routeIs('admin.settings.*')],
+        ],
     ];
 @endphp
 
