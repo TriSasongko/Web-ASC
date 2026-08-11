@@ -7,9 +7,26 @@
             </div>
         </div>
 
+        <div class="flex items-center gap-1 bg-surface-container-low rounded-xl p-1 w-fit max-w-full overflow-x-auto">
+            @foreach ([null => 'Semua'] + \App\Models\SchoolClass::levelOptions() as $lv => $label)
+                <a href="{{ route('admin.students.index', array_filter([
+                    'status' => $status,
+                    'level' => $lv,
+                    'search' => request('search'),
+                    'per_page' => request('per_page'),
+                ])) }}"
+                   class="px-4 py-2 rounded-lg font-label-md text-label-md whitespace-nowrap transition-all {{ ($level ?? null) === $lv ? 'bg-primary text-on-primary shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-lowest' }}">
+                    {{ $label }}
+                </a>
+            @endforeach
+        </div>
+
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
             <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
                 <form method="GET" class="flex flex-wrap items-center gap-2">
+                    @if ($level !== null)
+                        <input type="hidden" name="level" value="{{ $level }}">
+                    @endif
                     <select name="status" onchange="this.form.submit()"
                             class="bg-surface-container-low border border-outline-variant/50 rounded-full px-4 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
                         <option value="aktif" {{ $status === 'aktif' ? 'selected' : '' }}>Aktif</option>
@@ -126,6 +143,9 @@
                     @endif
                     @if ($status !== 'aktif')
                         <input type="hidden" name="status" value="{{ $status }}">
+                    @endif
+                    @if ($level !== null)
+                        <input type="hidden" name="level" value="{{ $level }}">
                     @endif
                 </form>
                 <div class="w-full">{{ $students->links('vendor.pagination.prevnext') }}</div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -20,14 +21,24 @@ class StudentController extends Controller
             ? $request->input('status')
             : 'aktif';
 
+        $level = in_array($request->integer('level'), array_keys(SchoolClass::levelOptions()), true)
+            ? $request->integer('level')
+            : null;
+
         $students = Student::with(['parent', 'classes.program'])
             ->whereHas('registrations', fn ($q) => $q->where('status', 'diterima'))
-            ->when($status !== 'semua', function ($q) use ($status) {
-                $q->whereHas('enrollments', function ($q) use ($status) {
-                    if ($status === 'aktif') {
-                        $q->where('is_active', true);
-                    } else {
-                        $q->where('renewal_status', $status);
+            ->when($status !== 'semua' || $level !== null, function ($q) use ($status, $level) {
+                $q->whereHas('enrollments', function ($q) use ($status, $level) {
+                    if ($status !== 'semua') {
+                        if ($status === 'aktif') {
+                            $q->where('is_active', true);
+                        } else {
+                            $q->where('renewal_status', $status);
+                        }
+                    }
+
+                    if ($level !== null) {
+                        $q->whereHas('schoolClass', fn ($cq) => $cq->where('level', $level));
                     }
                 });
             })
@@ -36,7 +47,7 @@ class StudentController extends Controller
             ->paginate($perPage)
             ->withQueryString();
 
-        return view('admin.students.index', compact('students', 'status'));
+        return view('admin.students.index', compact('students', 'status', 'level'));
     }
 
     public function show(Student $student)
