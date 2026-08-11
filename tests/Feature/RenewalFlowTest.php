@@ -357,6 +357,33 @@ class RenewalFlowTest extends TestCase
         $this->assertSame($old->id, $attendance->class_student_id);
     }
 
+    public function test_attendance_on_finished_lanjut_enrollment_starts_new_package_period(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 8, 'lanjut');
+
+        $this->actingAs($admin)
+            ->post(route('admin.attendances.store'), [
+                'attendance_date' => '2026-08-12',
+                'attendance' => [$student->id],
+            ])
+            ->assertRedirect();
+
+        $old = $enrollment->fresh();
+        $this->assertFalse($old->is_active);
+        $this->assertSame('selesai', $old->renewal_status);
+
+        $new = ClassStudent::where('student_id', $student->id)->where('id', '!=', $old->id)->first();
+        $this->assertNotNull($new);
+        $this->assertTrue($new->is_active);
+        $this->assertSame(1, $new->sessions_completed);
+
+        $attendance = Attendance::where('student_id', $student->id)->whereDate('attendance_date', '2026-08-12')->first();
+        $this->assertSame($new->id, $attendance->class_student_id);
+    }
+
     public function test_attendance_on_lanjut_enrollment_below_total_does_not_switch(): void
     {
         $admin = $this->makeAdmin();

@@ -13,6 +13,7 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class DummyDataSeeder extends Seeder
@@ -219,8 +220,20 @@ class DummyDataSeeder extends Seeder
 
     private function createEnrollment(Student $student, array $classes, array $data, Collection $coaches): void
     {
+        $class = $classes[$data['class']];
+        $total = $class->program->total_sessions;
+
+        // Paket per_paket sudah habis dan ortu konfirmasi lanjut:
+        // buat rantai 2 periode (lama selesai + baru aktif) agar rekap absensi
+        // menunjukkan paket terpisah, seperti hasil perpanjangan asli.
+        if ($data['renewal'] === 'lanjut' && $total !== null && $data['completed'] >= $total) {
+            $this->createRenewedPeriods($student, $class, $data, $coaches);
+
+            return;
+        }
+
         $enrollment = ClassStudent::create([
-            'class_id' => $classes[$data['class']]->id,
+            'class_id' => $class->id,
             'student_id' => $student->id,
             'level' => $data['level'] ?? null,
             'registration_id' => $student->registrations()->first()?->id,
@@ -232,26 +245,65 @@ class DummyDataSeeder extends Seeder
             'started_at' => now()->subDays(mt_rand(30, 120)),
         ]);
 
-        $this->createAttendances($student, $classes[$data['class']], $data['completed'], $coaches);
-        $this->createDevelopment($student, $classes[$data['class']], $coaches, $data['completed']);
+        $this->createAttendances($student, $class, $data['completed'], $coaches, $enrollment);
+        $this->createDevelopment($student, $class, $coaches, $data['completed']);
     }
 
-    private function createAttendances(Student $student, SchoolClass $class, int $count, Collection $coaches): void
+    private function createRenewedPeriods(Student $student, SchoolClass $class, array $data, Collection $coaches): void
+    {
+        $total = $class->program->total_sessions;
+        $newCompleted = min($data['new_completed'] ?? 0, $total);
+        $newStartedAt = now()->subDays(20);
+        $registrationId = $student->registrations()->first()?->id;
+
+        $old = ClassStudent::create([
+            'class_id' => $class->id,
+            'student_id' => $student->id,
+            'level' => $data['level'] ?? null,
+            'registration_id' => $registrationId,
+            'sessions_completed' => $total,
+            'is_active' => false,
+            'renewal_status' => 'selesai',
+            'started_at' => now()->subDays(120),
+            'ended_at' => $newStartedAt,
+        ]);
+
+        $new = ClassStudent::create([
+            'class_id' => $class->id,
+            'student_id' => $student->id,
+            'level' => $data['level'] ?? null,
+            'registration_id' => $registrationId,
+            'sessions_completed' => $newCompleted,
+            'is_active' => true,
+            'renewal_status' => 'aktif',
+            'renewed_from_id' => $old->id,
+            'started_at' => $newStartedAt,
+        ]);
+
+        $this->createAttendances($student, $class, $total, $coaches, $old);
+        $this->createAttendances($student, $class, $newCompleted, $coaches, $new);
+        $this->createDevelopment($student, $class, $coaches, max($data['completed'], $newCompleted));
+    }
+
+    private function createAttendances(Student $student, SchoolClass $class, int $count, Collection $coaches, ?ClassStudent $period = null): void
     {
         if ($count <= 0) {
             return;
         }
 
-        $start = now()->subDays(7 * $count);
+        $start = $period?->started_at
+            ? Carbon::parse($period->started_at)
+            : now()->subDays(7 * $count);
         $recorder = $coaches->random();
         $location = $this->locations[array_rand($this->locations)];
 
         for ($i = 1; $i <= $count; $i++) {
             Attendance::create([
                 'class_id' => $class->id,
+                'class_student_id' => $period?->id,
                 'student_id' => $student->id,
                 'recorded_by' => $recorder->id,
-                'attendance_date' => $start->copy()->addDays(7 * $i),
+                'attendance_date' => $start->copy()->addDays(7 * ($i - 1)),
                 'session_number' => $i,
                 'location' => $location,
             ]);
@@ -386,22 +438,22 @@ class DummyDataSeeder extends Seeder
     {
         return collect([
             ['name' => 'Ahmad Fauzi', 'gender' => 'L', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 7, 'renewal' => 'perlu_konfirmasi', 'is_active' => true],
-            ['name' => 'Salsabila Putri', 'gender' => 'P', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 8, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Salsabila Putri', 'gender' => 'P', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 8, 'new_completed' => 2, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Raka Pratama', 'gender' => 'L', 'program' => 'private', 'status' => 'diterima', 'class' => 'Private', 'level' => 1, 'completed' => 5, 'renewal' => 'berhenti', 'is_active' => false],
             ['name' => 'Nadia Aulia', 'gender' => 'P', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 3, 'renewal' => 'perlu_konfirmasi', 'is_active' => true],
-            ['name' => 'Dimas Anggara', 'gender' => 'L', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Dimas Anggara', 'gender' => 'L', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 4, 'new_completed' => 1, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Keysha Ramadhani', 'gender' => 'P', 'program' => 'mini-private', 'status' => 'diterima', 'class' => 'Mini Private', 'level' => 1, 'completed' => 1, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
             ['name' => 'Fajar Ramadhan', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 7, 'renewal' => 'perlu_konfirmasi', 'is_active' => true],
             ['name' => 'Aisyah Nur', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 6, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Bintang Mahesa', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 8, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
             ['name' => 'Zahra Amalia', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Rizky Ardiansyah', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 2, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
-            ['name' => 'Naila Safitri', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 8, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Naila Safitri', 'gender' => 'P', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 8, 'new_completed' => 3, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Yoga Saputra', 'gender' => 'L', 'program' => 'reguler', 'status' => 'diterima', 'class' => 'Reguler', 'level' => 1, 'completed' => 1, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Citra Lestari', 'gender' => 'P', 'program' => 'reguler', 'status' => 'menunggu_verifikasi', 'class' => null, 'completed' => 0, 'renewal' => null, 'is_active' => true],
             ['name' => 'Aldi Firmansyah', 'gender' => 'L', 'program' => 'reguler', 'status' => 'ditolak', 'class' => null, 'completed' => 0, 'renewal' => null, 'is_active' => true, 'rejection_reason' => 'Dokumen pendaftaran tidak lengkap'],
             ['name' => 'Bella Septiana', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 3, 'renewal' => 'perlu_konfirmasi', 'is_active' => true],
-            ['name' => 'Gilang Pratama', 'gender' => 'L', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 4, 'renewal' => 'lanjut', 'is_active' => true],
+            ['name' => 'Gilang Pratama', 'gender' => 'L', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 4, 'new_completed' => 2, 'renewal' => 'lanjut', 'is_active' => true],
             ['name' => 'Talitha Azzahra', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 1, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
             ['name' => 'Hafiz Ramadhan', 'gender' => 'L', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 4, 'renewal' => 'belum_konfirmasi', 'is_active' => true],
             ['name' => 'Kirana Ayu', 'gender' => 'P', 'program' => 'mini-reguler', 'status' => 'diterima', 'class' => 'Mini Reguler', 'level' => 1, 'completed' => 2, 'renewal' => 'pindah', 'is_active' => false],

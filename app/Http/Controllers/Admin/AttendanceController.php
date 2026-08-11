@@ -63,6 +63,17 @@ class AttendanceController extends Controller
                     ->where('is_active', true)
                     ->first();
 
+                // Jika periode aktif sudah selesai & status lanjut, buka periode paket baru
+                // dulu agar absensi ini tercatat pada paket yang baru.
+                if ($activeEnrollment?->schoolClass?->program?->billing_type === 'per_paket') {
+                    $activeEnrollment->completeRenewalIfReady();
+
+                    $activeEnrollment = ClassStudent::with('schoolClass.program')
+                        ->where('student_id', $studentId)
+                        ->where('is_active', true)
+                        ->first();
+                }
+
                 Attendance::create([
                     'class_id' => $activeEnrollment?->class_id,
                     'class_student_id' => $activeEnrollment?->id,
