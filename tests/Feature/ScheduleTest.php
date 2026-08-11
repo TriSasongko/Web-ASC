@@ -57,7 +57,6 @@ class ScheduleTest extends TestCase
             'program_id' => $program->id,
             'name' => 'Reguler A',
             'level' => 1,
-            'capacity' => 10,
             'is_active' => true,
         ]);
 

@@ -55,10 +55,6 @@
                     <dt class="font-label-sm text-label-sm text-outline">Level</dt>
                     <dd class="font-body-md text-body-md text-on-surface mt-0.5">{{ $class->level_label ?? '-' }}</dd>
                 </div>
-                <div>
-                    <dt class="font-label-sm text-label-sm text-outline">Kapasitas</dt>
-                    <dd class="font-body-md text-body-md text-on-surface mt-0.5">{{ $enrollments->count() }}/{{ $class->capacity ?? 'âˆž' }}</dd>
-                </div>
             </dl>
         </div>
 
@@ -225,6 +221,7 @@
                                         @endif
 
                                         @if ($class->level !== null && $class->level < \App\Models\SchoolClass::LEVEL_ELITE && $candidateClasses->isNotEmpty())
+                                            @if ($left === null || $left === 0)
                                         <div x-data="{ open: false }" class="relative inline-block">
                                             <button @click="open = true" type="button"
                                                 class="inline-flex items-center gap-1 bg-[#E8F5E9] text-[#2E7D32] px-2.5 py-1 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
@@ -240,7 +237,7 @@
                                                 <div class="w-full max-w-md bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden">
                                                     <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30 bg-surface/50">
                                                         <div>
-                                                            <h3 class="font-headline text-headline-sm text-on-surface">Naik Kelas Langsung</h3>
+                                                            <h3 class="font-headline text-headline-sm text-on-surface">Ajukan Naik Kelas</h3>
                                                             <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $student->full_name }}</p>
                                                         </div>
                                                         <button @click="open = false" type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
@@ -248,7 +245,7 @@
                                                         </button>
                                                     </div>
                                                     <form action="{{ route('admin.class-students.move', $e->id) }}" method="POST" class="px-6 py-5 space-y-4"
-                                                          onsubmit="return confirm('Naikkan {{ $student->full_name }} ke kelas terpilih secara langsung?')">
+                                                          onsubmit="return confirm('Ajukan {{ $student->full_name }} ke kelas terpilih? Wajib konfirmasi ke orang tua sebelum siswa dipindahkan.')">
                                                         @csrf
                                                         <div>
                                                             <x-input-label for="target_class_id" value="Kelas Target" />
@@ -259,19 +256,23 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
+                                                        <p class="font-body-sm text-body-sm text-outline rounded-lg bg-surface-container-low/50 border border-outline-variant/30 px-3 py-2">Setelah diajukan, wajib konfirmasi ke orang tua via WhatsApp lalu selesaikan di menu Rekomendasi.</p>
                                                         <div class="flex items-center justify-end gap-2 pt-2">
                                                             <button @click="open = false" type="button" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">
                                                                 Batal
                                                             </button>
                                                             <button type="submit" class="inline-flex items-center justify-center gap-2 bg-[#E8F5E9] text-[#2E7D32] px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
                                                                 <span class="material-symbols-outlined text-[18px]">north_east</span>
-                                                                Naikkan Kelas
+                                                                Ajukan Naik Kelas
                                                             </button>
                                                         </div>
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
+                                            @else
+                                                <span class="font-label-sm text-label-sm text-outline">Paket belum habis</span>
+                                            @endif
                                         @endif
 
                                         <a href="{{ route('admin.classes.developments.history', [$class, $student]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Perkembangan</a>

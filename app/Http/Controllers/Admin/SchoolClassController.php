@@ -36,7 +36,6 @@ class SchoolClassController extends Controller
             'program_id' => ['required', 'exists:programs,id'],
             'name' => ['required', 'string', 'max:255'],
             'level' => ['required', 'integer', 'min:1', 'max:3'],
-            'capacity' => ['nullable', 'integer', 'min:1'],
         ]);
 
         $this->validateLevelProgram($validated['program_id'], $validated['level']);
@@ -60,7 +59,6 @@ class SchoolClassController extends Controller
             'program_id' => ['required', 'exists:programs,id'],
             'name' => ['required', 'string', 'max:255'],
             'level' => ['required', 'integer', 'min:1', 'max:3'],
-            'capacity' => ['nullable', 'integer', 'min:1'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 

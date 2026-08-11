@@ -138,12 +138,12 @@ class DummyDataSeeder extends Seeder
     {
         $classes = [];
         $configs = [
-            ['name' => 'Private', 'program' => 'private', 'level' => 1, 'capacity' => 5],
-            ['name' => 'Mini Private', 'program' => 'mini-private', 'level' => 1, 'capacity' => 6],
-            ['name' => 'Reguler', 'program' => 'reguler', 'level' => 1, 'capacity' => 15],
-            ['name' => 'Mini Reguler', 'program' => 'mini-reguler', 'level' => 1, 'capacity' => 15],
-            ['name' => 'Kompetitif A', 'program' => 'kompetitif', 'level' => 3, 'capacity' => 12],
-            ['name' => 'Kompetitif B', 'program' => 'kompetitif', 'level' => 2, 'capacity' => 12],
+            ['name' => 'Private', 'program' => 'private', 'level' => 1],
+            ['name' => 'Mini Private', 'program' => 'mini-private', 'level' => 1],
+            ['name' => 'Reguler', 'program' => 'reguler', 'level' => 1],
+            ['name' => 'Mini Reguler', 'program' => 'mini-reguler', 'level' => 1],
+            ['name' => 'Kompetitif A', 'program' => 'kompetitif', 'level' => 3],
+            ['name' => 'Kompetitif B', 'program' => 'kompetitif', 'level' => 2],
         ];
 
         foreach ($configs as $config) {
@@ -151,7 +151,6 @@ class DummyDataSeeder extends Seeder
                 'program_id' => Program::where('slug', $config['program'])->first()->id,
                 'name' => $config['name'],
                 'level' => $config['level'],
-                'capacity' => $config['capacity'],
                 'is_active' => true,
             ]);
         }

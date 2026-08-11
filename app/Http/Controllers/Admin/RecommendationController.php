@@ -32,6 +32,8 @@ class RecommendationController extends Controller
         ]);
 
         $this->abortIfElite($validated['student_id'], $validated['current_class_id'] ?? null);
+        $this->abortIfPaketNotFinished($validated['student_id'], $validated['current_class_id'] ?? null);
+        $this->abortIfActiveRecommendationExists($validated['student_id']);
 
         ClassRecommendation::create([
             'student_id' => $validated['student_id'],
@@ -76,6 +78,7 @@ class RecommendationController extends Controller
         $current = $recommendation->current_class_id
             ? ClassStudent::where('class_id', $recommendation->current_class_id)
                 ->where('student_id', $recommendation->student_id)
+                ->orderByDesc('is_active')
                 ->first()
             : null;
 
@@ -124,6 +127,36 @@ class RecommendationController extends Controller
         if (($enrollment?->schoolClass?->level ?? null) >= SchoolClass::LEVEL_ELITE) {
             throw ValidationException::withMessages([
                 'recommended_level' => 'Siswa level Elite tidak dapat direkomendasikan naik kelas.',
+            ]);
+        }
+    }
+
+    private function abortIfPaketNotFinished(int $studentId, ?int $currentClassId): void
+    {
+        $enrollment = ClassStudent::with('schoolClass.program')->where('student_id', $studentId)
+            ->where('is_active', true)
+            ->when($currentClassId, fn ($q) => $q->where('class_id', $currentClassId))
+            ->latest()
+            ->first();
+
+        $program = $enrollment?->schoolClass?->program;
+
+        if ($program?->billing_type === 'per_paket' && ! $enrollment->isFinished()) {
+            throw ValidationException::withMessages([
+                'recommended_class_id' => 'Paket '.$program->name.' belum habis, siswa belum dapat dinaikkan kelas.',
+            ]);
+        }
+    }
+
+    private function abortIfActiveRecommendationExists(int $studentId): void
+    {
+        $active = ClassRecommendation::where('student_id', $studentId)
+            ->whereIn('status', ['pending', 'menunggu_ortu'])
+            ->exists();
+
+        if ($active) {
+            throw ValidationException::withMessages([
+                'recommended_class_id' => 'Masih ada rekomendasi naik kelas aktif untuk siswa ini.',
             ]);
         }
     }

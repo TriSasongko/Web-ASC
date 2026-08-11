@@ -79,6 +79,16 @@
                     </div>
                 </div>
 
+                @if (! $isPaket)
+                    @php
+                        $start = $class->pivot->started_at ?? $class->pivot->created_at;
+                    @endphp
+                    <div class="mb-4 flex flex-wrap gap-x-6 gap-y-1 font-body-sm text-body-sm text-outline">
+                        <span>Mulai periode: {{ $start?->format('d/m/Y') ?? '-' }}</span>
+                        <span>Periode berikutnya (billing): {{ $start?->copy()->addMonth()?->format('d/m/Y') ?? '-' }}</span>
+                    </div>
+                @endif
+
                 @php
                     $records = $attendanceLists[$class->pivot->id] ?? collect();
                 @endphp

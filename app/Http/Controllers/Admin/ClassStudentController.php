@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClassRecommendation;
 use App\Models\ClassSchedule;
 use App\Models\ClassStudent;
 use App\Models\Registration;
 use App\Models\SchoolClass;
 use App\Models\Student;
-use App\Services\StudentPromotionService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class ClassStudentController extends Controller
 {
@@ -43,11 +42,6 @@ class ClassStudentController extends Controller
         ]);
 
         $class = SchoolClass::findOrFail($validated['class_id']);
-
-        // Cek kapasitas kelas
-        if ($class->capacity && $class->students()->count() >= $class->capacity) {
-            return back()->with('error', 'Kapasitas kelas sudah penuh.');
-        }
 
         $class->students()->attach($registration->student_id, [
             'registration_id' => $registration->id,
@@ -82,7 +76,8 @@ class ClassStudentController extends Controller
         return back()->with('success', 'Siswa dikeluarkan dari kelas.');
     }
 
-    // Naikkan kelas siswa secara langsung oleh admin, tanpa melalui rekomendasi pelatih.
+    // Ajukan naik kelas oleh admin: membuat rekomendasi berstatus menunggu_ortu.
+    // Siswa baru benar-benar dipindahkan setelah orang tua konfirmasi via WA.
     public function move(Request $request, ClassStudent $enrollment)
     {
         $validated = $request->validate([
@@ -91,13 +86,46 @@ class ClassStudentController extends Controller
 
         $target = SchoolClass::findOrFail($validated['target_class_id']);
 
-        try {
-            app(StudentPromotionService::class)->promote($enrollment->student_id, $enrollment, $target);
-        } catch (ValidationException $e) {
-            return back()->with('error', $e->validator->errors()->first());
+        $currentLevel = $enrollment->schoolClass?->level;
+
+        if ($currentLevel !== null && $currentLevel >= SchoolClass::LEVEL_ELITE) {
+            return back()->with('error', 'Siswa level Elite tidak dapat dinaikkan kelas.');
         }
 
-        return back()->with('success', $enrollment->student->full_name.' berhasil dinaikkan ke kelas '.$target->name.'.');
+        if ($currentLevel !== null && $target->level <= $currentLevel) {
+            return back()->with('error', 'Kelas target harus level lebih tinggi.');
+        }
+
+        if (! ($target->program_id === $enrollment->schoolClass->program_id || $target->program?->isKompetitif())) {
+            return back()->with('error', 'Kelas target harus satu program atau berada di program Kompetitif.');
+        }
+
+        $program = $enrollment->schoolClass?->program;
+        if ($program?->billing_type === 'per_paket' && ! $enrollment->isFinished()) {
+            return back()->with('error', 'Paket '.$program->name.' belum habis, siswa belum dapat dinaikkan kelas.');
+        }
+
+        $activeRec = ClassRecommendation::where('student_id', $enrollment->student_id)
+            ->whereIn('status', ['pending', 'menunggu_ortu'])
+            ->exists();
+
+        if ($activeRec) {
+            return back()->with('error', 'Masih ada rekomendasi naik kelas aktif untuk siswa ini.');
+        }
+
+        ClassRecommendation::create([
+            'student_id' => $enrollment->student_id,
+            'from_user_id' => auth()->id(),
+            'current_class_id' => $enrollment->class_id,
+            'recommended_class_id' => $target->id,
+            'recommended_level' => $target->level,
+            'status' => 'menunggu_ortu',
+            'approved_by' => auth()->id(),
+        ]);
+
+        return redirect()
+            ->route('admin.recommendations.index')
+            ->with('success', 'Pengajuan naik kelas '.$enrollment->student->full_name.' ke '.$target->name.' dibuat. Silakan konfirmasi ke orang tua via WhatsApp.');
     }
 
     public function renew(Request $request, ClassStudent $enrollment)

@@ -46,11 +46,6 @@
                         </select>
                         <x-input-error :messages="$errors->get('level')" class="mt-2" />
                     </div>
-
-                    <div>
-                        <x-input-label for="capacity" value="Kapasitas" />
-                        <x-text-input id="capacity" type="number" name="capacity" value="{{ old('capacity', $class->capacity) }}" />
-                    </div>
                 </div>
 
                 <div class="flex items-center gap-2">

@@ -18,7 +18,7 @@ class SchoolClass extends Model
     public const LEVEL_ELITE = 3;
 
     protected $fillable = [
-        'program_id', 'name', 'level', 'capacity', 'is_active',
+        'program_id', 'name', 'level', 'is_active',
     ];
 
     public static function levelOptions(): array

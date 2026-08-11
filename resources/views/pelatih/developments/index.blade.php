@@ -120,7 +120,7 @@
                                                             <span class="material-symbols-outlined text-[16px]">schedule</span>
                                                             Menunggu Persetujuan
                                                         </span>
-                                                    @elseif ($studentLevel !== null && $studentLevel < \App\Models\SchoolClass::LEVEL_ELITE)
+                                                    @elseif ($studentLevel !== null && $studentLevel < \App\Models\SchoolClass::LEVEL_ELITE && ! $left)
                                                     <div x-data="{ open: false }" class="relative inline-block">
                                                         <button @click="open = true" type="button"
                                                             class="inline-flex items-center gap-1 bg-[#FFB300] text-white px-2.5 py-1 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">

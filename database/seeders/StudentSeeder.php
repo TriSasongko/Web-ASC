@@ -133,7 +133,6 @@ class StudentSeeder extends Seeder
                 ['name' => $data['class_name']],
                 [
                     'program_id' => $program->id,
-                    'capacity' => $program->max_students,
                     'is_active' => true,
                 ]
             );

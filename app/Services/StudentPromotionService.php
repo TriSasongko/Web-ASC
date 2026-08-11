@@ -27,8 +27,9 @@ class StudentPromotionService
             throw ValidationException::withMessages(['target_class_id' => 'Kelas target harus satu program atau berada di program Kompetitif.']);
         }
 
-        if ($target->capacity && $target->students()->count() >= $target->capacity) {
-            throw ValidationException::withMessages(['target_class_id' => 'Kapasitas kelas target sudah penuh.']);
+        $program = $current?->schoolClass?->program;
+        if ($program?->billing_type === 'per_paket' && ! $current->isFinished()) {
+            throw ValidationException::withMessages(['target_class_id' => 'Paket '.$program->name.' belum habis, siswa belum dapat dinaikkan kelas.']);
         }
 
         return \DB::transaction(function () use ($studentId, $current, $target) {

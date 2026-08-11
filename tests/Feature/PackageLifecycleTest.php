@@ -50,7 +50,6 @@ class PackageLifecycleTest extends TestCase
             'program_id' => $program->id,
             'name' => 'Reguler A',
             'level' => 1,
-            'capacity' => 10,
             'is_active' => true,
         ]);
 
@@ -162,7 +161,7 @@ class PackageLifecycleTest extends TestCase
     {
         $parent = $this->makeParent();
         $child = $this->makeStudent($parent);
-        $data = $this->makeEnrollment($child);
+        $data = $this->makeEnrollment($child, 8);
 
         $kompetitif = Program::firstOrCreate([
             'slug' => 'kompetitif',
@@ -202,7 +201,7 @@ class PackageLifecycleTest extends TestCase
     {
         $parent = $this->makeParent();
         $child = $this->makeStudent($parent);
-        $data = $this->makeEnrollment($child);
+        $data = $this->makeEnrollment($child, 8);
 
         $this->actingAs($data['admin'])
             ->post(route('admin.recommendations.store'), [
@@ -224,7 +223,7 @@ class PackageLifecycleTest extends TestCase
     {
         $parent = $this->makeParent();
         $child = $this->makeStudent($parent);
-        $data = $this->makeEnrollment($child);
+        $data = $this->makeEnrollment($child, 8);
 
         $kompetitif = Program::firstOrCreate([
             'slug' => 'kompetitif',
@@ -290,13 +289,12 @@ class PackageLifecycleTest extends TestCase
     {
         $parent = $this->makeParent();
         $child = $this->makeStudent($parent);
-        $data = $this->makeEnrollment($child);
+        $data = $this->makeEnrollment($child, 8);
 
         $nextClass = SchoolClass::create([
             'program_id' => $data['class']->program_id,
             'name' => 'Reguler B',
             'level' => 2,
-            'capacity' => 10,
             'is_active' => true,
         ]);
 
@@ -373,7 +371,7 @@ class PackageLifecycleTest extends TestCase
     {
         $parent = $this->makeParent();
         $child = $this->makeStudent($parent);
-        $data = $this->makeEnrollment($child);
+        $data = $this->makeEnrollment($child, 8);
 
         ClassRecommendation::create([
             'student_id' => $child->id,
@@ -465,5 +463,98 @@ class PackageLifecycleTest extends TestCase
             ->exists());
 
         $this->assertSame(4, $data['enrollment']->fresh()->sessions_completed);
+    }
+
+    public function test_coach_cannot_recommend_when_package_not_finished()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 4);
+
+        $kompetitif = Program::firstOrCreate([
+            'slug' => 'kompetitif',
+        ], [
+            'name' => 'Kompetitif',
+            'total_sessions' => null,
+            'price' => 300000,
+            'billing_type' => 'per_bulan',
+            'is_kompetitif' => true,
+            'is_active' => true,
+        ]);
+
+        $target = SchoolClass::create([
+            'program_id' => $kompetitif->id,
+            'name' => 'Kompetitif B',
+            'level' => 2,
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($data['coach'])
+            ->post(route('pelatih.recommendations.store', [$data['class'], $child]), [
+                'recommended_class_id' => $target->id,
+            ])
+            ->assertStatus(422);
+
+        $this->assertDatabaseMissing('class_recommendations', ['student_id' => $child->id]);
+    }
+
+    public function test_admin_cannot_create_recommendation_when_package_not_finished()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 4);
+
+        $this->actingAs($data['admin'])
+            ->post(route('admin.recommendations.store'), [
+                'student_id' => $child->id,
+                'current_class_id' => $data['class']->id,
+                'recommended_level' => 2,
+            ])
+            ->assertSessionHasErrors('recommended_class_id');
+
+        $this->assertDatabaseMissing('class_recommendations', ['student_id' => $child->id]);
+    }
+
+    public function test_second_coach_cannot_recommend_when_recommendation_active()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 8);
+
+        ClassRecommendation::create([
+            'student_id' => $child->id,
+            'from_user_id' => $data['coach']->id,
+            'current_class_id' => $data['class']->id,
+            'recommended_level' => 2,
+            'status' => 'menunggu_ortu',
+        ]);
+
+        $kompetitif = Program::firstOrCreate([
+            'slug' => 'kompetitif',
+        ], [
+            'name' => 'Kompetitif',
+            'total_sessions' => null,
+            'price' => 300000,
+            'billing_type' => 'per_bulan',
+            'is_kompetitif' => true,
+            'is_active' => true,
+        ]);
+
+        $target = SchoolClass::create([
+            'program_id' => $kompetitif->id,
+            'name' => 'Kompetitif B',
+            'level' => 2,
+            'is_active' => true,
+        ]);
+
+        $otherCoach = User::factory()->create(['role' => 'pelatih', 'is_active' => true]);
+
+        $this->actingAs($otherCoach)
+            ->post(route('pelatih.recommendations.store', [$data['class'], $child]), [
+                'recommended_class_id' => $target->id,
+            ])
+            ->assertStatus(422);
+
+        $this->assertSame(1, ClassRecommendation::where('student_id', $child->id)->count());
     }
 }

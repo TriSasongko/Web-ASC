@@ -50,6 +50,10 @@
                                     <span class="font-label-md text-label-md text-on-surface">{{ $enrollment->name }} — {{ $program->name }}</span>
                                     @if ($left === null)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">Bulanan</span>
+                                        @php
+                                            $start = $enrollment->pivot->started_at ?? $enrollment->pivot->created_at;
+                                        @endphp
+                                        <span class="font-label-sm text-label-sm text-outline">Periode: {{ $start?->format('d/m/Y') ?? '-' }} s.d. {{ $start?->copy()->addMonth()?->format('d/m/Y') ?? '-' }}</span>
                                     @elseif ($left === 0)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">Paket habis</span>
                                     @elseif ($left <= 2)
