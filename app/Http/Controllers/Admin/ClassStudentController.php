@@ -54,6 +54,7 @@ class ClassStudentController extends Controller
             'level' => $class->level,
             'sessions_completed' => 0,
             'is_active' => true,
+            'started_at' => now(),
         ]);
 
         // Penugasan ke sesi latihan (hanya sesi milik kelas terpilih, siswa boleh di beberapa sesi)

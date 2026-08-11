@@ -230,6 +230,7 @@ class DummyDataSeeder extends Seeder
             'renewal_status' => $data['renewal'],
             'renewal_note' => $this->renewalNote($data['renewal']),
             'renewed_at' => in_array($data['renewal'], ['lanjut', 'berhenti', 'pindah']) ? now()->subDays(mt_rand(1, 15)) : null,
+            'started_at' => now()->subDays(mt_rand(30, 120)),
         ]);
 
         $this->createAttendances($student, $classes[$data['class']], $data['completed'], $coaches);
@@ -299,6 +300,7 @@ class DummyDataSeeder extends Seeder
             'renewal_status' => 'lanjut',
             'renewal_note' => 'Lanjut setelah pindah level',
             'renewed_at' => now(),
+            'started_at' => now()->subDays(30),
         ]);
 
         Attendance::create([

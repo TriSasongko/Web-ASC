@@ -65,6 +65,7 @@ class AttendanceController extends Controller
 
                 Attendance::create([
                     'class_id' => $activeEnrollment?->class_id,
+                    'class_student_id' => $activeEnrollment?->id,
                     'student_id' => $studentId,
                     'recorded_by' => auth()->id(),
                     'attendance_date' => $validated['attendance_date'],

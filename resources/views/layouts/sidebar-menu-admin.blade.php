@@ -17,6 +17,7 @@
             ['label' => 'Kelas', 'icon' => 'pool', 'route' => 'admin.classes.index', 'active' => request()->routeIs('admin.classes.*') || request()->routeIs('admin.class-students.*'), 'badge' => $navClassesPending, 'badgeColor' => 'bg-error-container text-on-error-container'],
             ['label' => 'Jadwal', 'icon' => 'calendar_month', 'route' => 'admin.schedules.index', 'active' => request()->routeIs('admin.schedules.*')],
             ['label' => 'Absensi', 'icon' => 'event_available', 'route' => 'admin.attendances.index', 'active' => request()->routeIs('admin.attendances.*')],
+            ['label' => 'Perpanjangan Paket', 'icon' => 'autorenew', 'route' => 'admin.renewals.index', 'active' => request()->routeIs('admin.renewals.*'), 'badge' => $navRenewalsPending, 'badgeColor' => 'bg-error text-on-error'],
         ],
         'EVALUASI & AKADEMIK' => [
             ['label' => 'Perkembangan', 'icon' => 'assessment', 'route' => 'admin.developments.index', 'active' => request()->routeIs('admin.developments.*') || request()->routeIs('admin.classes.developments.*')],

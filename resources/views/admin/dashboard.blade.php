@@ -178,8 +178,9 @@
 
                 <!-- Menunggu Konfirmasi Paket -->
                 <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
-                    <div class="px-5 py-4 border-b border-outline-variant/30 bg-surface/50">
+                    <div class="px-5 py-4 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
                         <h5 class="font-headline text-headline-sm text-on-surface">Menunggu Konfirmasi Paket</h5>
+                        <a href="{{ route('admin.renewals.index') }}" class="text-primary font-label-sm text-label-sm hover:underline">Kelola</a>
                     </div>
                     <div class="p-4 space-y-3">
                         @forelse ($alerts as $alert)

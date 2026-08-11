@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ERaportController as AdminERaport;
 use App\Http\Controllers\Admin\ParentController;
 use App\Http\Controllers\Admin\RecommendationController as AdminRecommendation;
 use App\Http\Controllers\Admin\RegistrationController as AdminRegistration;
+use App\Http\Controllers\Admin\RenewalController as AdminRenewal;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\ERaportController;
@@ -68,6 +69,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('class-students/{enrollment}/stop', [ClassStudentController::class, 'stop'])->name('class-students.stop');
     Route::patch('class-students/{enrollment}/activate', [ClassStudentController::class, 'activate'])->name('class-students.activate');
     Route::post('class-students/{enrollment}/move', [ClassStudentController::class, 'move'])->name('class-students.move');
+
+    // Route Perpanjangan Paket untuk Admin
+    Route::get('renewals', [AdminRenewal::class, 'index'])->name('renewals.index');
+    Route::post('students/{student}/class-student/{classStudent}/confirm-renewal', [AdminRenewal::class, 'confirmRenewal'])->name('renewals.confirm');
+    Route::post('students/{student}/class-student/{classStudent}/decline-renewal', [AdminRenewal::class, 'declineRenewal'])->name('renewals.decline');
 
     // Route Absensi untuk Admin
     Route::get('attendances', [AdminAttendance::class, 'index'])->name('attendances.index');

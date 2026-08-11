@@ -52,6 +52,7 @@ class StudentPromotionService
                 'sessions_completed' => 0,
                 'is_active' => true,
                 'renewal_status' => 'belum_konfirmasi',
+                'started_at' => now(),
             ]);
         });
     }

@@ -65,6 +65,7 @@ class AttendanceController extends Controller
 
                 Attendance::create([
                     'class_id' => $activeEnrollment?->class_id,
+                    'class_student_id' => $activeEnrollment?->id,
                     'student_id' => $studentId,
                     'recorded_by' => auth()->id(),
                     'attendance_date' => $validated['attendance_date'],
@@ -131,7 +132,15 @@ class AttendanceController extends Controller
 
     public function destroy(Attendance $attendance)
     {
-        if ($attendance->class_id && $attendance->schoolClass?->program?->billing_type === 'per_paket') {
+        $enrollment = $attendance->class_student_id
+            ? ClassStudent::find($attendance->class_student_id)
+            : null;
+
+        if ($enrollment && $enrollment->schoolClass?->program?->billing_type === 'per_paket') {
+            $enrollment->update([
+                'sessions_completed' => DB::raw('GREATEST(0, sessions_completed - 1)'),
+            ]);
+        } elseif (! $enrollment && $attendance->class_id && $attendance->schoolClass?->program?->billing_type === 'per_paket') {
             $attendance->schoolClass->students()->updateExistingPivot($attendance->student_id, [
                 'sessions_completed' => DB::raw('GREATEST(0, sessions_completed - 1)'),
             ]);

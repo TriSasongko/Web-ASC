@@ -48,6 +48,13 @@ class AppServiceProvider extends ServiceProvider
                     ->distinct()
                     ->count('classes.id')
                 : 0);
+
+            $view->with('navRenewalsPending', $role === 'admin'
+                ? DB::table('class_student')
+                    ->where('is_active', true)
+                    ->where('renewal_status', 'perlu_konfirmasi')
+                    ->count()
+                : 0);
         });
     }
 }
