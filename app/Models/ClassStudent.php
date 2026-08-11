@@ -20,6 +20,12 @@ class ClassStudent extends Model
 
     public const RENEWAL_STATUS_AKTIF = 'aktif';
 
+    /**
+     * Ambang peringatan dini dalam jumlah sesi sisa.
+     * 1 = flag saat sisa sesi <= 1 (mendekati habis), 0 = flag saat tepat habis.
+     */
+    public const RENEWAL_FLAG_THRESHOLD = 1;
+
     protected $table = 'class_student';
 
     protected $fillable = [
@@ -82,5 +88,29 @@ class ClassStudent extends Model
         $total = $this->schoolClass?->program?->total_sessions;
 
         return $total !== null && $this->sessions_completed >= $total;
+    }
+
+    public function markForRenewalIfNeeded(): void
+    {
+        $program = $this->schoolClass?->program;
+
+        if ($program?->billing_type !== 'per_paket' || $program->total_sessions === null) {
+            return;
+        }
+
+        if ($this->sessions_completed < $program->total_sessions - self::RENEWAL_FLAG_THRESHOLD) {
+            return;
+        }
+
+        $terminalStatuses = [
+            self::RENEWAL_STATUS_PERLU_KONFIRMASI,
+            self::RENEWAL_STATUS_BERHENTI,
+            self::RENEWAL_STATUS_PINDAH,
+            self::RENEWAL_STATUS_SELESAI,
+        ];
+
+        if (! in_array($this->renewal_status, $terminalStatuses, true)) {
+            $this->update(['renewal_status' => self::RENEWAL_STATUS_PERLU_KONFIRMASI]);
+        }
     }
 }

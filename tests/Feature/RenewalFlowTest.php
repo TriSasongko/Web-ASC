@@ -252,4 +252,59 @@ class RenewalFlowTest extends TestCase
         $this->assertSame(1, $new->fresh()->sessions_completed);
         $this->assertSame(8, $enrollment->fresh()->sessions_completed);
     }
+
+    public function test_admin_attendance_flags_enrollment_for_renewal_in_realtime(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 7, 'belum_konfirmasi');
+
+        $this->actingAs($admin)
+            ->post(route('admin.attendances.store'), [
+                'attendance_date' => '2026-08-11',
+                'attendance' => [$student->id],
+            ])
+            ->assertRedirect();
+
+        $fresh = $enrollment->fresh();
+        $this->assertSame(8, $fresh->sessions_completed);
+        $this->assertSame('perlu_konfirmasi', $fresh->renewal_status);
+    }
+
+    public function test_pelatih_attendance_flags_enrollment_for_renewal_in_realtime(): void
+    {
+        $coach = User::factory()->create(['role' => 'pelatih', 'is_active' => true]);
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 7, 'belum_konfirmasi');
+
+        $this->actingAs($coach)
+            ->post(route('pelatih.attendances.store'), [
+                'attendance_date' => '2026-08-11',
+                'attendance' => [$student->id],
+            ])
+            ->assertRedirect();
+
+        $this->assertSame('perlu_konfirmasi', $enrollment->fresh()->renewal_status);
+    }
+
+    public function test_attendance_below_threshold_does_not_flag_for_renewal(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 5, 'belum_konfirmasi');
+
+        $this->actingAs($admin)
+            ->post(route('admin.attendances.store'), [
+                'attendance_date' => '2026-08-11',
+                'attendance' => [$student->id],
+            ])
+            ->assertRedirect();
+
+        $fresh = $enrollment->fresh();
+        $this->assertSame(6, $fresh->sessions_completed);
+        $this->assertSame('belum_konfirmasi', $fresh->renewal_status);
+    }
 }
