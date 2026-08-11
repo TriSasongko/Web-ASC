@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class StudentController extends Controller
 {
@@ -15,15 +16,27 @@ class StudentController extends Controller
             ? $request->integer('per_page')
             : 10;
 
+        $status = in_array($request->input('status'), ['semua', 'aktif', 'perlu_konfirmasi', 'berhenti', 'pindah'], true)
+            ? $request->input('status')
+            : 'aktif';
+
         $students = Student::with(['parent', 'classes.program'])
-            ->activeProgram()
             ->whereHas('registrations', fn ($q) => $q->where('status', 'diterima'))
+            ->when($status !== 'semua', function ($q) use ($status) {
+                $q->whereHas('enrollments', function ($q) use ($status) {
+                    if ($status === 'aktif') {
+                        $q->where('is_active', true);
+                    } else {
+                        $q->where('renewal_status', $status);
+                    }
+                });
+            })
             ->when($request->search, fn ($q) => $q->where('full_name', 'like', '%'.$request->search.'%'))
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
 
-        return view('admin.students.index', compact('students'));
+        return view('admin.students.index', compact('students', 'status'));
     }
 
     public function show(Student $student)
@@ -33,13 +46,40 @@ class StudentController extends Controller
         $attendances = Attendance::with('recorder')
             ->where('student_id', $student->id)
             ->orderBy('attendance_date')
-            ->get()
-            ->groupBy('class_id');
+            ->get();
+
+        $linked = $attendances->whereNotNull('class_student_id')->groupBy('class_student_id');
+
+        // Absensi lama tanpa class_student_id: lampirkan ke periode yang rentang tanggalnya sesuai
+        $legacy = $attendances->whereNull('class_student_id');
+
+        foreach ($legacy->groupBy('class_id') as $classId => $records) {
+            $periods = $student->classes->where('id', $classId);
+
+            if ($periods->isEmpty()) {
+                continue;
+            }
+
+            foreach ($records as $record) {
+                $target = $periods
+                    ->filter(fn ($c) => $this->periodContains($c->pivot, $record->attendance_date))
+                    ->first()
+                    ?? $periods->first(fn ($c) => $c->pivot->is_active)
+                    ?? $periods->first();
+
+                if ($target === null) {
+                    continue;
+                }
+
+                $bucket = $linked->get($target->pivot->id) ?? collect();
+                $linked->put($target->pivot->id, $bucket->push($record));
+            }
+        }
 
         $attendanceLists = [];
 
         foreach ($student->classes as $class) {
-            $records = $attendances[$class->id] ?? collect();
+            $records = $linked->get($class->pivot->id) ?? collect();
             $total = $class->program->total_sessions;
 
             if ($total === null) {
@@ -57,9 +97,21 @@ class StudentController extends Controller
                     ->values();
             }
 
-            $attendanceLists[$class->id] = $records;
+            $attendanceLists[$class->pivot->id] = $records;
         }
 
         return view('admin.students.show', compact('student', 'attendanceLists'));
+    }
+
+    private function periodContains($pivot, Carbon $date): bool
+    {
+        $started = $pivot->started_at ? Carbon::parse($pivot->started_at) : null;
+        $ended = $pivot->ended_at ? Carbon::parse($pivot->ended_at) : null;
+
+        if ($started !== null && $date->lt($started)) {
+            return false;
+        }
+
+        return $ended === null || $date->lte($ended);
     }
 }

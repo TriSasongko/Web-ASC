@@ -104,6 +104,7 @@ class ClassStudent extends Model
 
         $terminalStatuses = [
             self::RENEWAL_STATUS_PERLU_KONFIRMASI,
+            self::RENEWAL_STATUS_LANJUT,
             self::RENEWAL_STATUS_BERHENTI,
             self::RENEWAL_STATUS_PINDAH,
             self::RENEWAL_STATUS_SELESAI,
@@ -112,5 +113,37 @@ class ClassStudent extends Model
         if (! in_array($this->renewal_status, $terminalStatuses, true)) {
             $this->update(['renewal_status' => self::RENEWAL_STATUS_PERLU_KONFIRMASI]);
         }
+    }
+
+    public function renewIntoNextPeriod(): self
+    {
+        $next = self::create([
+            'class_id' => $this->class_id,
+            'student_id' => $this->student_id,
+            'level' => $this->level,
+            'registration_id' => $this->registration_id,
+            'sessions_completed' => 0,
+            'is_active' => true,
+            'renewal_status' => self::RENEWAL_STATUS_AKTIF,
+            'started_at' => now(),
+            'renewed_from_id' => $this->id,
+        ]);
+
+        $this->update([
+            'is_active' => false,
+            'renewal_status' => self::RENEWAL_STATUS_SELESAI,
+            'ended_at' => now(),
+        ]);
+
+        return $next;
+    }
+
+    public function completeRenewalIfReady(): void
+    {
+        if ($this->renewal_status !== self::RENEWAL_STATUS_LANJUT || ! $this->isFinished()) {
+            return;
+        }
+
+        $this->renewIntoNextPeriod();
     }
 }

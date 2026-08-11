@@ -307,4 +307,155 @@ class RenewalFlowTest extends TestCase
         $this->assertSame(6, $fresh->sessions_completed);
         $this->assertSame('belum_konfirmasi', $fresh->renewal_status);
     }
+
+    public function test_confirm_renewal_with_remaining_sessions_defers_until_finished(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 7, 'perlu_konfirmasi');
+
+        $this->actingAs($admin)
+            ->post(route('admin.renewals.confirm', [$student, $enrollment]))
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $fresh = $enrollment->fresh();
+        $this->assertTrue($fresh->is_active);
+        $this->assertSame('lanjut', $fresh->renewal_status);
+        $this->assertNull($fresh->ended_at);
+        $this->assertSame(1, ClassStudent::where('student_id', $student->id)->count());
+    }
+
+    public function test_attendance_on_lanjut_enrollment_switches_period_when_finished(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 7, 'lanjut');
+
+        $this->actingAs($admin)
+            ->post(route('admin.attendances.store'), [
+                'attendance_date' => '2026-08-11',
+                'attendance' => [$student->id],
+            ])
+            ->assertRedirect();
+
+        $old = $enrollment->fresh();
+        $this->assertFalse($old->is_active);
+        $this->assertSame('selesai', $old->renewal_status);
+        $this->assertNotNull($old->ended_at);
+
+        $new = ClassStudent::where('student_id', $student->id)->where('id', '!=', $old->id)->first();
+        $this->assertNotNull($new);
+        $this->assertSame($class->id, $new->class_id);
+        $this->assertSame(0, $new->sessions_completed);
+        $this->assertTrue($new->is_active);
+        $this->assertSame('aktif', $new->renewal_status);
+        $this->assertSame($old->id, $new->renewed_from_id);
+
+        $attendance = Attendance::where('student_id', $student->id)->whereDate('attendance_date', '2026-08-11')->first();
+        $this->assertSame($old->id, $attendance->class_student_id);
+    }
+
+    public function test_attendance_on_lanjut_enrollment_below_total_does_not_switch(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 6, 'lanjut');
+
+        $this->actingAs($admin)
+            ->post(route('admin.attendances.store'), [
+                'attendance_date' => '2026-08-11',
+                'attendance' => [$student->id],
+            ])
+            ->assertRedirect();
+
+        $fresh = $enrollment->fresh();
+        $this->assertSame(7, $fresh->sessions_completed);
+        $this->assertTrue($fresh->is_active);
+        $this->assertSame('lanjut', $fresh->renewal_status);
+        $this->assertSame(1, ClassStudent::where('student_id', $student->id)->count());
+    }
+
+    public function test_renewal_check_does_not_reflag_lanjut_enrollments(): void
+    {
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($this->makeStudent($this->makeParent()), $class, 8, 'lanjut');
+
+        $this->artisan('renewal:check')->assertExitCode(0);
+
+        $this->assertSame('lanjut', $enrollment->fresh()->renewal_status);
+    }
+
+    public function test_student_rekap_shows_attendance_per_period_after_renewal(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 8, 'perlu_konfirmasi');
+
+        $this->actingAs($admin)
+            ->post(route('admin.renewals.confirm', [$student, $enrollment]))
+            ->assertRedirect();
+
+        $new = ClassStudent::where('student_id', $student->id)->where('id', '!=', $enrollment->id)->firstOrFail();
+
+        Attendance::create([
+            'class_id' => $class->id,
+            'class_student_id' => $enrollment->id,
+            'student_id' => $student->id,
+            'recorded_by' => $admin->id,
+            'attendance_date' => '2026-08-01',
+            'session_number' => 1,
+        ]);
+
+        Attendance::create([
+            'class_id' => $class->id,
+            'class_student_id' => $new->id,
+            'student_id' => $student->id,
+            'recorded_by' => $admin->id,
+            'attendance_date' => '2026-08-02',
+            'session_number' => 1,
+        ]);
+
+        $content = $this->actingAs($admin)
+            ->get(route('admin.students.show', $student))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertSame(1, substr_count($content, '01/08/2026'));
+        $this->assertSame(1, substr_count($content, '02/08/2026'));
+        $this->assertStringContainsString('Selesai — sudah lanjut ke periode baru', $content);
+        $this->assertStringNotContainsString('Paket habis — Konfirmasi', $content);
+    }
+
+    public function test_student_rekap_attaches_legacy_attendance_by_period_date_window(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 8, 'perlu_konfirmasi');
+
+        $this->actingAs($admin)
+            ->post(route('admin.renewals.confirm', [$student, $enrollment]))
+            ->assertRedirect();
+
+        Attendance::create([
+            'class_id' => $class->id,
+            'class_student_id' => null,
+            'student_id' => $student->id,
+            'recorded_by' => $admin->id,
+            'attendance_date' => '2026-07-01',
+            'session_number' => 1,
+        ]);
+
+        $content = $this->actingAs($admin)
+            ->get(route('admin.students.show', $student))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertSame(1, substr_count($content, '01/07/2026'));
+    }
 }

@@ -25,25 +25,24 @@ class RenewalController extends Controller
         abort_unless($classStudent->student_id === $student->id, 404);
         abort_unless($classStudent->renewal_status === ClassStudent::RENEWAL_STATUS_PERLU_KONFIRMASI, 403);
 
-        DB::transaction(function () use ($classStudent) {
-            $classStudent->update([
-                'is_active' => false,
-                'renewal_status' => ClassStudent::RENEWAL_STATUS_SELESAI,
-                'ended_at' => now(),
-            ]);
+        $defer = $classStudent->schoolClass?->program?->billing_type === 'per_paket'
+            && $classStudent->remainingSessions() > 0;
 
-            ClassStudent::create([
-                'class_id' => $classStudent->class_id,
-                'student_id' => $classStudent->student_id,
-                'level' => $classStudent->level,
-                'registration_id' => $classStudent->registration_id,
-                'sessions_completed' => 0,
-                'is_active' => true,
-                'renewal_status' => ClassStudent::RENEWAL_STATUS_AKTIF,
-                'started_at' => now(),
-                'renewed_from_id' => $classStudent->id,
-            ]);
+        DB::transaction(function () use ($classStudent, $defer) {
+            if ($defer) {
+                $classStudent->update([
+                    'renewal_status' => ClassStudent::RENEWAL_STATUS_LANJUT,
+                ]);
+
+                return;
+            }
+
+            $classStudent->renewIntoNextPeriod();
         });
+
+        if ($defer) {
+            return back()->with('success', 'Paket '.$student->full_name.' dikonfirmasi lanjut. Sisa sesi akan dihabiskan dulu, lalu periode paket baru dibuat otomatis.');
+        }
 
         return back()->with('success', 'Paket '.$student->full_name.' diperpanjang. Periode paket baru berhasil dibuat.');
     }

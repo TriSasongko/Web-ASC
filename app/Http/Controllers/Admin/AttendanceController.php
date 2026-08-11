@@ -81,6 +81,7 @@ class AttendanceController extends Controller
                     }
 
                     $activeEnrollment->increment('sessions_completed');
+                    $activeEnrollment->completeRenewalIfReady();
                     $activeEnrollment->markForRenewalIfNeeded();
                 }
             }

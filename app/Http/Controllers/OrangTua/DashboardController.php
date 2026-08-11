@@ -10,7 +10,7 @@ class DashboardController extends Controller
     public function index()
     {
         $students = auth()->user()->students()
-            ->with(['classes.program'])
+            ->with(['classes' => fn ($q) => $q->wherePivot('is_active', true)->with('program')])
             ->get();
 
         $recommendations = ClassRecommendation::with(['student.enrollments', 'recommendedClass', 'currentClass', 'from', 'approver'])

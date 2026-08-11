@@ -9,7 +9,15 @@
 
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
             <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
-                <form method="GET" class="flex items-center gap-2">
+                <form method="GET" class="flex flex-wrap items-center gap-2">
+                    <select name="status" onchange="this.form.submit()"
+                            class="bg-surface-container-low border border-outline-variant/50 rounded-full px-4 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                        <option value="aktif" {{ $status === 'aktif' ? 'selected' : '' }}>Aktif</option>
+                        <option value="semua" {{ $status === 'semua' ? 'selected' : '' }}>Semua</option>
+                        <option value="perlu_konfirmasi" {{ $status === 'perlu_konfirmasi' ? 'selected' : '' }}>Perlu Konfirmasi</option>
+                        <option value="berhenti" {{ $status === 'berhenti' ? 'selected' : '' }}>Berhenti</option>
+                        <option value="pindah" {{ $status === 'pindah' ? 'selected' : '' }}>Pindah</option>
+                    </select>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
                         <input type="text" name="search" value="{{ request('search') }}"
@@ -36,54 +44,56 @@
                     </thead>
                     <tbody class="divide-y divide-outline-variant/30">
                         @forelse ($students as $student)
+                            @php
+                                $pivots = $student->classes->filter(fn ($c) => $c->pivot->is_active);
+                                if ($pivots->isEmpty() && in_array($status, ['berhenti', 'pindah'], true)) {
+                                    $pivots = $student->classes->filter(fn ($c) => $c->pivot->renewal_status === $status);
+                                }
+                            @endphp
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $student->full_name }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $student->parent->name }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $student->parent->phone ?? '-' }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface space-y-1">
-                                    @forelse ($student->classes as $class)
-                                        @if ($class->pivot->is_active)
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-body-sm text-body-sm text-on-surface">{{ $class->name }}</span>
-                                                <span class="font-body-sm text-body-sm text-outline">{{ $class->pivot->sessions_completed }}/{{ $class->program->total_sessions ?? '-' }}</span>
-                                            </div>
-                                        @endif
+                                    @forelse ($pivots as $class)
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-body-sm text-body-sm text-on-surface">{{ $class->name }}</span>
+                                            <span class="font-body-sm text-body-sm text-outline">{{ $class->pivot->sessions_completed }}/{{ $class->program->total_sessions ?? '-' }}</span>
+                                        </div>
                                     @empty
                                         <span class="font-body-sm text-body-sm text-outline">-</span>
                                     @endforelse
                                 </td>
                                 <td class="px-4 py-3 space-y-1">
-                                    @forelse ($student->classes as $class)
-                                        @if ($class->pivot->is_active)
-                                            <div>
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container/60 text-on-primary">{{ $class->level_label ?? '-' }}</span>
-                                            </div>
-                                        @endif
+                                    @forelse ($pivots as $class)
+                                        <div>
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container/60 text-on-primary">{{ $class->level_label ?? '-' }}</span>
+                                        </div>
                                     @empty
                                         <span class="font-body-sm text-body-sm text-outline">-</span>
                                     @endforelse
                                 </td>
                                 <td class="px-4 py-3 space-y-1">
-                                    @forelse ($student->classes as $class)
-                                        @if ($class->pivot->is_active)
-                                            @php
-                                                $total = $class->program->total_sessions;
-                                                $left = $total === null ? null : max(0, $total - $class->pivot->sessions_completed);
-                                            @endphp
-                                            <div>
-                                                @if ($class->pivot->renewal_status === 'lanjut')
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E6F8FC] text-secondary">Lanjut</span>
-                                                @elseif ($left === null)
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">Bulanan</span>
-                                                @elseif ($left === 0)
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">Paket habis</span>
-                                                @elseif ($left <= 1)
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#FFF8E1] text-[#B26A00]">Sisa {{ $left }}x</span>
-                                                @else
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E8F5E9] text-[#2E7D32]">Sisa {{ $left }}x</span>
-                                                @endif
-                                            </div>
-                                        @endif
+                                    @forelse ($pivots as $class)
+                                        @php
+                                            $total = $class->program->total_sessions;
+                                            $left = $total === null ? null : max(0, $total - $class->pivot->sessions_completed);
+                                        @endphp
+                                        <div>
+                                            @if (! $class->pivot->is_active)
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">{{ $class->pivot->renewal_status === 'pindah' ? 'Pindah' : 'Berhenti' }}</span>
+                                            @elseif ($class->pivot->renewal_status === 'lanjut')
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E6F8FC] text-secondary">Lanjut</span>
+                                            @elseif ($left === null)
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">Bulanan</span>
+                                            @elseif ($left === 0)
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">Paket habis</span>
+                                            @elseif ($left <= 1)
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#FFF8E1] text-[#B26A00]">Sisa {{ $left }}x</span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E8F5E9] text-[#2E7D32]">Sisa {{ $left }}x</span>
+                                            @endif
+                                        </div>
                                     @empty
                                         <span class="font-body-sm text-body-sm text-outline">-</span>
                                     @endforelse
@@ -113,6 +123,9 @@
                     <span class="font-body-sm text-body-sm text-on-surface-variant whitespace-nowrap">per halaman</span>
                     @if (request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+                    @if ($status !== 'aktif')
+                        <input type="hidden" name="status" value="{{ $status }}">
                     @endif
                 </form>
                 <div class="w-full">{{ $students->links('vendor.pagination.prevnext') }}</div>

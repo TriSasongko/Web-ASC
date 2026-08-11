@@ -80,7 +80,7 @@
                 </div>
 
                 @php
-                    $records = $attendanceLists[$class->id] ?? collect();
+                    $records = $attendanceLists[$class->pivot->id] ?? collect();
                 @endphp
 
                 @if ($records->isEmpty())
@@ -131,6 +131,10 @@
                             </div>
                         @elseif ($pivot->renewal_status === 'lanjut')
                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E6F8FC] text-secondary">Lanjut</span>
+                        @elseif ($pivot->renewal_status === 'selesai')
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">Selesai — sudah lanjut ke periode baru</span>
+                        @elseif ($pivot->renewal_status === 'pindah')
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">Pindah</span>
                         @elseif ($left <= 1)
                             <div x-data="{ open: false }" class="relative inline-block">
                                 <button @click="open = true" type="button"

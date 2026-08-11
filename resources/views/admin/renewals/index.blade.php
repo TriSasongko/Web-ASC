@@ -98,7 +98,11 @@
                         </div>
 
                         <div class="px-6 py-5 space-y-2">
-                            <p class="font-body-sm text-body-sm text-outline">Periode saat ini ({{ $completed }}/{{ $total }} sesi) akan ditutup dan periode paket baru akan dibuat mulai dari sesi 0.</p>
+                            @if ($left > 0)
+                                <p class="font-body-sm text-body-sm text-outline">Sisa <strong class="text-on-surface">{{ $left }}</strong> sesi dari periode saat ini akan <strong class="text-on-surface">dihabiskan dulu</strong>. Setelah sesi terakhir tercatat, periode paket baru ({{ $total }} sesi) akan dibuat otomatis.</p>
+                            @else
+                                <p class="font-body-sm text-body-sm text-outline">Periode saat ini ({{ $completed }}/{{ $total }} sesi) akan ditutup dan periode paket baru akan dibuat mulai dari sesi 0.</p>
+                            @endif
                             <p class="font-body-sm text-body-sm text-outline">Riwayat sesi & periode lama tetap tersimpan.</p>
                             <p class="font-body-sm text-body-sm text-outline mb-2">Pastikan orang tua sudah setuju dan pembayaran sudah diterima.</p>
 
