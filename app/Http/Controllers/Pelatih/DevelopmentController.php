@@ -73,7 +73,7 @@ class DevelopmentController extends Controller
     {
         $developments = Development::where('class_id', $class->id)
             ->where('student_id', $student->id)
-            ->latest()
+            ->latest('id')
             ->get();
 
         return view('pelatih.developments.history', compact('class', 'student', 'developments'));

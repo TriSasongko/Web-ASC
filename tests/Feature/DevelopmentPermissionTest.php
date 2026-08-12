@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Development;
 use App\Models\Program;
 use App\Models\SchoolClass;
 use App\Models\Student;
@@ -96,6 +97,44 @@ class DevelopmentPermissionTest extends TestCase
         $this->actingAs($coach)
             ->get(route('pelatih.developments.create', [$class, $student]))
             ->assertOk();
+    }
+
+    public function test_admin_development_index_has_view_perkembangan_button()
+    {
+        $admin = $this->makeAdmin();
+        $coach = $this->makeCoach(true);
+        [$class, $student] = $this->makeClassAndStudent();
+
+        foreach (['Juli 2026', 'Agustus 2026'] as $period) {
+            Development::create([
+                'class_id' => $class->id,
+                'student_id' => $student->id,
+                'coach_id' => $coach->id,
+                'period' => $period,
+            ]);
+        }
+
+        $this->actingAs($admin)
+            ->get(route('admin.developments.index'))
+            ->assertOk()
+            ->assertSee('Lihat Perkembangan')
+            // Dua periode untuk anak yang sama tampil dalam satu baris (bukan dua baris),
+            // dan periode terbaru (Agustus) yang jadi default link E-Raport di index.
+            ->assertViewHas('students', function ($students) {
+                if ($students->total() !== 1) {
+                    return false;
+                }
+
+                return $students->first()->developments->first()->period === 'Agustus 2026';
+            });
+
+        // Periode-periode terlihat dari halaman riwayat (lewat "Lihat Perkembangan"), default tab = terbaru.
+        $this->actingAs($admin)
+            ->get(route('admin.classes.developments.history', [$class, $student]))
+            ->assertOk()
+            ->assertSee('Juli 2026')
+            ->assertSee('Agustus 2026')
+            ->assertViewHas('developments', fn ($developments) => $developments->first()->period === 'Agustus 2026');
     }
 
     public function test_admin_can_toggle_coach_development_permission()

@@ -12,12 +12,14 @@ class DevelopmentController extends Controller
 {
     public function index(Request $request)
     {
-        $developments = Development::with(['student', 'schoolClass.program', 'coach'])
-            ->when($request->search, fn ($q) => $q->whereHas('student', fn ($s) => $s->where('full_name', 'like', '%'.$request->search.'%')))
-            ->latest()
+        $students = Student::query()
+            ->whereHas('developments')
+            ->when($request->search, fn ($q) => $q->where('full_name', 'like', '%'.$request->search.'%'))
+            ->with(['developments' => fn ($q) => $q->with(['schoolClass.program', 'coach'])->latest('id')])
+            ->orderBy('full_name')
             ->paginate(15);
 
-        return view('admin.developments.index', compact('developments'));
+        return view('admin.developments.index', compact('students'));
     }
 
     // Daftar siswa di kelas, untuk dipilih isi perkembangannya (akses penuh admin)
@@ -60,7 +62,7 @@ class DevelopmentController extends Controller
     {
         $developments = Development::where('class_id', $class->id)
             ->where('student_id', $student->id)
-            ->latest()
+            ->latest('id')
             ->get();
 
         return view('admin.developments.history', compact('class', 'student', 'developments'));

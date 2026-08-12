@@ -36,44 +36,42 @@
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Siswa</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Kelas</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Coach</th>
-                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Periode</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant/30">
-                        @forelse ($developments as $dev)
+                        @forelse ($students as $student)
+                            @php
+                                $devs = $student->developments;
+                                $latest = $devs->first();
+                            @endphp
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $dev->student->full_name }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $dev->schoolClass->name }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $dev->coach->name }}</td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $dev->period }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $student->full_name }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $latest?->schoolClass?->name ?? '-' }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $latest?->coach?->name ?? '-' }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-4">
-                                        <a href="{{ route('eraport.show', [$dev->student, $dev->id]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+                                        <a href="{{ route('admin.classes.developments.history', [$latest->schoolClass, $student]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+                                            <span class="material-symbols-outlined text-[16px]">insights</span>
+                                            Lihat Perkembangan
+                                        </a>
+                                        <a href="{{ route('eraport.show', [$student, $latest->id]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
                                             <span class="material-symbols-outlined text-[16px]">description</span>
                                             Lihat E-Raport
                                         </a>
-                                        <form action="{{ route('admin.developments.destroy', $dev) }}" method="POST" class="inline"
-                                              onsubmit="return confirm('Hapus data ini?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center gap-1 text-error font-label-md text-label-md hover:underline">
-                                                <span class="material-symbols-outlined text-[16px]">delete</span>
-                                                Hapus
-                                            </button>
-                                        </form>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-8 text-center font-body-sm text-body-sm text-outline">Belum ada data.</td>
+                                <td colspan="4" class="px-4 py-8 text-center font-body-sm text-body-sm text-outline">Belum ada data.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
-            <div class="p-5 border-t border-outline-variant/30">{{ $developments->links() }}</div>
+            <div class="p-5 border-t border-outline-variant/30">{{ $students->links() }}</div>
         </div>
     </div>
 </x-sidebar-layout>
