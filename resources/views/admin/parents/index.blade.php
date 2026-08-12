@@ -36,6 +36,7 @@
                     <thead class="bg-surface-container-low">
                         <tr>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nama</th>
+                            <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Anak</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Email</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">No. HP</th>
                             <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Status</th>
@@ -46,6 +47,20 @@
                         @forelse ($parents as $parent)
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
                                 <td class="px-4 py-2 font-body-sm text-body-sm text-on-surface">{{ $parent->name }}</td>
+                                <td class="px-4 py-2">
+                                    @if ($parent->students->isNotEmpty())
+                                        <div class="flex flex-wrap gap-1">
+                                            @foreach ($parent->students as $student)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">
+                                                    <span class="material-symbols-outlined text-[14px]">child_care</span>
+                                                    {{ $student->full_name }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <span class="font-body-sm text-body-sm text-outline">-</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-2 font-body-sm text-body-sm text-on-surface">{{ $parent->email }}</td>
                                 <td class="px-4 py-2 font-body-sm text-body-sm text-on-surface">{{ $parent->phone ?? '-' }}</td>
                                 <td class="px-4 py-2 font-body-sm text-body-sm text-on-surface">
@@ -86,7 +101,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-10 text-center font-body-sm text-body-sm text-outline">Belum ada data orang tua.</td>
+                                <td colspan="6" class="px-4 py-10 text-center font-body-sm text-body-sm text-outline">Belum ada data orang tua.</td>
                             </tr>
                         @endforelse
                     </tbody>

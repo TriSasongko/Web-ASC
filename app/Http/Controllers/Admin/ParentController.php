@@ -19,6 +19,7 @@ class ParentController extends Controller
             : 10;
 
         $parents = User::where('role', 'orang_tua')
+            ->with('students')
             ->when($request->search, fn ($q) => $q->where('name', 'like', '%'.$request->search.'%'))
             ->latest()
             ->paginate($perPage)

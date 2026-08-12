@@ -1,11 +1,4 @@
 <x-sidebar-layout>
-    @php
-        $initials = fn ($name) => collect(explode(' ', (string) $name))
-            ->filter()
-            ->map(fn ($word) => mb_substr($word, 0, 1))
-            ->take(2)
-            ->join('');
-    @endphp
     <div class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -82,14 +75,9 @@
                             @endphp
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
                                 <td class="px-4 py-3">
-                                    <div class="flex items-center gap-3">
-                                        <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary-container text-on-primary font-label-md text-label-md shrink-0">
-                                            {{ $initials($rec->student?->full_name) }}
-                                        </span>
-                                        <div>
-                                            <p class="font-label-md text-label-md text-on-surface">{{ $rec->student?->full_name }}</p>
-                                            <p class="font-body-sm text-body-sm text-outline">{{ $rec->currentClass?->name ?? 'Tanpa kelas aktif' }}</p>
-                                        </div>
+                                    <div>
+                                        <p class="font-label-md text-label-md text-on-surface">{{ $rec->student?->full_name }}</p>
+                                        <p class="font-body-sm text-body-sm text-outline">{{ $rec->currentClass?->name ?? 'Tanpa kelas aktif' }}</p>
                                     </div>
                                 </td>
                                 <td class="px-4 py-3">
