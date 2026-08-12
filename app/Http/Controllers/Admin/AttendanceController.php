@@ -33,7 +33,9 @@ class AttendanceController extends Controller
             ->orderBy('full_name')
             ->get();
 
-        return view('admin.attendances.create', compact('classes', 'students'));
+        return view('admin.attendances.create', compact('classes', 'students') + [
+            'attendanceByDate' => $this->attendanceByDate(),
+        ]);
     }
 
     public function store(Request $request)
@@ -47,17 +49,26 @@ class AttendanceController extends Controller
 
         $validated['session_number'] ??= 1;
 
-        DB::transaction(function () use ($validated) {
-            foreach ($validated['attendance'] as $studentId) {
-                $exists = Attendance::where('student_id', $studentId)
-                    ->where('attendance_date', $validated['attendance_date'])
-                    ->where('session_number', $validated['session_number'])
-                    ->exists();
+        $studentIds = array_values(array_unique($validated['attendance']));
 
-                if ($exists) {
-                    continue;
-                }
+        $alreadyRecorded = Attendance::whereIn('student_id', $studentIds)
+            ->whereDate('attendance_date', $validated['attendance_date'])
+            ->pluck('student_id')
+            ->unique();
 
+        if ($alreadyRecorded->isNotEmpty()) {
+            $names = Student::whereIn('id', $alreadyRecorded)
+                ->orderBy('full_name')
+                ->pluck('full_name')
+                ->implode(', ');
+
+            return back()
+                ->withInput()
+                ->withErrors(['attendance' => "Siswa berikut sudah tercatat hadir pada tanggal tersebut: {$names}. Setiap siswa hanya dapat diabsensi sekali per hari."]);
+        }
+
+        DB::transaction(function () use ($validated, $studentIds) {
+            foreach ($studentIds as $studentId) {
                 $activeEnrollment = ClassStudent::with('schoolClass.program')
                     ->where('student_id', $studentId)
                     ->where('is_active', true)
@@ -128,8 +139,7 @@ class AttendanceController extends Controller
         ]);
 
         $exists = Attendance::where('student_id', $attendance->student_id)
-            ->where('session_number', $attendance->session_number)
-            ->where('attendance_date', $validated['attendance_date'])
+            ->whereDate('attendance_date', $validated['attendance_date'])
             ->where('id', '!=', $attendance->id)
             ->exists();
 
@@ -162,5 +172,14 @@ class AttendanceController extends Controller
         $attendance->delete();
 
         return back()->with('success', 'Data absensi berhasil dihapus.');
+    }
+
+    private function attendanceByDate(): array
+    {
+        return Attendance::query()
+            ->get(['attendance_date', 'student_id'])
+            ->groupBy(fn (Attendance $attendance) => $attendance->attendance_date->format('Y-m-d'))
+            ->map(fn ($group) => $group->pluck('student_id')->map(fn ($id) => (int) $id)->all())
+            ->all();
     }
 }

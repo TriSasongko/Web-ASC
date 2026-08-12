@@ -16,7 +16,8 @@
                 :action="route('admin.attendances.store')"
                 :cancel="route('admin.attendances.index')"
                 :classes="$classes"
-                :students="$students" />
+                :students="$students"
+                :attendanceByDate="$attendanceByDate" />
         </div>
     </div>
 </x-sidebar-layout>

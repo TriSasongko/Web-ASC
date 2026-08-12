@@ -4,16 +4,18 @@
     'submitLabel' => 'Simpan Absensi',
     'classes' => collect(),
     'students' => collect(),
+    'attendanceByDate' => [],
 ])
 
-<form action="{{ $action }}" method="POST" class="space-y-6">
+<form action="{{ $action }}" method="POST" class="space-y-6"
+      x-data="{ attendanceDate: @js(old('attendance_date', now()->format('Y-m-d'))), search: '', classId: '', recorded: @js($attendanceByDate) }">
     @csrf
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <x-input-label for="attendance_date" value="Tanggal Latihan" />
             <x-text-input id="attendance_date" type="date" name="attendance_date" class="mt-1 block w-full"
-                          value="{{ old('attendance_date', now()->format('Y-m-d')) }}" required />
+                          x-model="attendanceDate" value="{{ old('attendance_date', now()->format('Y-m-d')) }}" required />
             <x-input-error :messages="$errors->get('attendance_date')" class="mt-2" />
         </div>
         <div>
@@ -24,12 +26,17 @@
         </div>
     </div>
 
-    <div class="border-t border-outline-variant/30 pt-6" x-data="{ search: '', classId: '' }">
+    <div class="border-t border-outline-variant/30 pt-6">
         <div class="flex items-center gap-2 mb-1">
             <span class="material-symbols-outlined text-primary text-[20px]">groups</span>
             <h3 class="font-headline text-headline-sm text-on-surface">Daftar Siswa</h3>
+            <span class="ml-auto inline-flex items-center gap-1 font-body-sm text-body-sm text-outline"
+                  x-show="(recorded[attendanceDate] || []).length > 0" x-cloak>
+                <span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+                <span x-text="(recorded[attendanceDate] || []).length + ' siswa sudah di absen pada tanggal ini'"></span>
+            </span>
         </div>
-        <p class="font-body-sm text-body-sm text-outline mb-4">Cari nama murid atau filter kelas, lalu centang siswa yang hadir.</p>
+        <p class="font-body-sm text-body-sm text-outline mb-4">Setiap siswa hanya dapat diabsensi sekali per hari. Siswa yang sudah tercatat hadir pada tanggal terpilih otomatis dinonaktifkan.</p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
@@ -77,10 +84,17 @@
                                 {{ $primary ? $primary->pivot->sessions_completed.'/'.($primary->program->total_sessions ?? '∞') : '-' }}
                             </td>
                             <td class="px-4 py-2 text-right">
-                                <label class="cursor-pointer inline-flex items-center gap-1.5">
-                                    <input type="checkbox" name="attendance[]" value="{{ $student->id }}" class="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary/40">
-                                    <span class="font-body-sm text-body-sm text-on-surface-variant">Hadir</span>
-                                </label>
+                                <template x-if="(recorded[attendanceDate] || []).includes({{ $student->id }})">
+                                    <span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-secondary whitespace-nowrap">
+                                        <span class="material-symbols-outlined text-[16px]">check_circle</span> Sudah di absen
+                                    </span>
+                                </template>
+                                <template x-if="!(recorded[attendanceDate] || []).includes({{ $student->id }})">
+                                    <label class="cursor-pointer inline-flex items-center gap-1.5">
+                                        <input type="checkbox" name="attendance[]" value="{{ $student->id }}" class="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary/40">
+                                        <span class="font-body-sm text-body-sm text-on-surface-variant">Hadir</span>
+                                    </label>
+                                </template>
                             </td>
                         </tr>
                     @empty

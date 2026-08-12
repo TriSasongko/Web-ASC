@@ -16,7 +16,8 @@
                 :action="route('pelatih.attendances.store')"
                 :cancel="route('pelatih.attendances.index')"
                 :classes="$classes"
-                :students="$students" />
+                :students="$students"
+                :attendanceByDate="$attendanceByDate" />
         </div>
     </div>
 </x-sidebar-layout>
