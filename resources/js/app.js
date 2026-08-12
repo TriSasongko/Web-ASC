@@ -26,4 +26,38 @@ window.confirmToggleDevelopment = function (event, form, coachName, isOn) {
     return false;
 };
 
+window.confirmMoveToClass = function (event, form, studentName) {
+    event.preventDefault();
+
+    var select = form.querySelector('select[name="target_class_id"]');
+    var targetName = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : '';
+
+    if (!select.value) {
+        Swal.fire({
+            title: 'Pilih kelas target',
+            text: 'Silakan pilih kelas target terlebih dahulu.',
+            icon: 'warning',
+            confirmButtonText: 'OK',
+        });
+
+        return false;
+    }
+
+    Swal.fire({
+        title: 'Ajukan Naik Kelas?',
+        html: '<strong>' + studentName + '</strong> akan diajukan naik ke <strong>' + targetName + '</strong>.',
+        text: 'Wajib konfirmasi ke orang tua sebelum siswa dipindahkan.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Ajukan',
+        cancelButtonText: 'Batal',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+
+    return false;
+};
+
 Alpine.start();

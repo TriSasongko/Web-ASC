@@ -181,7 +181,7 @@
                                                         </button>
                                                     </div>
                                                     <form action="{{ route('admin.class-students.move', $e->id) }}" method="POST" class="px-6 py-5 space-y-4"
-                                                          onsubmit="return confirm('Ajukan {{ $student->full_name }} ke kelas terpilih? Wajib konfirmasi ke orang tua sebelum siswa dipindahkan.')">
+                                                          onsubmit="return confirmMoveToClass(event, this, '{{ $student->full_name }}')">
                                                         @csrf
                                                         <div>
                                                             <x-input-label for="target_class_id" value="Kelas Target" />
