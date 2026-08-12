@@ -90,6 +90,29 @@ class ClassStudent extends Model
         return $total !== null && $this->sessions_completed >= $total;
     }
 
+    /**
+     * Perlu konfirmasi kelanjutan: sudah di-flag perlu_konfirmasi, atau paket
+     * per_paket sudah habis tapi belum diputuskan (belum lanjut/berhenti/pindah).
+     * Menjamin siswa 8/8 atau 4/4 selalu muncul di halaman perpanjangan.
+     */
+    public function needsRenewalConfirmation(): bool
+    {
+        if ($this->renewal_status === self::RENEWAL_STATUS_PERLU_KONFIRMASI) {
+            return true;
+        }
+
+        if (! $this->isFinished()) {
+            return false;
+        }
+
+        return ! in_array($this->renewal_status, [
+            self::RENEWAL_STATUS_LANJUT,
+            self::RENEWAL_STATUS_BERHENTI,
+            self::RENEWAL_STATUS_PINDAH,
+            self::RENEWAL_STATUS_SELESAI,
+        ], true);
+    }
+
     public function markForRenewalIfNeeded(): void
     {
         $program = $this->schoolClass?->program;

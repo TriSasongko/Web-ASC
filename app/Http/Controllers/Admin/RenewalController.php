@@ -13,8 +13,8 @@ class RenewalController extends Controller
     {
         $enrollments = ClassStudent::with(['student.parent', 'schoolClass.program'])
             ->where('is_active', true)
-            ->where('renewal_status', ClassStudent::RENEWAL_STATUS_PERLU_KONFIRMASI)
             ->get()
+            ->filter(fn ($enrollment) => $enrollment->needsRenewalConfirmation())
             ->sortBy('student.full_name');
 
         return view('admin.renewals.index', compact('enrollments'));
@@ -23,7 +23,7 @@ class RenewalController extends Controller
     public function confirmRenewal(Student $student, ClassStudent $classStudent)
     {
         abort_unless($classStudent->student_id === $student->id, 404);
-        abort_unless($classStudent->renewal_status === ClassStudent::RENEWAL_STATUS_PERLU_KONFIRMASI, 403);
+        abort_unless($classStudent->needsRenewalConfirmation(), 403);
 
         $defer = $classStudent->schoolClass?->program?->billing_type === 'per_paket'
             && $classStudent->remainingSessions() > 0;
@@ -50,7 +50,7 @@ class RenewalController extends Controller
     public function declineRenewal(Student $student, ClassStudent $classStudent)
     {
         abort_unless($classStudent->student_id === $student->id, 404);
-        abort_unless($classStudent->renewal_status === ClassStudent::RENEWAL_STATUS_PERLU_KONFIRMASI, 403);
+        abort_unless($classStudent->needsRenewalConfirmation(), 403);
 
         $classStudent->update([
             'is_active' => false,

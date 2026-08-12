@@ -37,6 +37,9 @@
                                 $progress = $total ? min(100, (int) round($completed / $total * 100)) : 0;
                                 $phone = preg_replace('/\D/', '', $student?->parent?->phone ?? '');
                                 $wa = 'https://wa.me/'.preg_replace('/^0/', '62', $phone);
+                                $waText = $left > 0
+                                    ? 'Halo '.$student->parent->name.', paket '.$program->name.' an. '.$student->full_name.' tersisa '.$left.' pertemuan lagi. Apakah ingin memperpanjang paket?'
+                                    : 'Halo '.$student->parent->name.', paket '.$program->name.' an. '.$student->full_name.' sudah habis ('.$completed.'/'.$total.'). Apakah ingin memperpanjang paket?';
                             @endphp
 
                             <tr x-data="{ confirmOpen: false, declineOpen: false }" class="hover:bg-surface-container-low/50 transition-colors">
@@ -66,7 +69,7 @@
                                 <td class="px-4 py-3">
                                     <div class="flex flex-wrap items-center gap-2">
                                         @if ($phone)
-                                            <a href="{{ $wa }}?text={{ urlencode('Halo '.$student->parent->name.', paket '.$program->name.' an. '.$student->full_name.' tersisa '.$left.' pertemuan lagi. Apakah ingin memperpanjang paket?') }}"
+                                            <a href="{{ $wa }}?text={{ urlencode($waText) }}"
                                                target="_blank"
                                                class="inline-flex items-center justify-center gap-1.5 bg-[#E8F5E9] text-[#2E7D32] px-3 py-1.5 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all active:scale-95">
                                                 <span class="material-symbols-outlined text-[16px]">chat</span>

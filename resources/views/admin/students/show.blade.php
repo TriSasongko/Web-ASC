@@ -264,8 +264,13 @@
                                             <p class="font-body-sm text-body-sm text-outline">Pertemuan: {{ $pivot->sessions_completed }}/{{ $total }} (sisa {{ $left }}x)</p>
                                             <p class="font-body-sm text-body-sm text-outline mb-2">Orang Tua: {{ $student->parent->name }} ({{ $student->parent->phone ?? '-' }})</p>
 
+                                            @php
+                                                $waMsg = $left === 0
+                                                    ? 'Halo '.$student->parent->name.', paket '.$class->program->name.' an. '.$student->full_name.' sudah habis ('.$pivot->sessions_completed.'/'.$total.'). Apakah ingin memperpanjang paket?'
+                                                    : 'Halo '.$student->parent->name.', paket '.$class->program->name.' an. '.$student->full_name.' tersisa '.$left.' pertemuan lagi. Harga '.$fmt($class->program->price).'. Apakah ingin memperpanjang paket?';
+                                            @endphp
                                             @if ($phone)
-                                                <a href="{{ $wa }}?text={{ urlencode('Halo '.$student->parent->name.', paket '.$class->program->name.' an. '.$student->full_name.' tersisa '.$left.' pertemuan lagi. Harga '.$fmt($class->program->price).'. Apakah ingin memperpanjang paket?') }}"
+                                                <a href="{{ $wa }}?text={{ urlencode($waMsg) }}"
                                                    target="_blank" class="flex items-center justify-center gap-2 bg-[#E8F5E9] text-[#2E7D32] px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all">
                                                     <span class="material-symbols-outlined text-[16px]">chat</span>
                                                     Konfirmasi via WA

@@ -10,6 +10,7 @@ use App\Models\Registration;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClassStudentController extends Controller
 {
@@ -132,13 +133,25 @@ class ClassStudentController extends Controller
     {
         abort_unless($enrollment->schoolClass->program->billing_type === 'per_paket', 403);
 
-        $enrollment->update([
-            'sessions_completed' => 0,
-            'is_active' => true,
-            'renewal_status' => 'lanjut',
-            'renewal_note' => $request->renewal_note ?: null,
-            'renewed_at' => now(),
-        ]);
+        DB::transaction(function () use ($enrollment, $request) {
+            $note = $request->renewal_note ?: null;
+
+            // Sisa sesi masih ada: tandai lanjut, sesi terakhir yang tercatat nanti
+            // otomatis membuka periode paket baru. Counter tidak direset di periode ini.
+            if ($enrollment->remainingSessions() > 0) {
+                $enrollment->update([
+                    'renewal_status' => ClassStudent::RENEWAL_STATUS_LANJUT,
+                    'renewal_note' => $note,
+                    'renewed_at' => now(),
+                ]);
+
+                return;
+            }
+
+            // Paket sudah habis: langsung buat periode paket baru.
+            $enrollment->renewIntoNextPeriod();
+            $enrollment->update(['renewal_note' => $note]);
+        });
 
         return back()->with('success', 'Paket '.$enrollment->student->full_name.' berhasil diperpanjang.');
     }

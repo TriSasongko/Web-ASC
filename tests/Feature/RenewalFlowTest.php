@@ -171,7 +171,22 @@ class RenewalFlowTest extends TestCase
         $this->assertSame(1, ClassStudent::where('student_id', $student->id)->count());
     }
 
-    public function test_confirm_renewal_requires_perlu_konfirmasi_status(): void
+    public function test_confirm_renewal_rejects_enrollment_not_needing_confirmation(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 3, 'belum_konfirmasi');
+
+        $this->actingAs($admin)
+            ->post(route('admin.renewals.confirm', [$student, $enrollment]))
+            ->assertForbidden();
+
+        $this->assertTrue($enrollment->fresh()->is_active);
+        $this->assertSame(1, ClassStudent::where('student_id', $student->id)->count());
+    }
+
+    public function test_confirm_renewal_accepts_finished_package_without_flag(): void
     {
         $admin = $this->makeAdmin();
         $student = $this->makeStudent($this->makeParent());
@@ -180,10 +195,17 @@ class RenewalFlowTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('admin.renewals.confirm', [$student, $enrollment]))
-            ->assertForbidden();
+            ->assertRedirect()
+            ->assertSessionHas('success');
 
-        $this->assertTrue($enrollment->fresh()->is_active);
-        $this->assertSame(1, ClassStudent::where('student_id', $student->id)->count());
+        $new = ClassStudent::where('student_id', $student->id)
+            ->where('id', '!=', $enrollment->id)
+            ->firstOrFail();
+
+        $this->assertFalse($enrollment->fresh()->is_active);
+        $this->assertSame('selesai', $enrollment->fresh()->renewal_status);
+        $this->assertTrue($new->is_active);
+        $this->assertSame(0, $new->sessions_completed);
     }
 
     public function test_non_admin_cannot_access_renewal_pages(): void
@@ -223,6 +245,49 @@ class RenewalFlowTest extends TestCase
             ->get(route('admin.renewals.index'))
             ->assertOk()
             ->assertDontSee($student->full_name);
+    }
+
+    public function test_renewals_index_lists_finished_package_without_flag(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $this->makeEnrollment($student, $class, 8, 'belum_konfirmasi');
+
+        $this->actingAs($admin)
+            ->get(route('admin.renewals.index'))
+            ->assertOk()
+            ->assertSee($student->full_name);
+    }
+
+    public function test_renewals_index_hides_finished_package_with_status_lanjut(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $this->makeEnrollment($student, $class, 8, 'lanjut');
+
+        $this->actingAs($admin)
+            ->get(route('admin.renewals.index'))
+            ->assertOk()
+            ->assertDontSee($student->full_name);
+    }
+
+    public function test_decline_renewal_accepts_finished_package_without_flag(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 8, 'belum_konfirmasi');
+
+        $this->actingAs($admin)
+            ->post(route('admin.renewals.decline', [$student, $enrollment]))
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $fresh = $enrollment->fresh();
+        $this->assertFalse($fresh->is_active);
+        $this->assertSame('berhenti', $fresh->renewal_status);
     }
 
     public function test_attendance_records_class_student_id_of_active_period_after_renewal(): void

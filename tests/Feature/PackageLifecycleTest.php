@@ -116,7 +116,7 @@ class PackageLifecycleTest extends TestCase
         $this->assertSame('belum_konfirmasi', $data['enrollment']->fresh()->renewal_status);
     }
 
-    public function test_renew_resets_sessions_and_reactivates()
+    public function test_renew_creates_new_period_when_package_finished()
     {
         $parent = $this->makeParent();
         $child = $this->makeStudent($parent);
@@ -126,11 +126,82 @@ class PackageLifecycleTest extends TestCase
             ->patch(route('admin.class-students.renew', $data['enrollment']))
             ->assertRedirect();
 
+        $old = $data['enrollment']->fresh();
+        $this->assertFalse($old->is_active);
+        $this->assertSame('selesai', $old->renewal_status);
+
+        $new = ClassStudent::where('student_id', $child->id)
+            ->where('id', '!=', $old->id)
+            ->firstOrFail();
+        $this->assertTrue($new->is_active);
+        $this->assertSame(0, $new->sessions_completed);
+        $this->assertSame('aktif', $new->renewal_status);
+        $this->assertSame($old->id, $new->renewed_from_id);
+    }
+
+    public function test_renew_defers_when_package_has_remaining_sessions()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 7);
+
+        $this->actingAs($data['admin'])
+            ->patch(route('admin.class-students.renew', $data['enrollment']))
+            ->assertRedirect();
+
         $fresh = $data['enrollment']->fresh();
-        $this->assertSame(0, $fresh->sessions_completed);
         $this->assertTrue($fresh->is_active);
         $this->assertSame('lanjut', $fresh->renewal_status);
-        $this->assertNotNull($fresh->renewed_at);
+        $this->assertSame(7, $fresh->sessions_completed);
+        $this->assertSame(1, ClassStudent::where('student_id', $child->id)->count());
+    }
+
+    public function test_renew_defer_then_attendance_finishes_old_and_starts_new_period()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 7);
+
+        $this->actingAs($data['admin'])
+            ->patch(route('admin.class-students.renew', $data['enrollment']))
+            ->assertRedirect();
+
+        // Sesi ke-8: masuk paket lama dan otomatis membuka periode baru.
+        $this->actingAs($data['admin'])
+            ->post(route('admin.attendances.store'), [
+                'attendance_date' => '2026-08-12',
+                'attendance' => [$child->id],
+            ])
+            ->assertRedirect();
+
+        $old = $data['enrollment']->fresh();
+        $this->assertFalse($old->is_active);
+        $this->assertSame('selesai', $old->renewal_status);
+        $this->assertSame(8, $old->sessions_completed);
+
+        $new = ClassStudent::where('student_id', $child->id)
+            ->where('id', '!=', $old->id)
+            ->firstOrFail();
+        $this->assertSame(0, $new->sessions_completed);
+
+        $this->assertSame(1, Attendance::where('student_id', $child->id)
+            ->where('class_student_id', $old->id)
+            ->whereDate('attendance_date', '2026-08-12')
+            ->count());
+
+        // Sesi berikutnya masuk periode paket baru.
+        $this->actingAs($data['admin'])
+            ->post(route('admin.attendances.store'), [
+                'attendance_date' => '2026-08-13',
+                'attendance' => [$child->id],
+            ])
+            ->assertRedirect();
+
+        $this->assertSame(1, $new->fresh()->sessions_completed);
+        $this->assertSame(1, Attendance::where('student_id', $child->id)
+            ->where('class_student_id', $new->id)
+            ->whereDate('attendance_date', '2026-08-13')
+            ->count());
     }
 
     public function test_parent_toggle_hides_all_children_and_restores_them()
