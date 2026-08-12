@@ -100,9 +100,9 @@
                             $slots = $total
                                 ? collect(range(1, $total))->map(fn ($i) => [
                                     'label' => 'Sesi '.$i,
-                                    'dateLabel' => $records->firstWhere('session_number', $i)?->attendance_date->format('d/m/Y') ?? '-',
-                                    'recorder' => $records->firstWhere('session_number', $i)?->recorder?->name,
-                                    'attended' => (bool) $records->firstWhere('session_number', $i),
+                                    'dateLabel' => $records->get($i - 1)?->attendance_date->format('d/m/Y') ?? '-',
+                                    'recorder' => $records->get($i - 1)?->recorder?->name,
+                                    'attended' => (bool) $records->get($i - 1),
                                 ])
                                 : collect();
                         @endphp
@@ -153,9 +153,9 @@
                     @php
                         $slots = collect(range(1, $total))->map(fn ($i) => [
                             'label' => 'Sesi '.$i,
-                            'dateLabel' => $records->firstWhere('session_number', $i)?->attendance_date->format('d/m/Y') ?? '-',
-                            'recorder' => $records->firstWhere('session_number', $i)?->recorder?->name,
-                            'attended' => (bool) $records->firstWhere('session_number', $i),
+                            'dateLabel' => $records->get($i - 1)?->attendance_date->format('d/m/Y') ?? '-',
+                            'recorder' => $records->get($i - 1)?->recorder?->name,
+                            'attended' => (bool) $records->get($i - 1),
                         ]);
                     @endphp
                     @include('admin.students._attendance-grid', ['slots' => $slots])

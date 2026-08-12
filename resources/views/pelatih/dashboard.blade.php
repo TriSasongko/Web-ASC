@@ -281,7 +281,7 @@
                             <div class="min-w-0">
                                 <p class="font-label-md text-label-md text-on-surface truncate">{{ $attendance->student?->full_name ?? '-' }}</p>
                                 <p class="font-label-sm text-label-sm text-outline truncate">
-                                    {{ $attendance->schoolClass?->name ?? 'Tanpa Kelas' }} · {{ $attendance->attendance_date->format('d M Y') }} · Sesi {{ $attendance->session_number }}
+                                    {{ $attendance->schoolClass?->name ?? 'Tanpa Kelas' }} · {{ $attendance->attendance_date->format('d M Y') }}
                                 </p>
                             </div>
                         </div>

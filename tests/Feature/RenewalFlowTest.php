@@ -485,4 +485,38 @@ class RenewalFlowTest extends TestCase
 
         $this->assertSame(1, substr_count($content, '01/07/2026'));
     }
+
+    public function test_student_rekap_uses_chronological_order_not_session_number(): void
+    {
+        $admin = $this->makeAdmin();
+        $student = $this->makeStudent($this->makeParent());
+        $class = $this->makeClass($this->makeProgram());
+        $enrollment = $this->makeEnrollment($student, $class, 2, 'aktif');
+
+        Attendance::create([
+            'class_id' => $class->id,
+            'class_student_id' => $enrollment->id,
+            'student_id' => $student->id,
+            'recorded_by' => $admin->id,
+            'attendance_date' => '2026-08-01',
+            'session_number' => 1,
+        ]);
+
+        Attendance::create([
+            'class_id' => $class->id,
+            'class_student_id' => $enrollment->id,
+            'student_id' => $student->id,
+            'recorded_by' => $admin->id,
+            'attendance_date' => '2026-08-08',
+            'session_number' => 1,
+        ]);
+
+        $content = $this->actingAs($admin)
+            ->get(route('admin.students.show', $student))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertSame(1, substr_count($content, '01/08/2026'));
+        $this->assertSame(1, substr_count($content, '08/08/2026'));
+    }
 }
