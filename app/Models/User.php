@@ -140,4 +140,16 @@ class User extends Authenticatable
         return $this->belongsToMany(ClassSchedule::class, 'class_schedule_user', 'user_id', 'class_schedule_id')
             ->withTimestamps();
     }
+
+    // Pengaturan honor pelatih ini
+    public function salarySetting()
+    {
+        return $this->hasOne(CoachSalarySetting::class, 'user_id');
+    }
+
+    // Pembayaran honor pelatih ini
+    public function salaryPayments()
+    {
+        return $this->hasMany(SalaryPayment::class, 'user_id')->orderByDesc('paid_at');
+    }
 }

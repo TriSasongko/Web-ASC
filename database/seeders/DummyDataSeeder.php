@@ -6,12 +6,16 @@ use App\Models\Attendance;
 use App\Models\ClassRecommendation;
 use App\Models\ClassSchedule;
 use App\Models\ClassStudent;
+use App\Models\CoachSalarySetting;
 use App\Models\Development;
 use App\Models\Program;
 use App\Models\Registration;
+use App\Models\SalaryPayment;
+use App\Models\SalarySetting;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
+use App\Services\SalaryService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -64,14 +68,48 @@ class DummyDataSeeder extends Seeder
             $data = $this->studentData()[$student->full_name];
 
             if ($data['class'] !== null) {
-                $this->createEnrollment($student, $classes, $data, $coaches);
+                $this->createEnrollment($student, $classes, $data);
             }
         }
 
         $this->addKiranaTransfer($studentsByName, $classes, $coaches);
-        $this->addTrialAttendances($studentsByName, $coaches);
         $this->assignSchedules($classes, $schedules, $coaches);
+
+        // Absensi dibuat setelah siswa ditempatkan ke jadwal agar session_number
+        // mengikuti sesi (1/2) milik siswa pada kelas paralel. Satu pelatih dipilih
+        // per kelas (pelatih demo di kelas Reguler paralel, sisanya acak tanpa
+        // pengulangan) supaya rekap honor paralel terbentuk dan tersebar ke banyak pelatih.
+        $classRecorder = [
+            $classes['Reguler']->id => $demoCoach,
+        ];
+
+        $recorderPool = $coaches->reject(fn (User $coach) => $coach->id === $demoCoach->id)->shuffle();
+
+        foreach ($students as $student) {
+            $data = $this->studentData()[$student->full_name];
+
+            if ($data['class'] === null) {
+                continue;
+            }
+
+            $class = $classes[$data['class']];
+            $recorder = $classRecorder[$class->id] ??= $recorderPool->shift() ?? $coaches->random();
+
+            $periods = $student->enrollments()
+                ->with('renewals')
+                ->where('class_id', $class->id)
+                ->get();
+
+            foreach ($periods as $period) {
+                $this->createAttendances($student, $class, $period->sessions_completed, $recorder, $period);
+            }
+
+            $this->createDevelopment($student, $class, $coaches, $data['completed']);
+        }
+
+        $this->addTrialAttendances($studentsByName, $coaches);
         $this->createRecommendations($studentsByName, $classes, $coaches, $admin);
+        $this->createSalaryDemoPayments($coaches);
     }
 
     private function createCoaches(User $demoCoach): Collection
@@ -164,7 +202,10 @@ class DummyDataSeeder extends Seeder
         $scheduleConfig = [
             'Private' => [['senin', '15:00', '16:00', 1]],
             'Mini Private' => [['selasa', '15:00', '16:00', 1]],
-            'Reguler' => [['rabu', '15:00', '16:30', 1]],
+            'Reguler' => [
+                ['rabu', '15:00', '16:30', 1],
+                ['rabu', '16:30', '18:00', 2],
+            ],
             'Mini Reguler' => [['jumat', '15:00', '16:30', 1]],
             'Kompetitif A' => [['sabtu', '07:00', '09:00', 1]],
             'Kompetitif B' => [['minggu', '07:00', '09:00', 1]],
@@ -191,13 +232,22 @@ class DummyDataSeeder extends Seeder
     private function assignSchedules(array $classes, array $schedules, Collection $coaches): void
     {
         foreach ($schedules as $className => $items) {
-            $studentIds = $classes[$className]->students()->pluck('students.id');
+            $studentIds = $classes[$className]->students()->pluck('students.id')->values();
             $assignedCoaches = $coaches->random(mt_rand(1, min(2, $coaches->count())));
 
-            foreach ($items as $schedule) {
+            foreach ($items as $index => $schedule) {
                 if ($studentIds->isNotEmpty()) {
-                    $schedule->students()->sync($studentIds);
+                    if (count($items) > 1) {
+                        // Kelas paralel: siswa dibagi merata per sesi.
+                        $chunkSize = (int) ceil($studentIds->count() / count($items));
+                        $sessionStudents = $studentIds->slice($index * $chunkSize, $chunkSize);
+                    } else {
+                        $sessionStudents = $studentIds;
+                    }
+
+                    $schedule->students()->sync($sessionStudents);
                 }
+
                 $schedule->coaches()->sync($assignedCoaches->pluck('id'));
             }
         }
@@ -218,7 +268,7 @@ class DummyDataSeeder extends Seeder
         ]);
     }
 
-    private function createEnrollment(Student $student, array $classes, array $data, Collection $coaches): void
+    private function createEnrollment(Student $student, array $classes, array $data): void
     {
         $class = $classes[$data['class']];
         $total = $class->program->total_sessions;
@@ -227,12 +277,16 @@ class DummyDataSeeder extends Seeder
         // buat rantai 2 periode (lama selesai + baru aktif) agar rekap absensi
         // menunjukkan paket terpisah, seperti hasil perpanjangan asli.
         if ($data['renewal'] === 'lanjut' && $total !== null && $data['completed'] >= $total) {
-            $this->createRenewedPeriods($student, $class, $data, $coaches);
+            $this->createRenewedPeriods($student, $class, $data);
 
             return;
         }
 
-        $enrollment = ClassStudent::create([
+        $endedAt = in_array($data['renewal'], ['berhenti', 'pindah'], true)
+            ? now()->subDays(mt_rand(8, 15))
+            : null;
+
+        ClassStudent::create([
             'class_id' => $class->id,
             'student_id' => $student->id,
             'level' => $data['level'] ?? null,
@@ -242,18 +296,16 @@ class DummyDataSeeder extends Seeder
             'renewal_status' => $data['renewal'],
             'renewal_note' => $this->renewalNote($data['renewal']),
             'renewed_at' => in_array($data['renewal'], ['lanjut', 'berhenti', 'pindah']) ? now()->subDays(mt_rand(1, 15)) : null,
-            'started_at' => now()->subDays(mt_rand(30, 120)),
+            'started_at' => now()->subWeeks($data['completed'] + 3),
+            'ended_at' => $endedAt,
         ]);
-
-        $this->createAttendances($student, $class, $data['completed'], $coaches, $enrollment);
-        $this->createDevelopment($student, $class, $coaches, $data['completed']);
     }
 
-    private function createRenewedPeriods(Student $student, SchoolClass $class, array $data, Collection $coaches): void
+    private function createRenewedPeriods(Student $student, SchoolClass $class, array $data): void
     {
         $total = $class->program->total_sessions;
         $newCompleted = min($data['new_completed'] ?? 0, $total);
-        $newStartedAt = now()->subDays(20);
+        $newStartedAt = now()->subDays(24);
         $registrationId = $student->registrations()->first()?->id;
 
         $old = ClassStudent::create([
@@ -264,11 +316,11 @@ class DummyDataSeeder extends Seeder
             'sessions_completed' => $total,
             'is_active' => false,
             'renewal_status' => 'selesai',
-            'started_at' => now()->subDays(120),
+            'started_at' => $newStartedAt->copy()->subWeeks($total + 2),
             'ended_at' => $newStartedAt,
         ]);
 
-        $new = ClassStudent::create([
+        ClassStudent::create([
             'class_id' => $class->id,
             'student_id' => $student->id,
             'level' => $data['level'] ?? null,
@@ -279,35 +331,73 @@ class DummyDataSeeder extends Seeder
             'renewed_from_id' => $old->id,
             'started_at' => $newStartedAt,
         ]);
-
-        $this->createAttendances($student, $class, $total, $coaches, $old);
-        $this->createAttendances($student, $class, $newCompleted, $coaches, $new);
-        $this->createDevelopment($student, $class, $coaches, max($data['completed'], $newCompleted));
     }
 
-    private function createAttendances(Student $student, SchoolClass $class, int $count, Collection $coaches, ?ClassStudent $period = null): void
+    private function createAttendances(Student $student, SchoolClass $class, int $count, User $recorder, ?ClassStudent $period = null): void
     {
         if ($count <= 0) {
             return;
         }
 
-        $start = $period?->started_at
-            ? Carbon::parse($period->started_at)
-            : now()->subDays(7 * $count);
-        $recorder = $coaches->random();
-        $location = $this->locations[array_rand($this->locations)];
+        $start = $period?->started_at ? Carbon::parse($period->started_at)->addDay() : now()->subWeeks($count);
+        $end = $period?->ended_at ? Carbon::parse($period->ended_at)->subDay() : now();
 
-        for ($i = 1; $i <= $count; $i++) {
+        // Tanggal latihan = hari jadwal kelas, mundur mingguan dari akhir periode
+        // agar semua siswa sekelas berbagi tanggal yang sama (rekap honor paralel).
+        $cursor = $end->copy();
+
+        while (! $cursor->isDayOfWeek($this->dayIndex($this->scheduleDayFor($class)))) {
+            $cursor->subDay();
+        }
+
+        $session = $this->sessionNumberFor($student, $class);
+        $location = $this->locations[array_rand($this->locations)];
+        $dates = [];
+
+        for ($i = 0; $i < $count; $i++) {
+            $date = $cursor->copy()->subWeeks($i);
+
+            if ($date->lt($start)) {
+                break;
+            }
+
+            $dates[] = $date;
+        }
+
+        foreach (array_reverse($dates) as $date) {
             Attendance::create([
                 'class_id' => $class->id,
                 'class_student_id' => $period?->id,
                 'student_id' => $student->id,
                 'recorded_by' => $recorder->id,
-                'attendance_date' => $start->copy()->addDays(7 * ($i - 1)),
-                'session_number' => $i,
+                'attendance_date' => $date,
+                'session_number' => $session,
                 'location' => $location,
             ]);
         }
+    }
+
+    private function scheduleDayFor(SchoolClass $class): string
+    {
+        return $class->schedules()->value('day') ?? 'minggu';
+    }
+
+    private function sessionNumberFor(Student $student, SchoolClass $class): int
+    {
+        return (int) ($student->schedules()->where('class_id', $class->id)->value('class_schedules.session_number') ?? 1);
+    }
+
+    private function dayIndex(string $day): int
+    {
+        return match ($day) {
+            'senin' => Carbon::MONDAY,
+            'selasa' => Carbon::TUESDAY,
+            'rabu' => Carbon::WEDNESDAY,
+            'kamis' => Carbon::THURSDAY,
+            'jumat' => Carbon::FRIDAY,
+            'sabtu' => Carbon::SATURDAY,
+            default => Carbon::SUNDAY,
+        };
     }
 
     private function createDevelopment(Student $student, SchoolClass $class, Collection $coaches, int $completed): void
@@ -341,7 +431,7 @@ class DummyDataSeeder extends Seeder
     {
         $kirana = $studentsByName['Kirana Ayu'];
 
-        ClassStudent::create([
+        $enrollment = ClassStudent::create([
             'class_id' => $classes['Kompetitif A']->id,
             'student_id' => $kirana->id,
             'level' => 3,
@@ -356,6 +446,7 @@ class DummyDataSeeder extends Seeder
 
         Attendance::create([
             'class_id' => $classes['Kompetitif A']->id,
+            'class_student_id' => $enrollment->id,
             'student_id' => $kirana->id,
             'recorded_by' => $coaches->random()->id,
             'attendance_date' => now()->subDays(2),
@@ -371,12 +462,18 @@ class DummyDataSeeder extends Seeder
         foreach (['Zahra Amalia', 'Alya Ramadhani'] as $name) {
             $student = $studentsByName[$name];
 
+            $date = now()->subDays(mt_rand(45, 70))->startOfDay();
+
+            while (Attendance::where('student_id', $student->id)->whereDate('attendance_date', $date)->exists()) {
+                $date->subDay();
+            }
+
             Attendance::create([
                 'class_id' => null,
                 'student_id' => $student->id,
                 'recorded_by' => $coaches->random()->id,
-                'attendance_date' => now()->subDays(mt_rand(40, 60)),
-                'session_number' => 99,
+                'attendance_date' => $date,
+                'session_number' => 1,
                 'location' => $this->locations[array_rand($this->locations)],
             ]);
         }
@@ -409,6 +506,54 @@ class DummyDataSeeder extends Seeder
                 'status' => $rec['status'],
                 'approved_by' => $rec['status'] === 'diterima' ? $admin->id : null,
                 'moved_at' => $rec['status'] === 'diterima' ? now() : null,
+            ]);
+        }
+    }
+
+    private function createSalaryDemoPayments(Collection $coaches): void
+    {
+        SalarySetting::updateOrCreate(
+            [],
+            [
+                'rate_reguler_satu' => 50000,
+                'rate_reguler_dua_plus' => 75000,
+                'rate_paralel_dua' => 80000,
+                'rate_paralel_banyak' => 100000,
+            ]
+        );
+
+        foreach ($coaches as $coach) {
+            CoachSalarySetting::firstOrCreate(
+                ['user_id' => $coach->id],
+                ['session_limit' => [8, 12, 24][array_rand([8, 12, 24])]]
+            );
+        }
+
+        // Bayar separuh unit honor tiap pelatih agar halaman honor menunjukkan
+        // riwayat pembayaran sekaligus sisa honor yang belum dibayar.
+        $service = new SalaryService;
+
+        foreach ($coaches as $coach) {
+            $unpaid = $service->unpaidSessions($coach);
+
+            if ($unpaid->isEmpty()) {
+                continue;
+            }
+
+            $payCount = (int) floor($unpaid->count() / 2);
+
+            if ($payCount < 1) {
+                continue;
+            }
+
+            $batch = $unpaid->take($payCount);
+
+            SalaryPayment::create([
+                'user_id' => $coach->id,
+                'amount' => (int) $batch->sum('nominal'),
+                'session_count' => $batch->count(),
+                'paid_at' => now()->subDays(mt_rand(5, 20)),
+                'note' => 'Pembayaran honor '.now()->translatedFormat('F Y'),
             ]);
         }
     }

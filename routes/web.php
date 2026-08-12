@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ParentController;
 use App\Http\Controllers\Admin\RecommendationController as AdminRecommendation;
 use App\Http\Controllers\Admin\RegistrationController as AdminRegistration;
 use App\Http\Controllers\Admin\RenewalController as AdminRenewal;
+use App\Http\Controllers\Admin\SalaryController as AdminSalary;
 use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StudentController;
@@ -114,6 +115,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Route E-Raport untuk Admin
     Route::get('eraports', [AdminERaport::class, 'index'])->name('eraports.index');
+
+    // Route Honor Pelatih untuk Admin
+    Route::get('salaries', [AdminSalary::class, 'index'])->name('salaries.index');
+    Route::put('salaries/rates', [AdminSalary::class, 'updateRates'])->name('salaries.rates');
+    Route::put('salaries/{coach}/limit', [AdminSalary::class, 'updateLimit'])->name('salaries.limit');
+    Route::post('salaries/{coach}/pay', [AdminSalary::class, 'pay'])->name('salaries.pay');
+    Route::delete('salary-payments/{payment}', [AdminSalary::class, 'destroyPayment'])->name('salaries.payments.destroy');
 
     // Route Pengaturan Landing Page untuk Admin
     Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');

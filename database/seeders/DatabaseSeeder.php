@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             ProgramSeeder::class,
             DummyDataSeeder::class,
             LandingPageSeeder::class,
+            SalarySettingSeeder::class,
         ]);
     }
 }

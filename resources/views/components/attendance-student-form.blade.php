@@ -8,8 +8,8 @@
     'blockedStudentIds' => [],
 ])
 
-<form action="{{ $action }}" method="POST" class="space-y-6"
-      x-data="{ attendanceDate: @js(old('attendance_date', now()->format('Y-m-d'))), search: '', classId: '', recorded: @js($attendanceByDate), blocked: @js($blockedStudentIds) }">
+    <form action="{{ $action }}" method="POST" class="space-y-6"
+          x-data="{ attendanceDate: @js(old('attendance_date', now()->format('Y-m-d'))), search: '', classId: '', session: 1, recorded: @js($attendanceByDate), blocked: @js($blockedStudentIds) }">
     @csrf
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -39,13 +39,19 @@
         </div>
         <p class="font-body-sm text-body-sm text-outline mb-4">Setiap siswa hanya dapat diabsensi sekali per hari. Siswa yang sudah tercatat hadir pada tanggal terpilih otomatis dinonaktifkan.</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
                 <select x-model="classId" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
                     <option value="">-- Semua Kelas --</option>
                     @foreach ($classes as $class)
                         <option value="{{ $class->id }}">{{ $class->name }} ({{ $class->level_label }} · {{ $class->program->name }})</option>
                     @endforeach
+                </select>
+            </div>
+            <div>
+                <select name="session_number" x-model="session" class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                    <option value="1">Sesi 1</option>
+                    <option value="2">Sesi 2</option>
                 </select>
             </div>
             <div>

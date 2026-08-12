@@ -48,6 +48,7 @@ class AttendanceController extends Controller
         $validated = $request->validate([
             'attendance_date' => ['required', 'date'],
             'location' => ['nullable', 'string', 'max:255'],
+            'session_number' => ['nullable', 'integer', 'in:1,2'],
             'attendance' => ['required', 'array'],
             'attendance.*' => ['integer', 'exists:students,id'],
         ]);
