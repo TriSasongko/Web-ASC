@@ -134,8 +134,7 @@ class AttendanceController extends Controller
             }
         });
 
-        return redirect()->route('pelatih.attendances.history')
-            ->with('success', 'Absensi berhasil disimpan.');
+        return back()->with('success', 'Absensi berhasil disimpan.');
     }
 
     public function history(Request $request)

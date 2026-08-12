@@ -601,7 +601,8 @@ class PackageLifecycleTest extends TestCase
                 'attendance_date' => '2026-08-09',
                 'attendance' => [$child->id],
             ])
-            ->assertRedirect(route('pelatih.attendances.history'));
+            ->assertRedirect()
+            ->assertSessionHas('success');
 
         $this->assertTrue(Attendance::where('student_id', $child->id)
             ->where('recorded_by', $substitute->id)

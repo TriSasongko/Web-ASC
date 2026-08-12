@@ -11,6 +11,19 @@
             </a>
         </div>
 
+        @if (session('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    Swal.fire({
+                        title: 'Absensi Tersimpan',
+                        text: '{{ session('success') }}',
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                    });
+                });
+            </script>
+        @endif
+
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6 md:p-8 max-w-4xl">
             <x-attendance-student-form
                 :action="route('pelatih.attendances.store')"

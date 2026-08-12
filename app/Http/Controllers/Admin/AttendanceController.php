@@ -134,8 +134,7 @@ class AttendanceController extends Controller
             }
         });
 
-        return redirect()->route('admin.attendances.history')
-            ->with('success', 'Absensi berhasil disimpan oleh Admin.');
+        return back()->with('success', 'Absensi berhasil disimpan.');
     }
 
     public function history(Request $request)
