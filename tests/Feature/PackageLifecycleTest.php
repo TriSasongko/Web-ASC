@@ -408,7 +408,7 @@ class PackageLifecycleTest extends TestCase
         $this->assertSame(1, ClassRecommendation::where('student_id', $child->id)->count());
     }
 
-    public function test_attendance_does_not_exceed_package_total()
+    public function test_attendance_is_blocked_when_package_total_is_finished()
     {
         $parent = $this->makeParent();
         $child = $this->makeStudent($parent);
@@ -419,10 +419,86 @@ class PackageLifecycleTest extends TestCase
                 'attendance_date' => '2026-08-09',
                 'attendance' => [$child->id],
             ])
-            ->assertRedirect();
+            ->assertSessionHasErrors('attendance');
 
         $this->assertSame(8, $data['enrollment']->fresh()->sessions_completed);
         $this->assertTrue($data['enrollment']->fresh()->is_active);
+        $this->assertSame(0, Attendance::where('student_id', $child->id)
+            ->whereDate('attendance_date', '2026-08-09')
+            ->count());
+    }
+
+    public function test_attendance_allows_the_last_session_before_package_finishes()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 7);
+
+        $this->actingAs($data['admin'])
+            ->post(route('admin.attendances.store'), [
+                'attendance_date' => '2026-08-09',
+                'attendance' => [$child->id],
+            ])
+            ->assertRedirect();
+
+        $this->assertSame(8, $data['enrollment']->fresh()->sessions_completed);
+    }
+
+    public function test_attendance_is_blocked_for_finished_package_recorded_by_coach()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 8);
+
+        $this->actingAs($data['coach'])
+            ->post(route('pelatih.attendances.store'), [
+                'attendance_date' => '2026-08-09',
+                'attendance' => [$child->id],
+            ])
+            ->assertSessionHasErrors('attendance');
+
+        $this->assertSame(0, Attendance::where('student_id', $child->id)
+            ->whereDate('attendance_date', '2026-08-09')
+            ->count());
+    }
+
+    public function test_attendance_allowed_when_finished_package_has_status_lanjut()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 8);
+
+        $data['enrollment']->update(['renewal_status' => 'lanjut']);
+
+        $this->actingAs($data['admin'])
+            ->post(route('admin.attendances.store'), [
+                'attendance_date' => '2026-08-09',
+                'attendance' => [$child->id],
+            ])
+            ->assertRedirect();
+
+        $next = ClassStudent::where('student_id', $child->id)
+            ->where('id', '!=', $data['enrollment']->id)
+            ->firstOrFail();
+
+        $this->assertFalse($data['enrollment']->fresh()->is_active);
+        $this->assertTrue($next->is_active);
+        $this->assertSame(1, Attendance::where('student_id', $child->id)
+            ->where('class_student_id', $next->id)
+            ->whereDate('attendance_date', '2026-08-09')
+            ->count());
+    }
+
+    public function test_create_page_marks_finished_package_student_as_paket_habis()
+    {
+        $parent = $this->makeParent();
+        $child = $this->makeStudent($parent);
+        $data = $this->makeEnrollment($child, 8);
+
+        $this->actingAs($data['admin'])
+            ->get(route('admin.attendances.create'))
+            ->assertOk()
+            ->assertSee('Paket habis');
     }
 
     public function test_attendance_increments_active_package_sessions()

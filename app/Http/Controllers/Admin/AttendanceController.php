@@ -33,7 +33,12 @@ class AttendanceController extends Controller
             ->orderBy('full_name')
             ->get();
 
-        return view('admin.attendances.create', compact('classes', 'students') + [
+        $blockedStudentIds = $students->filter(fn (Student $student) => $student->classes->isNotEmpty()
+            && $student->classes->every(fn ($class) => $this->attendanceBlocked($class)))
+            ->pluck('id')
+            ->all();
+
+        return view('admin.attendances.create', compact('classes', 'students', 'blockedStudentIds') + [
             'attendanceByDate' => $this->attendanceByDate(),
         ]);
     }
@@ -65,6 +70,26 @@ class AttendanceController extends Controller
             return back()
                 ->withInput()
                 ->withErrors(['attendance' => "Siswa berikut sudah tercatat hadir pada tanggal tersebut: {$names}. Setiap siswa hanya dapat diabsensi sekali per hari."]);
+        }
+
+        $finishedNames = collect($studentIds)
+            ->filter(function ($studentId) {
+                $enrollments = ClassStudent::with('schoolClass.program')
+                    ->where('student_id', $studentId)
+                    ->where('is_active', true)
+                    ->get();
+
+                return $enrollments->isNotEmpty()
+                    && $enrollments->every(fn ($enrollment) => $this->attendanceBlocked($enrollment));
+            })
+            ->map(fn ($id) => Student::find($id)?->full_name)
+            ->filter()
+            ->implode(', ');
+
+        if ($finishedNames !== '') {
+            return back()
+                ->withInput()
+                ->withErrors(['attendance' => "Siswa berikut paketnya sudah habis: {$finishedNames}. Lanjutkan atau hentikan paketnya dulu sebelum absensi berikutnya."]);
         }
 
         DB::transaction(function () use ($validated, $studentIds) {
@@ -181,5 +206,30 @@ class AttendanceController extends Controller
             ->groupBy(fn (Attendance $attendance) => $attendance->attendance_date->format('Y-m-d'))
             ->map(fn ($group) => $group->pluck('student_id')->map(fn ($id) => (int) $id)->all())
             ->all();
+    }
+
+    /**
+     * Absensi diblokir jika semua kelas aktif siswa adalah paket per_paket yang
+     * sudah habis dan belum status lanjut. Status lanjut tetap boleh absen karena
+     * store() otomatis membuka periode paket berikutnya.
+     *
+     * Menerima ClassStudent (dari store) atau SchoolClass + pivot (dari create).
+     */
+    private function attendanceBlocked(ClassStudent|SchoolClass $enrollmentOrClass): bool
+    {
+        $program = $enrollmentOrClass->schoolClass?->program ?? $enrollmentOrClass->program;
+
+        if ($program?->billing_type !== 'per_paket' || $program->total_sessions === null) {
+            return false;
+        }
+
+        $sessionsCompleted = $enrollmentOrClass->pivot->sessions_completed ?? $enrollmentOrClass->sessions_completed;
+        $renewalStatus = $enrollmentOrClass->pivot->renewal_status ?? $enrollmentOrClass->renewal_status;
+
+        if ($renewalStatus === ClassStudent::RENEWAL_STATUS_LANJUT) {
+            return false;
+        }
+
+        return $sessionsCompleted >= $program->total_sessions;
     }
 }

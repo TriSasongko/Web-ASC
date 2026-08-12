@@ -5,10 +5,11 @@
     'classes' => collect(),
     'students' => collect(),
     'attendanceByDate' => [],
+    'blockedStudentIds' => [],
 ])
 
 <form action="{{ $action }}" method="POST" class="space-y-6"
-      x-data="{ attendanceDate: @js(old('attendance_date', now()->format('Y-m-d'))), search: '', classId: '', recorded: @js($attendanceByDate) }">
+      x-data="{ attendanceDate: @js(old('attendance_date', now()->format('Y-m-d'))), search: '', classId: '', recorded: @js($attendanceByDate), blocked: @js($blockedStudentIds) }">
     @csrf
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -84,12 +85,17 @@
                                 {{ $primary ? $primary->pivot->sessions_completed.'/'.($primary->program->total_sessions ?? '∞') : '-' }}
                             </td>
                             <td class="px-4 py-2 text-right">
-                                <template x-if="(recorded[attendanceDate] || []).includes({{ $student->id }})">
+                                <template x-if="blocked.includes({{ $student->id }})">
+                                    <span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-orange whitespace-nowrap">
+                                        <span class="material-symbols-outlined text-[16px]">event_busy</span> Paket habis
+                                    </span>
+                                </template>
+                                <template x-if="!blocked.includes({{ $student->id }}) && (recorded[attendanceDate] || []).includes({{ $student->id }})">
                                     <span class="inline-flex items-center gap-1 font-body-sm text-body-sm text-secondary whitespace-nowrap">
                                         <span class="material-symbols-outlined text-[16px]">check_circle</span> Sudah di absen
                                     </span>
                                 </template>
-                                <template x-if="!(recorded[attendanceDate] || []).includes({{ $student->id }})">
+                                <template x-if="!blocked.includes({{ $student->id }}) && !(recorded[attendanceDate] || []).includes({{ $student->id }})">
                                     <label class="cursor-pointer inline-flex items-center gap-1.5">
                                         <input type="checkbox" name="attendance[]" value="{{ $student->id }}" class="h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary/40">
                                         <span class="font-body-sm text-body-sm text-on-surface-variant">Hadir</span>

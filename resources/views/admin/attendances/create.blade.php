@@ -17,7 +17,8 @@
                 :cancel="route('admin.attendances.index')"
                 :classes="$classes"
                 :students="$students"
-                :attendanceByDate="$attendanceByDate" />
+                :attendanceByDate="$attendanceByDate"
+                :blockedStudentIds="$blockedStudentIds" />
         </div>
     </div>
 </x-sidebar-layout>
