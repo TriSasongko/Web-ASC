@@ -42,12 +42,14 @@
         <!-- 1. Navbar -->
         @include('partials.header')
 
+        @php $s = $settings; @endphp
+
         <!-- 2. Hero Section -->
         <section class="relative pt-32 pb-16 md:pb-24 min-h-[90vh] flex items-center overflow-hidden">
             <!-- Background Image with Overlay -->
             <div class="absolute inset-0 z-0">
                 <div class="bg-cover bg-center w-full h-full"
-                     style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD4cneCRj7gVWVu5MoJSEhNOT2StGeVi4mEs0NzDt4j1OYkICwUtTlG34CCrhjYMwIpfst55mmAikPMfxcDcK6d1lRiMN1T1Z19N1fj_uIOsnkK5bjOOdNzAx-E1lGEXFF4kLGImmMHVkKKapB5CWSRcKt01UrlKnVgjTstB46ckJtLbIg0rKS4nFkTtJgn1dK5saaGvQn-0xCmi6IRQUth5XPAT4TK1sYC-fTnSwI5ZIjbNPZA_jgn')"></div>
+                     style="background-image: url('{{ $s['hero_image'] ?? '' }}')"></div>
                 <div class="absolute inset-0 bg-primary/80 mix-blend-multiply backdrop-blur-[2px]"></div>
             </div>
 
@@ -55,19 +57,19 @@
                 <!-- Text Content -->
                 <div class="text-on-primary space-y-6">
                     <h1 class="font-headline text-headline-lg-mobile md:text-headline-xl text-on-primary leading-tight">
-                        Belajar Renang Bersama <span class="text-orange-lighter">Coach Berpengalaman</span>
+                        {{ $s['hero_title'] ?? 'Belajar Renang Bersama ' }}<span class="text-orange-lighter">{{ $s['hero_highlight'] ?? 'Coach Berpengalaman' }}</span>
                     </h1>
                     <p class="font-body text-body-lg text-on-primary/90 max-w-xl">
-                        Program latihan aman, menyenangkan, dan berorientasi pada pencapaian, didampingi secara khusus oleh coach ahli bersertifikat.
+                        {{ $s['hero_subtitle'] ?? 'Program latihan aman, menyenangkan, dan berorientasi pada pencapaian, didampingi secara khusus oleh coach ahli bersertifikat.' }}
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 pt-4">
                         <a href="{{ route('register') }}"
                             class="bg-orange text-white px-8 py-4 rounded-lg font-body text-label-md text-center hover:bg-orange-light transition-colors shadow-lg shadow-orange/30">
-                            Daftar Sekarang
+                            {{ $s['hero_cta_primary'] ?? 'Daftar Sekarang' }}
                         </a>
                         <a href="#program"
                             class="bg-surface/10 backdrop-blur-sm border-2 border-on-primary text-on-primary px-8 py-4 rounded-lg font-body text-label-md text-center hover:bg-surface/20 transition-colors">
-                            Lihat Program
+                            {{ $s['hero_cta_secondary'] ?? 'Lihat Program' }}
                         </a>
                     </div>
                 </div>
@@ -76,8 +78,8 @@
                 <div class="hidden lg:block relative">
                     <div class="absolute inset-0 bg-orange/20 rounded-[2rem] transform rotate-3 scale-105 z-0 blur-xl"></div>
                     <img class="relative z-10 w-full h-auto rounded-[2rem] shadow-2xl object-cover aspect-[4/3] border-4 border-surface/30"
-                         alt="Anak-anak belajar renang bersama coach ASC"
-                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwN_z28IRGM_zCNn-d4plYCjWDys2KEkgg-mLNuv7eSWtkTBNKbHWlgXM30wsMxpc6WaGOeAjJ1zshXMZKwbYoo1OJKE0pBoFk0CidghkeUEoTZmyW49KD-aaF-oulIWzmxHFG2eT0xk5OaWjY9527tTyD4LMsL5OxgjVMvV62xAP4d7SSRiP4DUM54m72iBDRQZilVq5VVA1-yQXenm9TCxm62ccbOiqIhbSKeZSh9oIG3KJoC3ES">
+                         alt="{{ $s['hero_side_image_alt'] ?? 'Anak-anak belajar renang bersama coach ASC' }}"
+                         src="{{ $s['hero_side_image'] ?? '' }}">
                 </div>
             </div>
         </section>
@@ -87,19 +89,19 @@
             <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     <div class="space-y-6">
-                        <h2 class="font-headline text-headline-lg text-primary font-bold">Tentang Antasena Swimming Club</h2>
-                        <p class="text-on-surface-variant font-body text-body-lg">Berdiri sejak tahun 2010, Antasena Swimming Club (ASC) telah mendedikasikan diri untuk mencetak generasi perenang yang tangguh, percaya diri, dan berprestasi. Kami percaya bahwa berenang bukan sekadar olahraga, melainkan keterampilan hidup (life skill) yang esensial.</p>
+                        <h2 class="font-headline text-headline-lg text-primary font-bold">{{ $s['tentang_heading'] ?? 'Tentang Antasena Swimming Club' }}</h2>
+                        <p class="text-on-surface-variant font-body text-body-lg">{{ $s['tentang_text'] ?? 'Berdiri sejak tahun 2010, Antasena Swimming Club (ASC) telah mendedikasikan diri untuk mencetak generasi perenang yang tangguh, percaya diri, dan berprestasi. Kami percaya bahwa berenang bukan sekadar olahraga, melainkan keterampilan hidup (life skill) yang esensial.' }}</p>
                         <div class="bg-surface-container-low p-6 rounded-xl border-l-4 border-orange space-y-4">
                             <div>
                                 <h3 class="font-headline text-headline-sm text-primary font-semibold">Visi</h3>
-                                <p class="text-on-surface-variant text-body-md mt-2">Menjadi klub renang terbaik yang menginspirasi gaya hidup sehat dan mencetak atlet berprestasi di tingkat nasional maupun internasional.</p>
+                                <p class="text-on-surface-variant text-body-md mt-2">{{ $s['tentang_visi'] ?? 'Menjadi klub renang terbaik yang menginspirasi gaya hidup sehat dan mencetak atlet berprestasi di tingkat nasional maupun internasional.' }}</p>
                             </div>
                             <div>
                                 <h3 class="font-headline text-headline-sm text-primary font-semibold">Misi</h3>
                                 <ul class="list-disc list-inside text-on-surface-variant text-body-md mt-2 space-y-1">
-                                    <li>Menyediakan metode pelatihan yang aman, terstruktur, dan menyenangkan.</li>
-                                    <li>Mengembangkan potensi setiap individu melalui pendekatan personal.</li>
-                                    <li>Menumbuhkan karakter disiplin, sportivitas, dan pantang menyerah.</li>
+                                    @foreach (collect(preg_split('/\r\n|\r|\n/', $s['tentang_misi'] ?? ''))->map(fn ($line) => trim($line))->filter() as $misi)
+                                        <li>{{ $misi }}</li>
+                                    @endforeach
                                 </ul>
                             </div>
                         </div>
@@ -107,10 +109,10 @@
                     <div class="relative">
                         <img alt="Kegiatan latihan renang di ASC"
                              class="rounded-2xl shadow-xl w-full object-cover aspect-[4/3]"
-                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmiadFbEY1R71f-xV10Cxoiqukf6VBfRXqj7WAZDt-9S6Qsaz14Ulc-fu2uW0Musp9wb2TDiJAnbNlef8AaXiOgPpxm8_YD4j-2Q2M_DCiQw4xeQVj4ZJ_loKzBmTJdlo7aKKbvLKtMznAVcrjHc8KykjKgfGvluY1i6IhJlR8AH0AaM-RitVo7ZINwDDQFJf99rWANhjcTy3ywYqqXGoy8sdBD396_dEBeG7v-MPlOLBzu9KEVlrz">
+                             src="{{ $s['tentang_image'] ?? '' }}">
                         <div class="absolute -bottom-6 -left-6 bg-primary text-on-primary p-6 rounded-xl shadow-lg hidden md:block">
-                            <p class="font-headline text-headline-xl text-orange">10+</p>
-                            <p class="font-body text-label-sm uppercase tracking-wider">Tahun Pengalaman</p>
+                            <p class="font-headline text-headline-xl text-orange">{{ $s['tentang_years'] ?? '10+' }}</p>
+                            <p class="font-body text-label-sm uppercase tracking-wider">{{ $s['tentang_years_label'] ?? 'Tahun Pengalaman' }}</p>
                         </div>
                     </div>
                 </div>
@@ -181,156 +183,43 @@
         <section class="py-16 md:py-24 bg-surface" id="program">
             <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
                 <div class="text-center mb-12">
-                    <h2 class="font-headline text-headline-lg text-primary font-bold">Program Kelas Kami</h2>
-                    <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">Pilih program yang paling sesuai dengan kebutuhan dan target Anda.</p>
+                    <h2 class="font-headline text-headline-lg text-primary font-bold">{{ $s['program_heading'] ?? 'Program Kelas Kami' }}</h2>
+                    <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">{{ $s['program_subtitle'] ?? 'Pilih program yang paling sesuai dengan kebutuhan dan target Anda.' }}</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                    <!-- Private -->
-                    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-md hover:shadow-xl transition-shadow flex flex-col">
-                        <div class="mb-4">
-                            <h3 class="font-headline text-headline-sm text-primary font-bold">Private</h3>
-                            <p class="text-on-surface-variant text-label-sm mt-1">1 Coach : 1 Siswa</p>
+                    @foreach ($programs as $program)
+                        <div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-md hover:shadow-xl transition-shadow flex flex-col relative overflow-hidden {{ $program->featured ? 'border-t-4 border-t-primary' : '' }}">
+                            @if ($program->badge)
+                                <div class="absolute top-0 right-0 bg-orange text-white text-xs font-bold px-3 py-1 rounded-bl-lg">{{ $program->badge }}</div>
+                            @endif
+                            <div class="mb-4">
+                                <h3 class="font-headline text-headline-sm text-primary font-bold">{{ $program->name }}</h3>
+                                @if ($program->subtitle)
+                                    <p class="text-on-surface-variant text-label-sm mt-1">{{ $program->subtitle }}</p>
+                                @endif
+                            </div>
+                            <div class="mb-6">
+                                @if ($program->price)
+                                    <span class="font-headline text-headline-lg text-orange font-bold">Rp{{ number_format($program->price, 0, ',', '.') }}</span>
+                                    <span class="text-on-surface-variant text-body-md">{{ $program->billing_unit }}</span>
+                                @else
+                                    <span class="font-headline text-headline-lg text-orange font-bold">Hubungi Kami</span>
+                                @endif
+                            </div>
+                            <ul class="space-y-3 mb-8 flex-grow">
+                                @foreach ($program->featureList() as $feature)
+                                    <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
+                                        <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
+                                        <span>{{ $feature }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            <a href="{{ route('register') }}"
+                                class="w-full text-center {{ $program->featured ? 'bg-primary text-on-primary hover:bg-primary-container' : ($program->badge ? 'bg-primary text-on-primary hover:bg-primary-container' : 'bg-outline text-on-primary hover:bg-outline-variant') }} py-2 rounded-lg font-body text-label-md transition-colors mt-auto">
+                                {{ $program->button_label ?? 'Pilih Program' }}
+                            </a>
                         </div>
-                        <div class="mb-6">
-                            <span class="font-headline text-headline-lg text-orange font-bold">Rp500rb</span>
-                            <span class="text-on-surface-variant text-body-md">/sesi</span>
-                        </div>
-                        <ul class="space-y-3 mb-8 flex-grow">
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Fokus intensif 1 on 1</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Jadwal sangat fleksibel</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Progres lebih cepat</span>
-                            </li>
-                        </ul>
-                        <a href="{{ route('register') }}"
-                            class="w-full text-center bg-primary text-on-primary py-2 rounded-lg font-body text-label-md hover:bg-primary-container transition-colors mt-auto">
-                            Pilih Program
-                        </a>
-                    </div>
-                    <!-- Mini Private -->
-                    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-md hover:shadow-xl transition-shadow flex flex-col relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-orange text-white text-xs font-bold px-3 py-1 rounded-bl-lg">POPULER</div>
-                        <div class="mb-4">
-                            <h3 class="font-headline text-headline-sm text-primary font-bold">Mini Private</h3>
-                            <p class="text-on-surface-variant text-label-sm mt-1">1 Coach : 2-3 Siswa</p>
-                        </div>
-                        <div class="mb-6">
-                            <span class="font-headline text-headline-lg text-orange font-bold">Rp300rb</span>
-                            <span class="text-on-surface-variant text-body-md">/sesi</span>
-                        </div>
-                        <ul class="space-y-3 mb-8 flex-grow">
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Cocok untuk keluarga/teman</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Perhatian tetap optimal</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Lebih hemat</span>
-                            </li>
-                        </ul>
-                        <a href="{{ route('register') }}"
-                            class="w-full text-center bg-primary text-on-primary py-2 rounded-lg font-body text-label-md hover:bg-primary-container transition-colors mt-auto">
-                            Pilih Program
-                        </a>
-                    </div>
-                    <!-- Reguler -->
-                    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-md hover:shadow-xl transition-shadow flex flex-col">
-                        <div class="mb-4">
-                            <h3 class="font-headline text-headline-sm text-primary font-bold">Reguler</h3>
-                            <p class="text-on-surface-variant text-label-sm mt-1">1 Coach : Max 8 Siswa</p>
-                        </div>
-                        <div class="mb-6">
-                            <span class="font-headline text-headline-lg text-orange font-bold">Rp350rb</span>
-                            <span class="text-on-surface-variant text-body-md">/bulan</span>
-                        </div>
-                        <ul class="space-y-3 mb-8 flex-grow">
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>4x pertemuan/bulan</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Belajar bersama teman sebaya</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Kurikulum terstruktur</span>
-                            </li>
-                        </ul>
-                        <a href="{{ route('register') }}"
-                            class="w-full text-center bg-outline text-on-primary py-2 rounded-lg font-body text-label-md hover:bg-outline-variant transition-colors mt-auto">
-                            Pilih Program
-                        </a>
-                    </div>
-                    <!-- Mini Reguler -->
-                    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-md hover:shadow-xl transition-shadow flex flex-col">
-                        <div class="mb-4">
-                            <h3 class="font-headline text-headline-sm text-primary font-bold">Mini Reguler</h3>
-                            <p class="text-on-surface-variant text-label-sm mt-1">1 Coach : Max 5 Siswa</p>
-                        </div>
-                        <div class="mb-6">
-                            <span class="font-headline text-headline-lg text-orange font-bold">Rp200rb</span>
-                            <span class="text-on-surface-variant text-body-md">/sesi</span>
-                        </div>
-                        <ul class="space-y-3 mb-8 flex-grow">
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Kelompok kecil</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Fokus lebih baik dari reguler</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Interaksi sosial terjaga</span>
-                            </li>
-                        </ul>
-                        <a href="{{ route('register') }}"
-                            class="w-full text-center bg-outline text-on-primary py-2 rounded-lg font-body text-label-md hover:bg-outline-variant transition-colors mt-auto">
-                            Pilih Program
-                        </a>
-                    </div>
-                    <!-- Kompetitif -->
-                    <div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-md hover:shadow-xl transition-shadow flex flex-col border-t-4 border-t-primary">
-                        <div class="mb-4">
-                            <h3 class="font-headline text-headline-sm text-primary font-bold">Kompetitif</h3>
-                            <p class="text-on-surface-variant text-label-sm mt-1">Program Khusus Atlet</p>
-                        </div>
-                        <div class="mb-6">
-                            <span class="font-headline text-headline-lg text-orange font-bold">Rp300rb</span>
-                            <span class="text-on-surface-variant text-body-md">/bulan</span>
-                        </div>
-                        <ul class="space-y-3 mb-8 flex-grow">
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Latihan intensif</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Persiapan kejuaraan</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
-                                <span>Evaluasi berkala ketat</span>
-                            </li>
-                        </ul>
-                        <a href="{{ route('register') }}"
-                            class="w-full text-center bg-primary text-on-primary py-2 rounded-lg font-body text-label-md hover:bg-primary-container transition-colors mt-auto">
-                            Pilih Program
-                        </a>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </section>
@@ -391,58 +280,28 @@
                     <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">Dilatih langsung oleh para profesional bersertifikat yang berdedikasi tinggi.</p>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Coach 1 -->
-                    <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-md group">
-                        <div class="relative overflow-hidden aspect-[3/4]">
-                            <img alt="Coach Budi"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeo77mtiXI7SW9GOwmS9QuwGRGDjxWA16W2Ls0kayebuujMQ-kwoohS4jdKR_-7Vzb1hhl-CIspsO1bGP5np4UGcprJ-pWWmxTy6gmIdmuKUFZtliz_I1guflrgDtYyIskNfXeSlwv3nWADfTQi69Ijslnr-I8dfc0s_GbYJkUouVn7NKWY5pz_0CKdfZcN4fHHx4flGed_q9XRj1lSuM-yyvkqjVg48WjdZpMbeAKsYA4Dux67O_7">
+                    @forelse ($coaches as $coach)
+                        <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-md group">
+                            <div class="relative overflow-hidden aspect-[3/4]">
+                                @if ($coach->photo_url)
+                                    <img alt="{{ $coach->name }}"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                         src="{{ $coach->photo_url }}">
+                                @else
+                                    <div class="w-full h-full bg-surface-container flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-on-surface-variant text-[64px]">person</span>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="p-6">
+                                <h3 class="font-headline text-headline-sm text-primary font-bold">{{ $coach->name }}</h3>
+                                <p class="text-orange font-body text-label-md mb-2">{{ $coach->position }}</p>
+                                <p class="text-on-surface-variant text-body-sm">{{ $coach->description }}</p>
+                            </div>
                         </div>
-                        <div class="p-6">
-                            <h3 class="font-headline text-headline-sm text-primary font-bold">Budi Santoso</h3>
-                            <p class="text-orange font-body text-label-md mb-2">Head Coach</p>
-                            <p class="text-on-surface-variant text-body-sm">Mantan atlet nasional dengan pengalaman melatih lebih dari 15 tahun. Spesialisasi pada program kompetitif dan pembentukan teknik dasar.</p>
-                        </div>
-                    </div>
-                    <!-- Coach 2 -->
-                    <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-md group">
-                        <div class="relative overflow-hidden aspect-[3/4]">
-                            <img alt="Coach Siti"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaujJ0KbaRnEnDCCceyva2PTCxK2SzHQrlIIMScWeRyLcPR3vJgwl_sg8ujslrvIlCKh6rgxrDZ2PUZLVUq2-fJfVOR7qoQJiPl2VfZ-miTCg4pbhCb9MGiQB-1MPMnpAlknxNVUfTcyIEpZWWV0GrrjS7U4jTQosEkD4NCkytcIHfgzGTjkVgIFHc4fulH1hZrXgq6iqKGbWfZAPEYrAcoYwx_8fDF_RDuM4WjzsRv9yLG1V7k0ZU">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-headline text-headline-sm text-primary font-bold">Siti Rahmawati</h3>
-                            <p class="text-orange font-body text-label-md mb-2">Senior Coach</p>
-                            <p class="text-on-surface-variant text-body-sm">Ahli dalam pendekatan anak-anak usia dini. Sabar, telaten, dan selalu membuat suasana belajar renang menjadi sangat menyenangkan.</p>
-                        </div>
-                    </div>
-                    <!-- Coach 3 -->
-                    <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-md group">
-                        <div class="relative overflow-hidden aspect-[3/4]">
-                            <img alt="Coach Andi"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuABPMGvLp2zbPzfSSw72GWAj1BCTS-N1vhJs-lr-7heikBLSQUEpzzl9sjGIyItbNnN350Yt1RFNUi1U5V4TR-9kkRvz9aolqzHzCIoGR-xtTFa3h88PJ69jYKqE2rhlpYYfHLKL1OJFYje6svxeIgbaBva-AuEYcLD4FIoYQExQ_eCqTydZZTj9YHqDIil46UtsMGaZ6koqcPz2Q5n7wQOV_NQoel8pnNxazRHNaibmP_MFjfmaxRE">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-headline text-headline-sm text-primary font-bold">Andi Pratama</h3>
-                            <p class="text-orange font-body text-label-md mb-2">Coach</p>
-                            <p class="text-on-surface-variant text-body-sm">Spesialis gaya bebas dan kupu-kupu. Fokus pada peningkatan stamina dan perbaikan detail teknik berenang.</p>
-                        </div>
-                    </div>
-                    <!-- Coach 4 -->
-                    <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-md group">
-                        <div class="relative overflow-hidden aspect-[3/4]">
-                            <img alt="Coach Maya"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5WDNHwIogwoeeLcW4e35W2GKQWwtA4u-GZN9mEKMZ47HOvmQscThegdvkyQ-0uQfIabYUf7wfBppnzVqY-kAy2hwnxMYpIQyOOHxLVMUmAVuboM9MRgvrmBNB7JP5W87-lq4XfnxwT4iD4jk3OeN6oXo1azJxuDAHi4siYGDBsAZYKwD3HBQ0MUcHewHbqZCOhf_6quLQbIGW3aLZR41aGMnF_kUi6jHRZP_4U0BhYv1cayC0p5ll">
-                        </div>
-                        <div class="p-6">
-                            <h3 class="font-headline text-headline-sm text-primary font-bold">Maya Sari</h3>
-                            <p class="text-orange font-body text-label-md mb-2">Coach</p>
-                            <p class="text-on-surface-variant text-body-sm">Bersertifikat khusus penyelamatan air (water rescue). Sangat memperhatikan aspek keamanan dan keselamatan selama berlatih.</p>
-                        </div>
-                    </div>
+                    @empty
+                        <p class="col-span-full text-center text-on-surface-variant">Belum ada coach.</p>
+                    @endforelse
                 </div>
             </div>
         </section>
@@ -455,54 +314,16 @@
                     <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">Momen-momen seru dan pencapaian membanggakan siswa-siswi ASC.</p>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <a class="block relative group overflow-hidden rounded-xl aspect-square" href="#galeri">
-                        <img alt="Galeri 1" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCFjAR19WNvx9tJfzMIQU7C-ZAA5JTQpUY1ebjhg4yfBmGOSy4fAOhfZRTEYT17Yg6PyphQKOHSho3UzsYKpqE5l4T7_MEVAb_JKw0jLrAvepaQCy8svP5spDYcLc8EqHPJeiOf4ZrwlSgMgmV2AFw56WMTMYnSFvCjyJIm_L5TTQ3sOtwELddhZnBbIrE2L6LTcCZltanivo6URhU2ojZdVrDvqYouLdku9D7FU7IwD_Xwpe4jdiD">
-                        <div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-on-primary text-4xl">zoom_in</span>
-                        </div>
-                    </a>
-                    <a class="block relative group overflow-hidden rounded-xl aspect-square" href="#galeri">
-                        <img alt="Galeri 2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4P-5_4Y5GizDpwCwV9xBjXIWg8mUjFl81Omq9KtY2DyCdDv6au1RXmLIDVkFsHCe4T6t6VO3DTBs7RV-ZM4iK4lePLqtKiUXSaD71dIUT04MZZq-2j7uRq5u-QH8geBTh5CKv6OShNx8O9rMdUyVYWaUS5vjYtzDCedZH5LK_vpZjy97dDwieHZeXyrpE-4EQRgQadb7WO4ucrs2w28xudGaOVqPfrFui-1O1z_axAI7hpT882Wcn">
-                        <div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-on-primary text-4xl">zoom_in</span>
-                        </div>
-                    </a>
-                    <a class="block relative group overflow-hidden rounded-xl aspect-square" href="#galeri">
-                        <img alt="Galeri 3" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzigC_t94uOPkI0tnm69pMGC7_smYqXWZ9SRMSohLKzHI9zmLeNlV1U4hMEaGkI4-9-CSrf425YQw0HE_lHaPvyilkF3al3V66j6mSHg4UqZYNPp8IF8MY-SSGpV7XeXkA2Xr4AH2_JRHP4gh9kdVZp-czfmD_7poetKY_alGNE005YUHMxZx1LnRPLUTrYJu6OwhxME2bOFAdQnDBuIFmGibLY29oKNCiVU8ER7pnBG0hB1r9vO9Y">
-                        <div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-on-primary text-4xl">zoom_in</span>
-                        </div>
-                    </a>
-                    <a class="block relative group overflow-hidden rounded-xl aspect-square" href="#galeri">
-                        <img alt="Galeri 4" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNHW2v0H8rjqk_809Rul0iwTiPtoVHs9C3DtxxogAITRO9qT0nVMtYSK_qb0s6SdGbiUOUYiBuzfuIZfH-_Xba8vfmojv-IkMOBWJ3hoQbe1AWLo4YyG2NlxBkDYAoyemuezVNO_LqytCC4MR2qbKZFhccx15kjD6rSJzZ0FnQWzZGq5ik6Hece0tZzqmCmgJwc_y_-JEeTkbQ-4YyjAWL1O_PI5tV5RnV7Wb7NB1Zh_4owC63cHYv">
-                        <div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-on-primary text-4xl">zoom_in</span>
-                        </div>
-                    </a>
-                    <a class="block relative group overflow-hidden rounded-xl aspect-square" href="#galeri">
-                        <img alt="Galeri 5" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfmTpBJqswEQZ9ekHqNMgu6_I0z0dO8R2ImxD8Psl_jF9e_5wU7E5NxttMx0cckm2tsZXtcuQTRCqLQNwAg3uMhQf22bl-MD4hwzyYnKkQWuiTzSrfk6VcX3jjb2HzkYJFmbhbJF6qa5KC8izRTOmX2wRSnbvPTEgZ937jh1rmZ41MdgqFyqE7pjquuiJuRL0oxA-MUjCTZtys4qcwQXEFNnAYgS2RnIYDMUEMuQre3yEaQSNlKkPf">
-                        <div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-on-primary text-4xl">zoom_in</span>
-                        </div>
-                    </a>
-                    <a class="block relative group overflow-hidden rounded-xl aspect-square" href="#galeri">
-                        <img alt="Galeri 6" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDuO0KiEFUUcQrDEco2eDycR7OYs6kZTdubh39OM_JiZjFk4h0Ay8OYAtNEnAwuEkkgZrZhu8qmqcsXV6XUXH66Tw4fVbuLHqN5rcLqFGqPvXpmUeIF6rDjDkNmOvE4dtYUqnLaaBjtJx10wl0R79T7NOzn_hm-WmT3MB1QNhsBd5ddoAYt17Fcl-g6_auQ1QLUBQVIb4ahPFLtuUqJbRClVASAzSuo2nqmBHyVLKklP8Nd0BA_vGS">
-                        <div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-on-primary text-4xl">zoom_in</span>
-                        </div>
-                    </a>
-                    <a class="block relative group overflow-hidden rounded-xl aspect-square" href="#galeri">
-                        <img alt="Galeri 7" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBThTzuWI5rBBwhO7oDgVytmutMzhy3fa7Zm69UlhWl7gWjOqKFvCECbsPdF8R8IZ1DhKXv_Y4wyeSzB3CMk8SjfvPPJDahjUeE41RaEvk67Gga93EHDVDrt8oL4b68MYzox5p3c6m2e3rzjFEICWtJdjuJqAW8noPVIX-eLmX2x0miuZV73yWsz5SJpob1M6XcliuO-Rwhd5TPgpEKlnNq45lb4WaPjRYELlJ2-HTTSUEMT8p5i1pC">
-                        <div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-on-primary text-4xl">zoom_in</span>
-                        </div>
-                    </a>
-                    <a class="block relative group overflow-hidden rounded-xl aspect-square" href="#galeri">
-                        <img alt="Galeri 8" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYOHuZo9ysAmIHkpPED6uJw-hDQRSvOW6Um4uUIDoLcVbB58rg8Lss2YoEARULU8ZUsTxK5ktLjEx79uybYNkz8fiUScpUxDN5k8pq6Ws1TovgMVZ7SLNBS2XemjSnzuEmUrJJhDLiCOHNe3fw3vJoaJiDM8_TYZRxNfA_EbV15Y3y8oiG2Yl2ZqPUNJ3FJloDyrggep7vcEUtuDYjozhZpc_WRqfGEVnPeIwIMSiGhGlJKOeZcLHd">
-                        <div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-on-primary text-4xl">zoom_in</span>
-                        </div>
-                    </a>
+                    @forelse ($gallery as $image)
+                        <a class="block relative group overflow-hidden rounded-xl aspect-square" href="{{ url('/galeri') }}">
+                            <img alt="{{ $image->caption ?? 'Galeri ASC' }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="{{ $image->image_url }}">
+                            <div class="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-on-primary text-4xl">zoom_in</span>
+                            </div>
+                        </a>
+                    @empty
+                        <p class="col-span-full text-center text-on-surface-variant">Belum ada foto galeri.</p>
+                    @endforelse
                 </div>
             </div>
         </section>

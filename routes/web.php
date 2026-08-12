@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\SchoolClassController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\ERaportController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\OrangTua\DashboardController as OrangTuaDashboard;
 use App\Http\Controllers\OrangTua\ERaportController as OrangTuaERaport;
 use App\Http\Controllers\OrangTua\RegistrationController as OrangTuaRegistration;
@@ -28,29 +29,19 @@ use App\Http\Controllers\Pelatih\ScheduleController as PelatihSchedule;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [LandingController::class, 'home']);
 
-Route::get('/tentang', function () {
-    return view('tentang');
-});
+Route::get('/tentang', [LandingController::class, 'tentang']);
 
-Route::get('/program', function () {
-    return view('program');
-});
+Route::get('/program', [LandingController::class, 'program']);
 
-Route::get('/galeri', function () {
-    return view('galeri');
-});
+Route::get('/galeri', [LandingController::class, 'galeri']);
 
 Route::get('/faq', function () {
     return view('faq');
 });
 
-Route::get('/kontak', function () {
-    return view('kontak');
-});
+Route::get('/kontak', [LandingController::class, 'kontak']);
 
 // Route dashboard & fitur khusus Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -124,9 +115,25 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Route E-Raport untuk Admin
     Route::get('eraports', [AdminERaport::class, 'index'])->name('eraports.index');
 
-    // Route Pengaturan untuk Admin
+    // Route Pengaturan Landing Page untuk Admin
     Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
-    Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::put('settings/hero', [SettingController::class, 'updateHero'])->name('settings.hero');
+    Route::put('settings/tentang', [SettingController::class, 'updateTentang'])->name('settings.tentang');
+    Route::put('settings/program', [SettingController::class, 'updateProgram'])->name('settings.program');
+    Route::put('settings/galeri', [SettingController::class, 'updateGaleri'])->name('settings.galeri');
+    Route::put('settings/kontak', [SettingController::class, 'updateKontak'])->name('settings.kontak');
+
+    Route::post('settings/coaches', [SettingController::class, 'storeCoach'])->name('settings.coaches.store');
+    Route::put('settings/coaches/{coach}', [SettingController::class, 'updateCoach'])->name('settings.coaches.update');
+    Route::delete('settings/coaches/{coach}', [SettingController::class, 'destroyCoach'])->name('settings.coaches.destroy');
+
+    Route::post('settings/programs', [SettingController::class, 'storeProgram'])->name('settings.programs.store');
+    Route::put('settings/programs/{program}', [SettingController::class, 'updateProgramItem'])->name('settings.programs.update');
+    Route::delete('settings/programs/{program}', [SettingController::class, 'destroyProgram'])->name('settings.programs.destroy');
+
+    Route::post('settings/gallery', [SettingController::class, 'storeGallery'])->name('settings.gallery.store');
+    Route::put('settings/gallery/{gallery}', [SettingController::class, 'updateGallery'])->name('settings.gallery.update');
+    Route::delete('settings/gallery/{gallery}', [SettingController::class, 'destroyGallery'])->name('settings.gallery.destroy');
 });
 
 Route::middleware(['auth', 'role:pelatih'])->prefix('pelatih')->name('pelatih.')->group(function () {

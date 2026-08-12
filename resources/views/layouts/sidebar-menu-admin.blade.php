@@ -25,7 +25,7 @@
             ['label' => 'E-Raport', 'icon' => 'description', 'route' => 'admin.eraports.index', 'active' => request()->routeIs('admin.eraports.*') || request()->routeIs('eraport.*')],
         ],
         'PENGATURAN' => [
-            ['label' => 'Pengaturan', 'icon' => 'settings', 'route' => 'admin.settings.edit', 'active' => request()->routeIs('admin.settings.*')],
+            ['label' => 'Landing Page', 'icon' => 'web', 'route' => 'admin.settings.edit', 'active' => request()->routeIs('admin.settings.*')],
         ],
     ];
 @endphp

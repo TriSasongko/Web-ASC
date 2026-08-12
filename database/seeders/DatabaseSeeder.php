@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             RoleUserSeeder::class,
             ProgramSeeder::class,
             DummyDataSeeder::class,
+            LandingPageSeeder::class,
         ]);
     }
 }

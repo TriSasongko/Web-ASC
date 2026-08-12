@@ -1,10 +1,8 @@
 <x-sidebar-layout>
     <div class="space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Pengaturan</h2>
-                <p class="font-body-sm text-body-sm text-outline mt-1">Nomor telepon dan alamat admin dipakai sebagai kontak website (footer &amp; halaman kontak).</p>
-            </div>
+        <div>
+            <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Pengaturan Landing Page</h2>
+            <p class="font-body-sm text-body-sm text-outline mt-1">Kelola konten halaman depan website (hero, tentang, program, galeri, dan kontak).</p>
         </div>
 
         @if (session('success'))
@@ -14,42 +12,48 @@
             </div>
         @endif
 
-        @php
-            $adminPhone = \App\Models\User::where('role', 'admin')->orderBy('id')->value('phone');
-            $adminAddress = \App\Models\User::where('role', 'admin')->orderBy('id')->value('address');
-        @endphp
+        @if ($errors->any())
+            <div class="flex items-center gap-2 bg-error-container text-on-error-container border border-error/20 px-4 py-3 rounded-lg font-body-sm text-body-sm">
+                <span class="material-symbols-outlined text-[18px]">error</span>
+                Periksa kembali isian form: {{ $errors->first() }}
+            </div>
+        @endif
 
-        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6 md:p-8 max-w-3xl">
-            <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
-                @csrf
-                @method('PUT')
-
-                <div>
-                    <x-input-label for="phone" value="Nomor Telepon / WhatsApp" />
-                    <x-text-input id="phone" name="phone" class="mt-1 block w-full"
-                        value="{{ old('phone', $adminPhone) }}"
-                        placeholder="081234567890" required />
-                    <x-input-error :messages="$errors->get('phone')" class="mt-2" />
-                    <p class="mt-2 font-body-sm text-body-sm text-outline">
-                        Nomor ini tersimpan pada data pengguna admin dan akan tampil di bagian footer serta halaman kontak website.
-                    </p>
-                </div>
-
-                <div>
-                    <x-input-label for="address" value="Alamat" />
-                    <x-text-input id="address" name="address" class="mt-1 block w-full"
-                        value="{{ old('address', $adminAddress) }}"
-                        placeholder="Jl. Prof. Dr. Ir. Sumantri Brojonegoro No.1, ..." required />
-                    <x-input-error :messages="$errors->get('address')" class="mt-2" />
-                    <p class="mt-2 font-body-sm text-body-sm text-outline">
-                        Alamat ini tersimpan pada data pengguna admin dan akan tampil di bagian footer serta halaman kontak website.
-                    </p>
-                </div>
-
-                <div class="flex items-center gap-3 pt-2">
-                    <x-primary-button>Simpan Pengaturan</x-primary-button>
-                </div>
-            </form>
+        {{-- Tab Navigasi --}}
+        <div class="flex gap-1 overflow-x-auto bg-surface-container-low rounded-xl p-1.5">
+            @php
+                $tabs = [
+                    'hero' => ['label' => 'Hero', 'icon' => 'image'],
+                    'tentang' => ['label' => 'Tentang & Coach', 'icon' => 'groups'],
+                    'program' => ['label' => 'Program', 'icon' => 'pool'],
+                    'galeri' => ['label' => 'Galeri', 'icon' => 'photo_library'],
+                    'kontak' => ['label' => 'Kontak', 'icon' => 'contact_phone'],
+                ];
+            @endphp
+            @foreach ($tabs as $key => $item)
+                <a href="{{ route('admin.settings.edit', ['tab' => $key]) }}"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-label-md text-label-md whitespace-nowrap transition-colors {{ $tab === $key ? 'bg-surface-container-lowest text-primary shadow-sm font-bold' : 'text-on-surface-variant hover:bg-surface-container-lowest/50' }}">
+                    <span class="material-symbols-outlined text-[18px] {{ $tab === $key ? 'filled' : '' }}">{{ $item['icon'] }}</span>
+                    {{ $item['label'] }}
+                </a>
+            @endforeach
         </div>
+
+        @switch($tab)
+            @case('tentang')
+                @include('admin.settings.tabs.tentang')
+                @break
+            @case('program')
+                @include('admin.settings.tabs.program')
+                @break
+            @case('galeri')
+                @include('admin.settings.tabs.galeri')
+                @break
+            @case('kontak')
+                @include('admin.settings.tabs.kontak')
+                @break
+            @default
+                @include('admin.settings.tabs.hero')
+        @endswitch
     </div>
 </x-sidebar-layout>

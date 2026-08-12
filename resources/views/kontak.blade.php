@@ -88,7 +88,7 @@
                             <div>
                                 <h2 class="font-headline text-headline-sm font-bold text-primary mb-2">Email</h2>
                                 <p class="text-on-surface-variant">
-                                    <a href="mailto:gilangaudiokorgiepangestu@gmail.com" class="hover:text-orange transition-colors">gilangaudiokorgiepangestu@gmail.com</a>
+                                    <a href="mailto:{{ $settings['kontak_email'] }}" class="hover:text-orange transition-colors">{{ $settings['kontak_email'] }}</a>
                                 </p>
                             </div>
                         </div>
@@ -98,8 +98,19 @@
                             </span>
                             <div>
                                 <h2 class="font-headline text-headline-sm font-bold text-primary mb-2">Jam Operasional</h2>
-                                <p class="text-on-surface-variant">Senin – Jumat: 08.00 – 20.00</p>
-                                <p class="text-on-surface-variant">Sabtu – Minggu: 07.00 – 18.00</p>
+                                <p class="text-on-surface-variant">{{ $settings['kontak_hours_weekday'] }}</p>
+                                <p class="text-on-surface-variant">{{ $settings['kontak_hours_weekend'] }}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 p-6 rounded-2xl border border-outline-variant/50 bg-surface pool-shadow">
+                            <span class="w-12 h-12 shrink-0 rounded-full bg-primary-container text-primary flex items-center justify-center">
+                                <span class="material-symbols-outlined">alternate_email</span>
+                            </span>
+                            <div>
+                                <h2 class="font-headline text-headline-sm font-bold text-primary mb-2">Instagram</h2>
+                                <p class="text-on-surface-variant">
+                                    <a href="{{ $settings['kontak_instagram'] }}" target="_blank" rel="noopener noreferrer" class="hover:text-orange transition-colors">{{ $settings['kontak_instagram_handle'] }}</a>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -145,7 +156,7 @@
                 <div class="mt-16">
                     <div class="relative rounded-3xl overflow-hidden shadow-2xl">
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.3473943868075!2d105.23627687474358!3d-5.363862494614921!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40c54bbc12a533%3A0xf38f052a38ab7537!2sKolam%20Renang%20Universitas%20Lampung!5e0!3m2!1sid!2sid!4v1786456619529!5m2!1sid!2sid"
+                            src="{{ $settings['kontak_maps_url'] }}"
                             class="w-full h-[300px] md:h-[420px] border-0"
                             allowfullscreen=""
                             loading="lazy"
