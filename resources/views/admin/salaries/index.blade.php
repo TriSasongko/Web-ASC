@@ -88,38 +88,161 @@
                 <span class="material-symbols-outlined text-primary text-[20px]">payments</span>
                 <h3 class="font-headline text-headline-sm text-on-surface">Nominal Honor per Sesi</h3>
             </div>
-            <form action="{{ route('admin.salaries.rates') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                @csrf @method('PUT')
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-5">
                 <div>
-                    <x-input-label for="rate_reguler_satu" value="Reguler/Private 1 anak" />
-                    <x-text-input id="rate_reguler_satu" name="rate_reguler_satu" type="number" class="mt-1 block w-full"
-                                  value="{{ old('rate_reguler_satu', $settings->rate_reguler_satu) }}" required />
-                </div>
-                <div>
-                    <x-input-label for="rate_reguler_dua_plus" value="Reguler/Private 2+ anak" />
-                    <x-text-input id="rate_reguler_dua_plus" name="rate_reguler_dua_plus" type="number" class="mt-1 block w-full"
-                                  value="{{ old('rate_reguler_dua_plus', $settings->rate_reguler_dua_plus) }}" required />
+                    <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Reguler/Private 1 anak</p>
+                    <p class="font-headline text-headline-sm text-on-surface mt-1">{{ $fmt($settings->rate_reguler_satu) }}</p>
                 </div>
                 <div>
-                    <x-input-label for="rate_paralel_dua" value="Paralel total 2 anak" />
-                    <x-text-input id="rate_paralel_dua" name="rate_paralel_dua" type="number" class="mt-1 block w-full"
-                                  value="{{ old('rate_paralel_dua', $settings->rate_paralel_dua) }}" required />
+                    <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Reguler/Private 2+ anak</p>
+                    <p class="font-headline text-headline-sm text-on-surface mt-1">{{ $fmt($settings->rate_reguler_dua_plus) }}</p>
                 </div>
                 <div>
-                    <x-input-label for="rate_paralel_banyak" value="Paralel total 3+ anak" />
-                    <x-text-input id="rate_paralel_banyak" name="rate_paralel_banyak" type="number" class="mt-1 block w-full"
-                                  value="{{ old('rate_paralel_banyak', $settings->rate_paralel_banyak) }}" required />
+                    <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Paralel total 2 anak</p>
+                    <p class="font-headline text-headline-sm text-on-surface mt-1">{{ $fmt($settings->rate_paralel_dua) }}</p>
                 </div>
-                <div class="md:col-span-2 lg:col-span-4 flex justify-end pt-2">
-                    <x-primary-button>Simpan Nominal</x-primary-button>
+                <div>
+                    <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Paralel total 3+ anak</p>
+                    <p class="font-headline text-headline-sm text-on-surface mt-1">{{ $fmt($settings->rate_paralel_banyak) }}</p>
                 </div>
-            </form>
-            @if ($errors->any())
-                <div class="mt-4">
-                    <x-input-error :messages="$errors->all()" class="mt-2" />
-                </div>
-            @endif
+            </div>
+            <div class="flex justify-end pt-5">
+                <button type="button" @click="$dispatch('open-modal', 'salary-rates')"
+                        class="inline-flex items-center justify-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all hover:scale-[0.98] shadow-sm active:scale-95">
+                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                    Ubah Nominal
+                </button>
+            </div>
         </div>
+
+        <x-modal name="salary-rates" maxWidth="lg">
+            <form action="{{ route('admin.salaries.rates') }}" method="POST" class="p-6"
+                  x-data="{
+                      initial: @js([
+                          'rate_reguler_satu' => (int) $settings->rate_reguler_satu,
+                          'rate_reguler_dua_plus' => (int) $settings->rate_reguler_dua_plus,
+                          'rate_paralel_dua' => (int) $settings->rate_paralel_dua,
+                          'rate_paralel_banyak' => (int) $settings->rate_paralel_banyak,
+                      ]),
+                      values: @js([
+                          'rate_reguler_satu' => (string) old('rate_reguler_satu', $settings->rate_reguler_satu),
+                          'rate_reguler_dua_plus' => (string) old('rate_reguler_dua_plus', $settings->rate_reguler_dua_plus),
+                          'rate_paralel_dua' => (string) old('rate_paralel_dua', $settings->rate_paralel_dua),
+                          'rate_paralel_banyak' => (string) old('rate_paralel_banyak', $settings->rate_paralel_banyak),
+                      ]),
+                      labels: {
+                          rate_reguler_satu: 'Reguler/Private 1 anak',
+                          rate_reguler_dua_plus: 'Reguler/Private 2+ anak',
+                          rate_paralel_dua: 'Paralel total 2 anak',
+                          rate_paralel_banyak: 'Paralel total 3+ anak',
+                      },
+                      fmt(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); },
+                      get dirty() {
+                          return Object.keys(this.initial).some(k => this.values[k] !== String(this.initial[k]));
+                      },
+                      resetValues() {
+                          this.values = Object.fromEntries(Object.entries(this.initial).map(([k, v]) => [k, String(v)]));
+                      },
+                      confirmSave() {
+                          if (!this.dirty) return;
+
+                          const changes = Object.keys(this.initial)
+                              .filter(k => this.values[k] !== String(this.initial[k]))
+                              .map(k => '<div class=&quot;flex items-center justify-between gap-3 py-1 border-b border-outline-variant/30 last:border-0&quot;>' +
+                                  '<span>' + this.labels[k] + '</span>' +
+                                  '<span class=&quot;whitespace-nowrap&quot;><span class=&quot;line-through text-outline&quot;>' + this.fmt(this.initial[k]) + '</span> ' +
+                                  '<span class=&quot;material-symbols-outlined text-[14px] align-middle&quot;>arrow_forward</span> ' +
+                                  '<span class=&quot;font-label-md text-label-md text-primary&quot;>' + this.fmt(this.values[k]) + '</span></span>' +
+                              '</div>');
+
+                          Swal.fire({
+                              title: 'Simpan Perubahan Honor?',
+                              html: '<p class=&quot;text-sm text-outline mb-2&quot;>Nominal honor per sesi berikut akan diubah:</p>' + changes.join(''),
+                              icon: 'warning',
+                              showCancelButton: true,
+                              confirmButtonText: 'Ya, Simpan',
+                              cancelButtonText: 'Batal',
+                          }).then((result) => {
+                              if (result.isConfirmed) {
+                                  $refs.rateForm.submit();
+                              }
+                          });
+                      },
+                  }"
+                  x-ref="rateForm"
+                  x-on:open-modal.window="if ($event.detail === 'salary-rates') { resetValues(); $nextTick(() => $refs.rate_reguler_satu.focus()); }"
+                  @submit.prevent="confirmSave()">
+                @csrf @method('PUT')
+                <div class="flex items-start justify-between gap-4 mb-5">
+                    <div>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Ubah Nominal Honor</h3>
+                        <p class="font-body-sm text-body-sm text-outline mt-1">Masukkan nominal baru per sesi, lalu simpan.</p>
+                    </div>
+                    <button type="button" @click="$dispatch('close-modal', 'salary-rates')"
+                            class="p-1.5 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container-low transition-colors shrink-0" title="Tutup">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label for="rate_reguler_satu" value="Reguler/Private 1 anak" />
+                        <input id="rate_reguler_satu" name="rate_reguler_satu" type="number" required
+                               x-model="values.rate_reguler_satu" x-ref="rate_reguler_satu"
+                               x-on:wheel.prevent="true"
+                               value="{{ old('rate_reguler_satu', $settings->rate_reguler_satu) }}"
+                               class="w-full border-outline-variant rounded-lg px-3 py-2 bg-surface-container-lowest shadow-sm focus:border-primary focus:ring-primary/30 mt-1 block w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+                    </div>
+                    <div>
+                        <x-input-label for="rate_reguler_dua_plus" value="Reguler/Private 2+ anak" />
+                        <input id="rate_reguler_dua_plus" name="rate_reguler_dua_plus" type="number" required
+                               x-model="values.rate_reguler_dua_plus"
+                               x-on:wheel.prevent="true"
+                               value="{{ old('rate_reguler_dua_plus', $settings->rate_reguler_dua_plus) }}"
+                               class="w-full border-outline-variant rounded-lg px-3 py-2 bg-surface-container-lowest shadow-sm focus:border-primary focus:ring-primary/30 mt-1 block w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+                    </div>
+                    <div>
+                        <x-input-label for="rate_paralel_dua" value="Paralel total 2 anak" />
+                        <input id="rate_paralel_dua" name="rate_paralel_dua" type="number" required
+                               x-model="values.rate_paralel_dua"
+                               x-on:wheel.prevent="true"
+                               value="{{ old('rate_paralel_dua', $settings->rate_paralel_dua) }}"
+                               class="w-full border-outline-variant rounded-lg px-3 py-2 bg-surface-container-lowest shadow-sm focus:border-primary focus:ring-primary/30 mt-1 block w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+                    </div>
+                    <div>
+                        <x-input-label for="rate_paralel_banyak" value="Paralel total 3+ anak" />
+                        <input id="rate_paralel_banyak" name="rate_paralel_banyak" type="number" required
+                               x-model="values.rate_paralel_banyak"
+                               x-on:wheel.prevent="true"
+                               value="{{ old('rate_paralel_banyak', $settings->rate_paralel_banyak) }}"
+                               class="w-full border-outline-variant rounded-lg px-3 py-2 bg-surface-container-lowest shadow-sm focus:border-primary focus:ring-primary/30 mt-1 block w-full [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 mt-6 pt-4 border-t border-outline-variant/30">
+                    <span x-show="!dirty" class="font-body-sm text-body-sm text-outline" x-cloak>
+                        Belum ada perubahan.
+                    </span>
+                    <div class="flex items-center gap-3">
+                        <button type="button" @click="$dispatch('close-modal', 'salary-rates')"
+                                class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-5 py-2.5 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">
+                            Batal
+                        </button>
+                        <button type="submit" :disabled="!dirty"
+                                class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-container text-on-primary rounded-lg font-label-md text-label-md hover:opacity-90 transition-all hover:scale-[0.98] shadow-sm active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-25 disabled:pointer-events-none">
+                            Simpan Nominal
+                        </button>
+                    </div>
+                </div>
+
+                @if ($errors->any())
+                    <div class="mt-4">
+                        <x-input-error :messages="$errors->all()" class="mt-2" />
+                    </div>
+                @endif
+            </form>
+        </x-modal>
 
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden"
              x-data="{
