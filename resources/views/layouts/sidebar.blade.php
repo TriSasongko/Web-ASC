@@ -35,6 +35,8 @@
             @vite(['resources/js/admin.js'])
         @elseif ($role === 'pelatih')
             @vite(['resources/js/pelatih.js'])
+        @else
+            @vite(['resources/js/orangtua.js'])
         @endif
 
         <style>

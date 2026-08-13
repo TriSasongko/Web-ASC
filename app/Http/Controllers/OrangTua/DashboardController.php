@@ -3,21 +3,117 @@
 namespace App\Http\Controllers\OrangTua;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendance;
 use App\Models\ClassRecommendation;
+use App\Models\ClassSchedule;
+use App\Models\Development;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $students = auth()->user()->students()
+        $user = auth()->user();
+
+        // Anak dengan kelas aktif + program
+        $students = $user->students()
             ->with(['classes' => fn ($q) => $q->wherePivot('is_active', true)->with('program')])
+            ->orderBy('full_name')
             ->get();
 
-        $recommendations = ClassRecommendation::with(['student.enrollments', 'recommendedClass', 'currentClass', 'from', 'approver'])
-            ->whereHas('student', fn ($q) => $q->where('parent_id', auth()->id()))
+        $studentIds = $students->pluck('id');
+        $activeClassIds = $students->flatMap(fn ($s) => $s->classes->pluck('id'))->unique()->values();
+
+        // Statistik ringkas
+        $totalChildren = $students->count();
+
+        $activePrograms = 0;
+        $totalSessionsLeft = 0;
+
+        foreach ($students as $student) {
+            foreach ($student->classes as $enrollment) {
+                $activePrograms++;
+
+                $total = $enrollment->program->total_sessions;
+                if ($total !== null) {
+                    $totalSessionsLeft += max(0, $total - $enrollment->pivot->sessions_completed);
+                }
+            }
+        }
+
+        // Rekomendasi naik kelas
+        $recommendations = ClassRecommendation::with(['student', 'recommendedClass', 'currentClass', 'from'])
+            ->whereHas('student', fn ($q) => $q->where('parent_id', $user->id))
             ->latest()
             ->get();
 
-        return view('orangtua.dashboard', compact('students', 'recommendations'));
+        $pendingRecommendations = $recommendations->where('status', 'menunggu_ortu')->count();
+
+        // Jadwal latihan hari ini untuk anak
+        $todayDay = ClassSchedule::DAYS[(now()->dayOfWeek + 6) % 7];
+
+        $todaySchedules = ClassSchedule::with(['schoolClass.program', 'coaches'])
+            ->where('day', $todayDay)
+            ->whereIn('class_id', $activeClassIds)
+            ->orderBy('start_time')
+            ->get();
+
+        // Jadwal 7 hari ke depan (tanggal sebenarnya untuk setiap sesi)
+        $upcomingSchedules = collect();
+
+        for ($offset = 0; $offset < 7; $offset++) {
+            $date = today()->addDays($offset);
+            $day = ClassSchedule::DAYS[($date->dayOfWeek + 6) % 7];
+
+            ClassSchedule::with(['schoolClass.program', 'coaches'])
+                ->where('day', $day)
+                ->whereIn('class_id', $activeClassIds)
+                ->orderBy('start_time')
+                ->get()
+                ->each(function ($schedule) use (&$upcomingSchedules, $date) {
+                    $upcomingSchedules->push([
+                        'date' => $date,
+                        'schedule' => $schedule,
+                    ]);
+                });
+        }
+
+        $upcomingSchedules = $upcomingSchedules
+            ->sortBy(fn ($item) => $item['date']->toDateString().' '.($item['schedule']->start_time ?? ''))
+            ->take(5)
+            ->values();
+
+        // Absensi anak 7 hari terakhir (untuk grafik)
+        $attendanceChart = collect(range(6, 0))->map(function (int $offset) use ($studentIds) {
+            $day = today()->subDays($offset);
+
+            return [
+                'label' => $day->format('d/m'),
+                'total' => Attendance::whereIn('student_id', $studentIds)
+                    ->whereDate('attendance_date', $day)
+                    ->count(),
+            ];
+        });
+
+        // E-Raport terbaru per anak
+        $latestDevelopments = Development::whereHas('student', fn ($q) => $q->where('parent_id', $user->id))
+            ->with('student')
+            ->orderByDesc('id')
+            ->get()
+            ->unique('student_id')
+            ->values();
+
+        return view('orangtua.dashboard', compact(
+            'students',
+            'totalChildren',
+            'activePrograms',
+            'totalSessionsLeft',
+            'recommendations',
+            'pendingRecommendations',
+            'todayDay',
+            'todaySchedules',
+            'upcomingSchedules',
+            'attendanceChart',
+            'latestDevelopments',
+        ));
     }
 }
