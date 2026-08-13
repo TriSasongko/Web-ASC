@@ -9,6 +9,7 @@ use App\Models\ClassSchedule;
 use App\Models\Registration;
 use App\Models\Student;
 use App\Models\User;
+use App\Services\SalaryService;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -36,7 +37,7 @@ class DashboardController extends Controller
 
         $pendingRegistrations = Registration::where('status', 'menunggu_verifikasi')->count();
 
-        $todayDay = ClassSchedule::DAYS[now()->dayOfWeek - 1];
+        $todayDay = ClassSchedule::DAYS[(now()->dayOfWeek + 6) % 7];
         $todaySchedules = ClassSchedule::where('day', $todayDay)
             ->with(['schoolClass.program', 'coaches', 'students'])
             ->orderBy('start_time')
@@ -136,6 +137,25 @@ class DashboardController extends Controller
 
         $activities = $activities->sortByDesc('time')->take(6)->values();
 
+        $honor = (new SalaryService)->unpaidForAll();
+        $honorCoachesWithUnpaid = $honor->filter(fn ($h) => $h['sessions']->isNotEmpty());
+        $honorTotal = $honor->sum('total');
+        $honorSessions = $honor->sum(fn ($h) => $h['sessions']->count());
+        $honorCoachCount = $honorCoachesWithUnpaid->count();
+
+        $coachNames = User::whereIn('id', $honorCoachesWithUnpaid->keys())->pluck('name', 'id');
+
+        $honorCoaches = $honorCoachesWithUnpaid
+            ->sortByDesc('total')
+            ->map(fn ($h) => [
+                'id' => (int) $h['user_id'],
+                'name' => $coachNames[$h['user_id']] ?? 'Pelatih #'.$h['user_id'],
+                'sessions' => $h['sessions']->count(),
+                'total' => $h['total'],
+            ])
+            ->values()
+            ->take(5);
+
         return view('admin.dashboard', compact(
             'alerts',
             'totalStudents',
@@ -148,7 +168,11 @@ class DashboardController extends Controller
             'growth',
             'statusData',
             'packageData',
-            'activities'
+            'activities',
+            'honorTotal',
+            'honorSessions',
+            'honorCoaches',
+            'honorCoachCount'
         ));
     }
 }

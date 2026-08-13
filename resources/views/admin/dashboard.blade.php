@@ -1,4 +1,5 @@
 <x-sidebar-layout>
+    @php $fmt = fn ($n) => 'Rp '.number_format($n ?? 0, 0, ',', '.'); @endphp
     <div class="space-y-6">
 
         <!-- Header Title -->
@@ -197,6 +198,30 @@
                         @endforelse
                     </div>
                 </div>
+
+                <!-- Distribusi Paket -->
+                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5">
+                    <h5 class="font-headline text-headline-sm text-on-surface mb-4">Distribusi Paket</h5>
+                    <div class="flex items-center justify-center gap-10 flex-wrap">
+                        <div class="relative h-[150px] w-[150px] shrink-0">
+                            <canvas id="packageChart"></canvas>
+                        </div>
+                        <div class="space-y-2.5">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-primary-container"></span>
+                                <span class="font-label-sm text-label-sm text-outline">Aktif</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-[#FFB300]"></span>
+                                <span class="font-label-sm text-label-sm text-outline">Hampir Habis</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-error"></span>
+                                <span class="font-label-sm text-label-sm text-outline">Habis</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Right Sidebar Area -->
@@ -224,26 +249,49 @@
                     </div>
                 </div>
 
-                <!-- Distribusi Paket -->
-                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5">
-                    <h5 class="font-headline text-headline-sm text-on-surface mb-4">Distribusi Paket</h5>
-                    <div class="relative h-[180px] w-full flex justify-center">
-                        <canvas id="packageChart"></canvas>
+                <!-- Honor Pelatih -->
+                <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
+                    <div class="px-5 py-4 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-[20px]">payments</span>
+                            <h5 class="font-headline text-headline-sm text-on-surface">Honor Pelatih</h5>
+                        </div>
+                        <a href="{{ route('admin.salaries.index') }}" class="text-primary font-label-sm text-label-sm hover:underline shrink-0">Kelola Honor</a>
                     </div>
-                    <div class="mt-4 flex justify-center gap-4">
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-primary-container"></span>
-                            <span class="font-label-sm text-label-sm text-outline">Aktif</span>
+
+                    @if ($honorCoachCount === 0)
+                        <p class="font-body-sm text-body-sm text-outline text-center py-8">Semua honor pelatih sudah dibayar. 🎉</p>
+                    @else
+                        <div class="px-5 py-3 border-b border-outline-variant/30 bg-surface-container-low/40 flex items-center justify-between gap-3">
+                            <p class="font-body-sm text-body-sm text-on-surface-variant">Belum dibayar · {{ $honorCoachCount }} pelatih</p>
+                            <p class="font-label-md text-label-md text-error whitespace-nowrap">{{ $fmt($honorTotal) }}</p>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-[#FFB300]"></span>
-                            <span class="font-label-sm text-label-sm text-outline">Hampir Habis</span>
+                        <div class="divide-y divide-outline-variant/30">
+                            @foreach ($honorCoaches as $hc)
+                                <div class="flex items-center justify-between gap-3 px-5 py-3">
+                                    <div class="min-w-0">
+                                        <p class="font-label-md text-label-md text-on-surface truncate">{{ $hc['name'] }}</p>
+                                        <p class="font-body-sm text-body-sm text-outline">{{ $hc['sessions'] }} sesi belum dibayar</p>
+                                    </div>
+                                    <div class="flex items-center gap-3 shrink-0">
+                                        <span class="font-label-md text-label-md text-on-surface whitespace-nowrap">{{ $fmt($hc['total']) }}</span>
+                                        <form action="{{ route('admin.salaries.pay', $hc['id']) }}" method="POST"
+                                              onsubmit="return confirm('Tandai honor {{ addslashes($hc['name']) }} sebesar {{ $fmt($hc['total']) }} ({{ $hc['sessions'] }} sesi) sebagai dibayar?')">
+                                            @csrf
+                                            <button type="submit" class="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors" title="Tandai Dibayar">
+                                                <span class="material-symbols-outlined text-[18px]">payments</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-error"></span>
-                            <span class="font-label-sm text-label-sm text-outline">Habis</span>
-                        </div>
-                    </div>
+                        @if ($honorCoachCount > $honorCoaches->count())
+                            <div class="px-5 py-2.5 border-t border-outline-variant/30 text-center">
+                                <span class="font-body-sm text-body-sm text-outline">+{{ $honorCoachCount - $honorCoaches->count() }} pelatih lainnya · lihat di Kelola Honor</span>
+                            </div>
+                        @endif
+                    @endif
                 </div>
             </div>
         </div>

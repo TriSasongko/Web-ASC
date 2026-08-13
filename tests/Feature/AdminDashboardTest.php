@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Attendance;
 use App\Models\Program;
+use App\Models\SalarySetting;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
@@ -79,5 +81,52 @@ class AdminDashboardTest extends TestCase
         $response = $this->actingAs($parent)->get('/admin/dashboard');
 
         $response->assertForbidden();
+    }
+
+    public function test_admin_dashboard_menampilkan_honor_pelatih(): void
+    {
+        SalarySetting::create([
+            'rate_reguler_satu' => 50000,
+            'rate_reguler_dua_plus' => 75000,
+            'rate_paralel_dua' => 80000,
+            'rate_paralel_banyak' => 100000,
+        ]);
+
+        $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
+        $coach = User::factory()->create(['role' => 'pelatih', 'name' => 'Coach Honor', 'is_active' => true]);
+        $parent = $this->makeParent();
+
+        $student = $this->makeStudent($parent, 'Anak Honor');
+
+        $program = Program::create([
+            'name' => 'Reguler',
+            'slug' => 'reguler',
+            'total_sessions' => 8,
+            'price' => 350000,
+            'billing_type' => 'per_paket',
+            'is_active' => true,
+        ]);
+
+        $class = SchoolClass::create([
+            'program_id' => $program->id,
+            'name' => 'Reguler A',
+            'is_active' => true,
+        ]);
+
+        Attendance::create([
+            'class_id' => $class->id,
+            'student_id' => $student->id,
+            'recorded_by' => $coach->id,
+            'attendance_date' => '2026-08-01',
+            'session_number' => 1,
+        ]);
+
+        $response = $this->actingAs($admin)->get('/admin/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Honor Pelatih');
+        $response->assertSee('Coach Honor');
+        $response->assertSee('Rp 50.000');
+        $response->assertSee('1 sesi belum dibayar');
     }
 }
