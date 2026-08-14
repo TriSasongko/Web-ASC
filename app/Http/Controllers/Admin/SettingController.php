@@ -13,7 +13,7 @@ use Illuminate\Validation\Rule;
 
 class SettingController extends Controller
 {
-    private const TABS = ['hero', 'tentang', 'program', 'galeri', 'kontak'];
+    private const TABS = ['hero', 'tentang', 'program', 'galeri', 'jadwal', 'kontak'];
 
     public function edit(Request $request)
     {
@@ -23,12 +23,21 @@ class SettingController extends Controller
         return view('admin.settings.edit', [
             'tab' => $tab,
             'settings' => LandingSetting::allValues(),
+            'jadwalRows' => $this->jadwalRows(),
             'coaches' => LandingCoach::orderBy('sort_order')->orderBy('id')->get(),
             'programs' => LandingProgram::orderBy('sort_order')->orderBy('id')->get(),
             'gallery' => LandingGalleryImage::orderBy('sort_order')->orderBy('id')->get(),
             'adminPhone' => User::where('role', 'admin')->orderBy('id')->value('phone'),
             'adminAddress' => User::where('role', 'admin')->orderBy('id')->value('address'),
         ]);
+    }
+
+    private function jadwalRows(): array
+    {
+        $raw = LandingSetting::get('jadwal_reguler');
+        $rows = $raw ? json_decode($raw, true) : [];
+
+        return is_array($rows) && $rows !== [] ? $rows : [];
     }
 
     public function updateHero(Request $request)
@@ -118,6 +127,36 @@ class SettingController extends Controller
 
         return redirect()->route('admin.settings.edit', ['tab' => 'galeri'])
             ->with('success', 'Konten seksi Galeri berhasil diperbarui.');
+    }
+
+    public function updateJadwal(Request $request)
+    {
+        $validated = $request->validate([
+            'jadwal_heading' => ['required', 'string', 'max:255'],
+            'jadwal_subtitle' => ['nullable', 'string', 'max:1000'],
+            'rows' => ['required', 'array', 'min:1', 'max:50'],
+            'rows.*.day' => ['required', 'string', 'max:255'],
+            'rows.*.time' => ['required', 'string', 'max:100'],
+            'rows.*.program' => ['required', 'string', 'max:255'],
+            'rows.*.location' => ['required', 'string', 'max:255'],
+        ], [
+            'jadwal_heading.required' => 'Judul seksi Jadwal wajib diisi.',
+            'rows.required' => 'Minimal satu baris jadwal wajib diisi.',
+            'rows.min' => 'Minimal satu baris jadwal wajib diisi.',
+            'rows.*.day.required' => 'Hari pada setiap baris wajib diisi.',
+            'rows.*.time.required' => 'Jam pada setiap baris wajib diisi.',
+            'rows.*.program.required' => 'Program pada setiap baris wajib diisi.',
+            'rows.*.location.required' => 'Lokasi pada setiap baris wajib diisi.',
+        ]);
+
+        $this->saveSettings([
+            'jadwal_heading' => $validated['jadwal_heading'],
+            'jadwal_subtitle' => $validated['jadwal_subtitle'] ?? null,
+            'jadwal_reguler' => json_encode(array_values($validated['rows']), JSON_UNESCAPED_UNICODE),
+        ]);
+
+        return redirect()->route('admin.settings.edit', ['tab' => 'jadwal'])
+            ->with('success', 'Jadwal latihan reguler berhasil diperbarui.');
     }
 
     public function updateKontak(Request $request)

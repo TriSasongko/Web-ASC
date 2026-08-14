@@ -228,8 +228,8 @@
         <section class="py-16 md:py-24 bg-surface-container-lowest" id="jadwal">
             <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
                 <div class="text-center mb-12">
-                    <h2 class="font-headline text-headline-lg text-primary font-bold">Jadwal Latihan Reguler</h2>
-                    <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">Untuk jadwal Private dan Mini Private dapat didiskusikan langsung dengan Coach.</p>
+                    <h2 class="font-headline text-headline-lg text-primary font-bold">{{ $s['jadwal_heading'] ?? 'Jadwal Latihan Reguler' }}</h2>
+                    <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">{{ $s['jadwal_subtitle'] ?? 'Untuk jadwal Private dan Mini Private dapat didiskusikan langsung dengan Coach.' }}</p>
                 </div>
                 <div class="overflow-x-auto rounded-xl border border-outline-variant/30 shadow-sm">
                     <table class="w-full text-left border-collapse">
@@ -242,30 +242,18 @@
                             </tr>
                         </thead>
                         <tbody class="text-on-surface-variant">
-                            <tr class="hover:bg-surface-container-low transition-colors border-b border-outline-variant/20">
-                                <td class="p-4 font-semibold text-primary">Senin &amp; Rabu</td>
-                                <td class="p-4">15:30 - 17:00</td>
-                                <td class="p-4">Reguler Pemula &amp; Lanjutan</td>
-                                <td class="p-4">Kolam Renang Universitas Lampung</td>
-                            </tr>
-                            <tr class="hover:bg-surface-container-low transition-colors border-b border-outline-variant/20">
-                                <td class="p-4 font-semibold text-primary">Selasa &amp; Kamis</td>
-                                <td class="p-4">16:00 - 18:00</td>
-                                <td class="p-4">Kompetitif (Atlet)</td>
-                                <td class="p-4">Kolam Renang Universitas Lampung</td>
-                            </tr>
-                            <tr class="hover:bg-surface-container-low transition-colors border-b border-outline-variant/20">
-                                <td class="p-4 font-semibold text-primary">Jumat</td>
-                                <td class="p-4">15:00 - 16:30</td>
-                                <td class="p-4">Mini Reguler</td>
-                                <td class="p-4">Kolam Renang Universitas Lampung</td>
-                            </tr>
-                            <tr class="hover:bg-surface-container-low transition-colors">
-                                <td class="p-4 font-semibold text-primary">Sabtu &amp; Minggu</td>
-                                <td class="p-4">07:00 - 09:00</td>
-                                <td class="p-4">Semua Kelas Reguler</td>
-                                <td class="p-4">Kolam Renang Universitas Lampung</td>
-                            </tr>
+                            @forelse ($jadwalRows as $row)
+                                <tr class="hover:bg-surface-container-low transition-colors {{ $loop->last ? '' : 'border-b border-outline-variant/20' }}">
+                                    <td class="p-4 font-semibold text-primary">{{ $row['day'] }}</td>
+                                    <td class="p-4">{{ $row['time'] }}</td>
+                                    <td class="p-4">{{ $row['program'] }}</td>
+                                    <td class="p-4">{{ $row['location'] }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="p-4 text-center">Jadwal belum diatur.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

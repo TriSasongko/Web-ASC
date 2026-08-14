@@ -1,8 +1,6 @@
 <x-sidebar-layout>
     @php
         $fmt = fn ($n) => 'Rp '.number_format($n ?? 0, 0, ',', '.');
-        $chartLabels = $attendanceChart->pluck('label');
-        $chartTotals = $attendanceChart->pluck('total');
         $dayLabels = ['senin' => 'Senin', 'selasa' => 'Selasa', 'rabu' => 'Rabu', 'kamis' => 'Kamis', 'jumat' => 'Jumat', 'sabtu' => 'Sabtu', 'minggu' => 'Minggu'];
         $monthLabels = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'];
         $todayLabel = ucfirst($dayLabels[$todayDay]).', '.now()->format('d').' '.$monthLabels[now()->month].' '.now()->year;
@@ -234,19 +232,76 @@
             <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
                 <div class="flex items-start justify-between gap-3 mb-1">
                     <div>
-                        <h3 class="font-headline text-headline-sm text-on-surface">Aktivitas Latihan Anak</h3>
-                        <p class="font-body-sm text-body-sm text-outline mt-0.5">7 Hari Terakhir</p>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Perkembangan Penilaian Umum</h3>
+                        <p class="font-body-sm text-body-sm text-outline mt-0.5">Distribusi penilaian umum dari pelatih (periode terakhir)</p>
                     </div>
-                    <span class="material-symbols-outlined text-outline text-[24px]">monitoring</span>
+                    <span class="material-symbols-outlined text-outline text-[24px]">pie_chart</span>
                 </div>
                 @if ($totalChildren > 0)
-                    <div class="relative h-[260px] w-full mt-4">
-                        <canvas id="attendanceChart"></canvas>
+                    <div class="grid grid-cols-1 {{ $totalChildren > 1 ? 'md:grid-cols-2' : '' }} gap-4 mt-5">
+                        @forelse ($developmentCharts as $chart)
+                            <div class="rounded-xl border border-outline-variant/30 p-4 hover:bg-surface-container-low/50 transition-colors">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-9 h-9 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-label-md text-label-md shrink-0">
+                                        {{ strtoupper(substr($chart['student_name'], 0, 1)) }}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h4 class="font-headline text-headline-sm text-on-surface truncate">{{ $chart['student_name'] }}</h4>
+                                        <p class="font-label-sm text-label-sm text-outline truncate">
+                                            @if ($chart['period'])
+                                                {{ $chart['period'] }} · {{ $chart['total'] }} aspek dinilai
+                                            @else
+                                                Belum ada penilaian
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+
+                                @if ($chart['total'] > 0)
+                                    <div class="flex flex-col sm:flex-row items-center gap-5">
+                                        <div class="relative w-36 h-36 shrink-0">
+                                            <canvas id="devChart-{{ $chart['student_id'] }}"></canvas>
+                                            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                                <span class="font-headline text-headline-md text-on-surface">{{ number_format($chart['average'], 1, ',', '.') }}</span>
+                                                <span class="font-label-sm text-label-sm text-outline">rata-rata</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-1 w-full space-y-2">
+                                            @foreach ($chart['slices'] as $slice)
+                                                <div class="flex items-center gap-2">
+                                                    <span class="w-3 h-3 rounded-full shrink-0" style="background-color: {{ $slice['color'] }}"></span>
+                                                    <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $slice['label'] }}</span>
+                                                    <span class="ml-auto font-label-sm text-label-sm text-on-surface tabular-nums">
+                                                        {{ $slice['count'] }}<span class="text-outline"> · {{ round($slice['count'] / $chart['total'] * 100) }}%</span>
+                                                    </span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <a href="{{ route('eraport.show', [$chart['student_id'], $chart['development_id']]) }}"
+                                        class="mt-4 w-full inline-flex items-center justify-center gap-1.5 border border-primary/40 text-primary rounded-lg px-3 py-2 font-label-md text-label-md hover:bg-primary-container/50 transition-colors">
+                                        <span class="material-symbols-outlined text-[16px]">description</span>
+                                        Detail E-Raport
+                                    </a>
+                                @else
+                                    <div class="text-center py-8">
+                                        <span class="material-symbols-outlined text-outline text-[32px]">assessment</span>
+                                        <p class="font-body-sm text-body-sm text-outline mt-1">Belum ada penilaian perkembangan untuk anak ini.</p>
+                                    </div>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="text-center py-10 lg:col-span-2">
+                                <span class="material-symbols-outlined text-outline text-[40px]">assessment</span>
+                                <p class="font-body-sm text-body-sm text-outline mt-2">Belum ada data penilaian perkembangan.</p>
+                            </div>
+                        @endforelse
                     </div>
                 @else
                     <div class="text-center py-16">
-                        <span class="material-symbols-outlined text-outline text-[40px]">monitoring</span>
-                        <p class="font-body-sm text-body-sm text-outline mt-2">Grafik absensi muncul setelah anak terdaftar.</p>
+                        <span class="material-symbols-outlined text-outline text-[40px]">assessment</span>
+                        <p class="font-body-sm text-body-sm text-outline mt-2">Diagram penilaian muncul setelah anak terdaftar.</p>
                     </div>
                 @endif
             </div>
@@ -398,69 +453,51 @@
     @if ($totalChildren > 0)
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                const labels = @json($chartLabels);
-                const totals = @json($chartTotals);
+                const charts = @json($developmentCharts);
 
                 Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
                 Chart.defaults.color = '#737785';
-                Chart.defaults.scale.grid.color = 'rgba(194, 198, 214, 0.2)';
 
-                const ctx = document.getElementById('attendanceChart').getContext('2d');
-                const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-                gradient.addColorStop(0, 'rgba(11, 94, 215, 0.25)');
-                gradient.addColorStop(1, 'rgba(11, 94, 215, 0)');
+                charts.forEach((chart) => {
+                    if (chart.total === 0) return;
 
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Kehadiran',
-                            data: totals,
-                            borderColor: '#0B5ED7',
-                            backgroundColor: gradient,
-                            borderWidth: 3,
-                            pointBackgroundColor: '#ffffff',
-                            pointBorderColor: '#0B5ED7',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: '#121B2E',
-                                padding: 12,
-                                titleFont: { size: 12, weight: '600' },
-                                bodyFont: { size: 14, weight: '700' },
-                                displayColors: false,
-                                cornerRadius: 8,
-                                callbacks: {
-                                    label: function (context) {
-                                        return ' ' + context.raw + ' sesi latihan';
+                    const canvas = document.getElementById('devChart-' + chart.student_id);
+                    if (!canvas) return;
+
+                    new Chart(canvas.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: chart.slices.map((s) => s.label),
+                            datasets: [{
+                                data: chart.slices.map((s) => s.count),
+                                backgroundColor: chart.slices.map((s) => s.color),
+                                borderColor: '#FFFFFF',
+                                borderWidth: 3,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '68%',
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#121B2E',
+                                    padding: 12,
+                                    titleFont: { size: 12, weight: '600' },
+                                    bodyFont: { size: 14, weight: '700' },
+                                    cornerRadius: 8,
+                                    callbacks: {
+                                        label: function (context) {
+                                            const pct = Math.round(context.raw / chart.total * 100);
+                                            return ' ' + context.raw + ' aspek (' + pct + '%)';
+                                        }
                                     }
                                 }
                             }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { stepSize: 1, maxTicksLimit: 6, font: { size: 11 } },
-                                border: { display: false }
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: { font: { size: 11 } },
-                                border: { display: false }
-                            }
                         }
-                    }
+                    });
                 });
             });
         </script>

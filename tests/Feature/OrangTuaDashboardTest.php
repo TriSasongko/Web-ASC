@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\ClassSchedule;
 use App\Models\ClassStudent;
+use App\Models\Development;
 use App\Models\Program;
 use App\Models\SchoolClass;
 use App\Models\Student;
@@ -83,5 +84,65 @@ class OrangTuaDashboardTest extends TestCase
             ->get(route('orangtua.dashboard'))
             ->assertOk()
             ->assertSee('Daftarkan anak sekarang');
+    }
+
+    public function test_dashboard_shows_development_pie_chart_per_child()
+    {
+        $parent = $this->makeParent();
+        $coach = User::factory()->create(['role' => 'pelatih', 'is_active' => true]);
+
+        $program = Program::create([
+            'name' => 'Kompetitif',
+            'slug' => 'kompetitif',
+            'total_sessions' => null,
+            'price' => 500000,
+            'billing_type' => 'per_bulan',
+            'is_active' => true,
+        ]);
+
+        $class = SchoolClass::create([
+            'program_id' => $program->id,
+            'name' => 'Kompetitif A',
+            'level' => 1,
+            'is_active' => true,
+        ]);
+
+        $withDev = Student::create([
+            'parent_id' => $parent->id,
+            'full_name' => 'Anak Dinilai',
+            'gender' => 'L',
+        ]);
+
+        $withoutDev = Student::create([
+            'parent_id' => $parent->id,
+            'full_name' => 'Anak Belum Dinilai',
+            'gender' => 'P',
+        ]);
+
+        Development::create([
+            'class_id' => $class->id,
+            'student_id' => $withDev->id,
+            'coach_id' => $coach->id,
+            'period' => 'Agustus 2026',
+            'adaptasi_lingkungan_baru' => 'baik',
+            'komunikasi' => 'baik',
+            'menerima_instruksi' => 'sangat_baik',
+            'disiplin' => 'sangat_baik',
+            'percaya_diri' => 'baik',
+            'daya_tahan' => 'baik',
+            'recovery' => 'cukup',
+            'water_survive' => 'baik',
+        ]);
+
+        $this->actingAs($parent)
+            ->get(route('orangtua.dashboard'))
+            ->assertOk()
+            ->assertSee('Perkembangan Penilaian Umum')
+            ->assertSee('Anak Dinilai')
+            ->assertSee('Agustus 2026')
+            ->assertSee('8 aspek dinilai')
+            ->assertSee('Detail E-Raport')
+            ->assertSee('Anak Belum Dinilai')
+            ->assertSee('Belum ada penilaian');
     }
 }

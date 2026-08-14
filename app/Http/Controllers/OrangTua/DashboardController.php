@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\OrangTua;
 
 use App\Http\Controllers\Controller;
-use App\Models\Attendance;
 use App\Models\ClassRecommendation;
 use App\Models\ClassSchedule;
 use App\Models\Development;
@@ -20,10 +19,7 @@ class DashboardController extends Controller
             ->orderBy('full_name')
             ->get();
 
-        $studentIds = $students->pluck('id');
         $activeClassIds = $students->flatMap(fn ($s) => $s->classes->pluck('id'))->unique()->values();
-
-        // Statistik ringkas
         $totalChildren = $students->count();
 
         $activePrograms = 0;
@@ -82,18 +78,6 @@ class DashboardController extends Controller
             ->take(5)
             ->values();
 
-        // Absensi anak 7 hari terakhir (untuk grafik)
-        $attendanceChart = collect(range(6, 0))->map(function (int $offset) use ($studentIds) {
-            $day = today()->subDays($offset);
-
-            return [
-                'label' => $day->format('d/m'),
-                'total' => Attendance::whereIn('student_id', $studentIds)
-                    ->whereDate('attendance_date', $day)
-                    ->count(),
-            ];
-        });
-
         // E-Raport terbaru per anak
         $latestDevelopments = Development::whereHas('student', fn ($q) => $q->where('parent_id', $user->id))
             ->with('student')
@@ -101,6 +85,79 @@ class DashboardController extends Controller
             ->get()
             ->unique('student_id')
             ->values();
+
+        // Distribusi penilaian umum terbaru per anak (untuk diagram pie)
+        $scoreWeights = array_flip(array_keys(Development::scores()));
+        $scoreColors = [
+            'kurang' => '#C62828',
+            'cukup' => '#FFB300',
+            'baik' => '#0B5ED7',
+            'sangat_baik' => '#2E7D32',
+        ];
+
+        $developmentCharts = $students->map(function ($student) use ($latestDevelopments, $scoreWeights, $scoreColors) {
+            $development = $latestDevelopments->firstWhere('student_id', $student->id);
+
+            $distribution = array_fill_keys(array_keys(Development::scores()), 0);
+            $total = 0;
+            $weightSum = 0;
+
+            if ($development) {
+                foreach (array_keys(Development::umumAspects()) as $aspect) {
+                    $value = $development->{$aspect};
+                    if ($value !== null && array_key_exists($value, $distribution)) {
+                        $distribution[$value]++;
+                        $total++;
+                        $weightSum += $scoreWeights[$value] + 1;
+                    }
+                }
+            }
+
+            $slices = [];
+            foreach ($distribution as $key => $count) {
+                if ($count > 0) {
+                    $slices[] = [
+                        'key' => $key,
+                        'label' => Development::scoreLabel($key),
+                        'count' => $count,
+                        'color' => $scoreColors[$key],
+                    ];
+                }
+            }
+
+            $aspects = [];
+            foreach (Development::umumAspects() as $key => $label) {
+                $value = $development?->{$key};
+                $aspects[] = [
+                    'label' => $label,
+                    'value' => $value,
+                    'score' => Development::scoreLabel($value),
+                    'color' => $value !== null ? ($scoreColors[$value] ?? null) : null,
+                ];
+            }
+
+            $aspects = [];
+            foreach (Development::umumAspects() as $key => $label) {
+                $value = $development?->{$key};
+                $aspects[] = [
+                    'label' => $label,
+                    'value' => $value,
+                    'score' => Development::scoreLabel($value),
+                    'color' => $value !== null ? ($scoreColors[$value] ?? null) : null,
+                ];
+            }
+
+            return [
+                'student_id' => $student->id,
+                'student_name' => $student->full_name,
+                'development_id' => $development?->id,
+                'period' => $development?->period,
+                'distribution' => $distribution,
+                'slices' => $slices,
+                'total' => $total,
+                'average' => $total > 0 ? round($weightSum / $total, 1) : null,
+            ];
+        })->values();
 
         return view('orangtua.dashboard', compact(
             'students',
@@ -112,7 +169,7 @@ class DashboardController extends Controller
             'todayDay',
             'todaySchedules',
             'upcomingSchedules',
-            'attendanceChart',
+            'developmentCharts',
             'latestDevelopments',
         ));
     }

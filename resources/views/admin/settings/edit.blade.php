@@ -2,7 +2,7 @@
     <div class="space-y-6">
         <div>
             <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Pengaturan Landing Page</h2>
-            <p class="font-body-sm text-body-sm text-outline mt-1">Kelola konten halaman depan website (hero, tentang, program, galeri, dan kontak).</p>
+            <p class="font-body-sm text-body-sm text-outline mt-1">Kelola konten halaman depan website (hero, tentang, program, galeri, jadwal, dan kontak).</p>
         </div>
 
         @if (session('success'))
@@ -27,6 +27,7 @@
                     'tentang' => ['label' => 'Tentang & Coach', 'icon' => 'groups'],
                     'program' => ['label' => 'Program', 'icon' => 'pool'],
                     'galeri' => ['label' => 'Galeri', 'icon' => 'photo_library'],
+                    'jadwal' => ['label' => 'Jadwal', 'icon' => 'calendar_month'],
                     'kontak' => ['label' => 'Kontak', 'icon' => 'contact_phone'],
                 ];
             @endphp
@@ -48,6 +49,9 @@
                 @break
             @case('galeri')
                 @include('admin.settings.tabs.galeri')
+                @break
+            @case('jadwal')
+                @include('admin.settings.tabs.jadwal')
                 @break
             @case('kontak')
                 @include('admin.settings.tabs.kontak')

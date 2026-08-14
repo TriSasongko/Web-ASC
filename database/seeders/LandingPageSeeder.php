@@ -40,6 +40,16 @@ class LandingPageSeeder extends Seeder
             'galeri_heading' => 'Galeri Kegiatan',
             'galeri_subtitle' => 'Momen-momen seru dan pencapaian membanggakan siswa-siswi ASC.',
 
+            // Jadwal Latihan Reguler
+            'jadwal_heading' => 'Jadwal Latihan Reguler',
+            'jadwal_subtitle' => 'Untuk jadwal Private dan Mini Private dapat didiskusikan langsung dengan Coach.',
+            'jadwal_reguler' => json_encode([
+                ['day' => 'Senin & Rabu', 'time' => '15:30 - 17:00', 'program' => 'Reguler Pemula & Lanjutan', 'location' => 'Kolam Renang Universitas Lampung'],
+                ['day' => 'Selasa & Kamis', 'time' => '16:00 - 18:00', 'program' => 'Kompetitif (Atlet)', 'location' => 'Kolam Renang Universitas Lampung'],
+                ['day' => 'Jumat', 'time' => '15:00 - 16:30', 'program' => 'Mini Reguler', 'location' => 'Kolam Renang Universitas Lampung'],
+                ['day' => 'Sabtu & Minggu', 'time' => '07:00 - 09:00', 'program' => 'Semua Kelas Reguler', 'location' => 'Kolam Renang Universitas Lampung'],
+            ], JSON_UNESCAPED_UNICODE),
+
             // Kontak
             'kontak_email' => 'gilangaudiokorgiepangestu@gmail.com',
             'kontak_instagram' => 'https://www.instagram.com/asc_lampung/',

@@ -140,6 +140,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('settings/tentang', [SettingController::class, 'updateTentang'])->name('settings.tentang');
     Route::put('settings/program', [SettingController::class, 'updateProgram'])->name('settings.program');
     Route::put('settings/galeri', [SettingController::class, 'updateGaleri'])->name('settings.galeri');
+    Route::put('settings/jadwal', [SettingController::class, 'updateJadwal'])->name('settings.jadwal');
     Route::put('settings/kontak', [SettingController::class, 'updateKontak'])->name('settings.kontak');
 
     Route::post('settings/coaches', [SettingController::class, 'storeCoach'])->name('settings.coaches.store');

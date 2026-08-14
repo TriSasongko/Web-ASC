@@ -46,7 +46,7 @@ class LandingPageSettingTest extends TestCase
     {
         $admin = $this->makeAdmin();
 
-        foreach (['hero', 'tentang', 'program', 'galeri', 'kontak'] as $tab) {
+        foreach (['hero', 'tentang', 'program', 'galeri', 'jadwal', 'kontak'] as $tab) {
             $this->actingAs($admin)->get(route('admin.settings.edit', ['tab' => $tab]))
                 ->assertOk();
         }
@@ -174,6 +174,48 @@ class LandingPageSettingTest extends TestCase
 
         $this->actingAs($admin)->delete(route('admin.settings.gallery.destroy', $image))->assertRedirect();
         $this->assertDatabaseMissing('landing_gallery', ['id' => $image->id]);
+    }
+
+    public function test_admin_can_update_jadwal_settings_and_it_reflects_on_homepage(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->put(route('admin.settings.jadwal'), [
+            'jadwal_heading' => 'Jadwal Reguler ASC',
+            'jadwal_subtitle' => 'Jadwal latihan kelas reguler setiap pekan.',
+            'rows' => [
+                ['day' => 'Senin', 'time' => '15:00 - 16:30', 'program' => 'Reguler', 'location' => 'Kolam Unila'],
+                ['day' => 'Sabtu', 'time' => '07:00 - 08:30', 'program' => 'Mini Reguler', 'location' => 'Kolam Unila'],
+            ],
+        ])->assertRedirect(route('admin.settings.edit', ['tab' => 'jadwal']));
+
+        $this->assertSame('Jadwal Reguler ASC', LandingSetting::get('jadwal_heading'));
+
+        $this->get('/')->assertOk()
+            ->assertSee('Jadwal Reguler ASC')
+            ->assertSee('Jadwal latihan kelas reguler setiap pekan.')
+            ->assertSee('Senin', false)
+            ->assertSee('15:00 - 16:30')
+            ->assertSee('Kolam Unila');
+    }
+
+    public function test_invalid_jadwal_rows_are_rejected(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->put(route('admin.settings.jadwal'), [
+            'jadwal_heading' => 'Jadwal',
+            'rows' => [
+                ['day' => '', 'time' => '15:00', 'program' => 'Reguler', 'location' => 'Kolam'],
+            ],
+        ])->assertSessionHasErrors('rows.0.day');
+
+        $this->assertNotSame('Jadwal', LandingSetting::get('jadwal_heading'));
+
+        $this->actingAs($admin)->put(route('admin.settings.jadwal'), [
+            'jadwal_heading' => 'Jadwal Tanpa Baris',
+            'rows' => [],
+        ])->assertSessionHasErrors('rows');
     }
 
     public function test_invalid_kontak_email_is_rejected(): void
