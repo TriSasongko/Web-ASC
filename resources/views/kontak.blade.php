@@ -48,8 +48,16 @@
         <!-- Main Content -->
         <main class="flex-grow pb-16 md:pb-24">
             <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
-                <header class="py-12 md:py-16 text-center">
-                    <h1 class="font-headline text-headline-lg-mobile md:text-headline-xl text-primary mb-6">Hubungi Kami</h1>
+                <header class="relative text-center pt-8 md:pt-12 pb-10 md:pb-12 overflow-hidden">
+                    <div class="absolute inset-0 -z-10 pointer-events-none">
+                        <div class="absolute -top-20 -right-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
+                        <div class="absolute top-6 -left-24 w-80 h-80 bg-orange/10 rounded-full blur-3xl"></div>
+                    </div>
+                    <span class="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full font-body text-label-md font-semibold mb-5">
+                        <span class="material-symbols-outlined text-[18px]">support_agent</span>
+                        Kami Siap Membantu
+                    </span>
+                    <h1 class="font-headline text-headline-lg-mobile md:text-headline-xl text-primary mb-4">Hubungi Kami</h1>
                     <p class="font-body text-body-lg text-on-surface-variant max-w-2xl mx-auto">
                         Ada pertanyaan seputar pendaftaran, jadwal, atau program? Silakan hubungi kami melalui saluran di bawah ini.
                     </p>
@@ -62,21 +70,21 @@
                             <span class="w-12 h-12 shrink-0 rounded-full bg-primary-container text-primary flex items-center justify-center">
                                 <span class="material-symbols-outlined">location_on</span>
                             </span>
-                            <div>
+                            <div class="min-w-0">
                                 <h2 class="font-headline text-headline-sm font-bold text-primary mb-2">Alamat</h2>
-                                <p class="text-on-surface-variant">{{ \App\Models\User::adminAddress() }}</p>
+                                <p class="text-on-surface-variant break-words">{{ \App\Models\User::adminAddress() }}</p>
                             </div>
                         </div>
                         <div class="flex gap-4 p-6 rounded-2xl border border-outline-variant/50 bg-surface pool-shadow">
                             <span class="w-12 h-12 shrink-0 rounded-full bg-primary-container text-primary flex items-center justify-center">
                                 <span class="material-symbols-outlined">call</span>
                             </span>
-                            <div>
+                            <div class="min-w-0">
                                 <h2 class="font-headline text-headline-sm font-bold text-primary mb-2">Telepon / WhatsApp</h2>
-                                <p class="text-on-surface-variant">
+                                <p class="text-on-surface-variant break-words">
                                     <a href="{{ \App\Models\User::adminTelLink() }}" class="hover:text-orange transition-colors">{{ \App\Models\User::adminWaDisplay() }}</a>
                                 </p>
-                                <p class="text-on-surface-variant">
+                                <p class="text-on-surface-variant break-words">
                                     <a href="{{ \App\Models\User::adminWaLink() }}" target="_blank" class="hover:text-orange transition-colors">Chat via WhatsApp</a>
                                 </p>
                             </div>
@@ -85,9 +93,9 @@
                             <span class="w-12 h-12 shrink-0 rounded-full bg-primary-container text-primary flex items-center justify-center">
                                 <span class="material-symbols-outlined">mail</span>
                             </span>
-                            <div>
+                            <div class="min-w-0">
                                 <h2 class="font-headline text-headline-sm font-bold text-primary mb-2">Email</h2>
-                                <p class="text-on-surface-variant">
+                                <p class="text-on-surface-variant break-all">
                                     <a href="mailto:{{ $settings['kontak_email'] }}" class="hover:text-orange transition-colors">{{ $settings['kontak_email'] }}</a>
                                 </p>
                             </div>
@@ -96,19 +104,19 @@
                             <span class="w-12 h-12 shrink-0 rounded-full bg-primary-container text-primary flex items-center justify-center">
                                 <span class="material-symbols-outlined">schedule</span>
                             </span>
-                            <div>
+                            <div class="min-w-0">
                                 <h2 class="font-headline text-headline-sm font-bold text-primary mb-2">Jam Operasional</h2>
-                                <p class="text-on-surface-variant">{{ $settings['kontak_hours_weekday'] }}</p>
-                                <p class="text-on-surface-variant">{{ $settings['kontak_hours_weekend'] }}</p>
+                                <p class="text-on-surface-variant break-words">{{ $settings['kontak_hours_weekday'] }}</p>
+                                <p class="text-on-surface-variant break-words">{{ $settings['kontak_hours_weekend'] }}</p>
                             </div>
                         </div>
                         <div class="flex gap-4 p-6 rounded-2xl border border-outline-variant/50 bg-surface pool-shadow">
                             <span class="w-12 h-12 shrink-0 rounded-full bg-primary-container text-primary flex items-center justify-center">
                                 <span class="material-symbols-outlined">alternate_email</span>
                             </span>
-                            <div>
+                            <div class="min-w-0">
                                 <h2 class="font-headline text-headline-sm font-bold text-primary mb-2">Instagram</h2>
-                                <p class="text-on-surface-variant">
+                                <p class="text-on-surface-variant break-words">
                                     <a href="{{ $settings['kontak_instagram'] }}" target="_blank" rel="noopener noreferrer" class="hover:text-orange transition-colors">{{ $settings['kontak_instagram_handle'] }}</a>
                                 </p>
                             </div>
@@ -162,13 +170,13 @@
                             loading="lazy"
                             referrerpolicy="strict-origin-when-cross-origin"
                             title="Lokasi Antasena Swimming Club"></iframe>
-                        <div class="absolute bottom-4 left-4 bg-surface/95 backdrop-blur px-5 py-3 rounded-2xl pool-shadow flex items-center gap-3 pointer-events-none">
-                            <span class="w-10 h-10 rounded-full bg-primary-container text-primary flex items-center justify-center">
+                        <div class="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto bg-surface/95 backdrop-blur px-4 sm:px-5 py-3 rounded-2xl pool-shadow flex items-center gap-3 pointer-events-none">
+                            <span class="w-10 h-10 shrink-0 rounded-full bg-primary-container text-primary flex items-center justify-center">
                                 <span class="material-symbols-outlined">map</span>
                             </span>
-                            <div>
-                                <p class="font-headline text-headline-sm font-bold text-primary">Kolam Renang Universitas Lampung</p>
-                                <p class="text-on-surface-variant text-body-sm">Bandar Lampung, Lampung</p>
+                            <div class="min-w-0">
+                                <p class="font-headline text-headline-sm font-bold text-primary truncate">Kolam Renang Universitas Lampung</p>
+                                <p class="text-on-surface-variant text-body-sm truncate">Bandar Lampung, Lampung</p>
                             </div>
                         </div>
                     </div>

@@ -67,7 +67,7 @@
                             class="bg-orange text-white px-8 py-4 rounded-lg font-body text-label-md text-center hover:bg-orange-light transition-colors shadow-lg shadow-orange/30">
                             {{ $s['hero_cta_primary'] ?? 'Daftar Sekarang' }}
                         </a>
-                        <a href="#program"
+                        <a href="{{ url('/program') }}"
                             class="bg-surface/10 backdrop-blur-sm border-2 border-on-primary text-on-primary px-8 py-4 rounded-lg font-body text-label-md text-center hover:bg-surface/20 transition-colors">
                             {{ $s['hero_cta_secondary'] ?? 'Lihat Program' }}
                         </a>
