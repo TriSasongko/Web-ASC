@@ -3,26 +3,50 @@
         $chartLabels = $attendanceChart->pluck('label');
         $chartTotal = $attendanceChart->pluck('total');
         $chartStudents = $attendanceChart->pluck('students');
+        $todayLabel = ucfirst($todayDay).', '.now()->format('d M Y');
     @endphp
 
     <div class="space-y-8">
-        <!-- Page Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Selamat datang kembali, {{ auth()->user()->name }} 👋</h2>
-                <p class="font-body-sm text-body-sm text-outline mt-1">Berikut ringkasan aktivitas pelatihan Anda hari ini.</p>
-            </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('pelatih.attendances.create') }}" class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all hover:scale-[0.98] shadow-sm active:scale-95 shrink-0">
-                    <span class="material-symbols-outlined text-[18px]">event_available</span>
-                    Ambil Absensi
-                </a>
-                @if ($canAssess)
-                    <a href="{{ route('pelatih.developments.index') }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all active:scale-95 shrink-0">
-                        <span class="material-symbols-outlined text-[18px]">assessment</span>
-                        Isi Penilaian
+        <!-- Hero Banner -->
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0047a9] via-[#0b5ed7] to-secondary shadow-[0_10px_40px_rgba(11,94,215,0.25)] text-white p-6 md:p-8">
+            <div class="absolute -right-10 -top-16 w-56 h-56 bg-white/10 rounded-full blur-xl"></div>
+            <div class="absolute right-16 -bottom-20 w-48 h-48 bg-white/10 rounded-full blur-lg"></div>
+            <div class="absolute -left-10 -bottom-16 w-40 h-40 bg-secondary-fixed/20 rounded-full blur-xl"></div>
+
+            <div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div>
+                    <p class="font-label-sm text-label-sm text-white/80 uppercase tracking-widest mb-2">{{ $todayLabel }}</p>
+                    <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-white">Selamat datang kembali, {{ auth()->user()->name }} 👋</h2>
+                    <p class="font-body-sm text-body-sm text-white/85 mt-2 max-w-xl">
+                        Berikut ringkasan aktivitas latihan Anda hari ini — jadwal, absensi, dan penilaian dalam satu tempat.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2 mt-4">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm font-label-sm text-label-sm">
+                            <span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                            {{ $todaySchedules->count() }} Jadwal Hari Ini
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm font-label-sm text-label-sm">
+                            <span class="material-symbols-outlined text-[16px]">group</span>
+                            {{ $todayStudentCount }} Siswa
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm font-label-sm text-label-sm">
+                            <span class="material-symbols-outlined text-[16px]">event_available</span>
+                            {{ $totalAttendanceToday }} Absensi Dicatat
+                        </span>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
+                    <a href="{{ route('pelatih.attendances.create') }}" class="inline-flex items-center justify-center gap-2 bg-white text-[#0047a9] px-5 py-3 rounded-xl font-label-md text-label-md shadow-sm hover:opacity-90 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">event_available</span>
+                        Ambil Absensi
                     </a>
-                @endif
+                    @if ($canAssess)
+                        <a href="{{ route('pelatih.developments.index') }}" class="inline-flex items-center justify-center gap-2 border border-white/50 text-white px-5 py-3 rounded-xl font-label-md text-label-md hover:bg-white/10 transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">assessment</span>
+                            Isi Penilaian
+                        </a>
+                    @endif
+                </div>
             </div>
         </div>
 
@@ -33,190 +57,19 @@
             </div>
         @endif
 
-        <!-- Catatan Pribadi + Jadwal Hari Ini -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Catatan Pribadi (Fitur Utama) -->
-            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
-                <div class="flex items-start justify-between gap-3 mb-4">
-                    <div>
-                        <h3 class="font-headline text-headline-sm text-on-surface">Catatan Pribadi</h3>
-                        <p class="font-body-sm text-body-sm text-outline mt-0.5">Catatan ini hanya dapat dilihat oleh Anda.</p>
-                    </div>
-                    <span class="material-symbols-outlined text-outline text-[24px]">sticky_note_2</span>
-                </div>
-
-            <form action="{{ route('pelatih.notes.store') }}" method="POST" class="mb-5">
-                @csrf
-                <div class="flex flex-col sm:flex-row gap-3 mb-3">
-                    <div class="w-full sm:w-44">
-                        <x-input-label for="note_date" value="Tanggal Catatan" />
-                        <input type="date" name="note_date" id="note_date" value="{{ old('note_date', now()->format('Y-m-d')) }}" required
-                            class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
-                        @error('note_date')
-                            <p class="font-body-sm text-body-sm text-error mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-                <textarea name="content" rows="2" placeholder="Tulis catatan Anda di sini..." required
-                    class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all resize-none">{{ old('content') }}</textarea>
-                @error('content')
-                    <p class="font-body-sm text-body-sm text-error mt-1">{{ $message }}</p>
-                @enderror
-                <div class="flex justify-end mt-2">
-                    <button type="submit" class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
-                        <span class="material-symbols-outlined text-[18px]">add</span>
-                        Simpan Catatan
-                    </button>
-                </div>
-            </form>
-
-            <div x-data="{ editing: null }" class="space-y-3">
-                @forelse ($notes as $note)
-                    <div class="border border-outline-variant/30 rounded-lg p-4 bg-surface/50">
-                        <template x-if="editing === {{ $note->id }}">
-                            <form action="{{ route('pelatih.notes.update', $note) }}" method="POST">
-                                @csrf @method('PATCH')
-                                <div class="w-full sm:w-44 mb-3">
-                                    <x-input-label for="note_date_{{ $note->id }}" value="Tanggal Catatan" />
-                                    <input type="date" name="note_date" id="note_date_{{ $note->id }}" value="{{ $note->note_date?->format('Y-m-d') }}" required
-                                        class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
-                                </div>
-                                <textarea name="content" rows="2" required
-                                    class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all resize-none">{{ $note->content }}</textarea>
-                                <div class="flex justify-end gap-2 mt-2">
-                                    <button type="button" @click="editing = null" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">Batal</button>
-                                    <button type="submit" class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">Simpan Perubahan</button>
-                                </div>
-                            </form>
-                        </template>
-                        <template x-if="editing !== {{ $note->id }}">
-                            <div>
-                                <p class="font-body-sm text-body-sm text-on-surface whitespace-pre-wrap">{{ $note->content }}</p>
-                                <div class="flex items-center justify-between gap-2 mt-3">
-                                    <p class="font-label-sm text-label-sm text-outline">{{ $note->note_date?->format('d M Y') ?? $note->created_at->format('d M Y') }}</p>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" @click="editing = {{ $note->id }}" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit Catatan">
-                                            <span class="material-symbols-outlined text-[20px]">edit</span>
-                                        </button>
-                                        <div x-data="{ open: false }" class="relative inline-block">
-                                            <button @click="open = true" type="button" class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus Catatan">
-                                                <span class="material-symbols-outlined text-[20px]">delete</span>
-                                            </button>
-
-                                            <div x-show="open" x-cloak x-transition.opacity
-                                                class="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
-                                                @click="open = false"></div>
-
-                                            <div x-show="open" x-cloak x-transition
-                                                @keydown.escape.window="open = false"
-                                                class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                                                <div class="w-full max-w-sm bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden">
-                                                    <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30 bg-surface/50">
-                                                        <div>
-                                                            <h3 class="font-headline text-headline-sm text-on-surface">Hapus Catatan</h3>
-                                                            <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $note->note_date?->format('d M Y') }}</p>
-                                                        </div>
-                                                        <button @click="open = false" type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
-                                                            <span class="material-symbols-outlined text-[20px]">close</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="px-6 py-5">
-                                                        <p class="font-body-sm text-body-sm text-on-surface-variant">Yakin ingin menghapus catatan ini? Tindakan ini tidak dapat dibatalkan.</p>
-                                                        <div class="flex items-center justify-end gap-2 mt-4">
-                                                            <button @click="open = false" type="button" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">
-                                                                Batal
-                                                            </button>
-                                                            <form action="{{ route('pelatih.notes.destroy', $note) }}" method="POST">
-                                                                @csrf @method('DELETE')
-                                                                <button type="submit" class="inline-flex items-center justify-center gap-2 bg-error text-on-error px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
-                                                                    <span class="material-symbols-outlined text-[18px]">delete</span>
-                                                                    Hapus
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                @empty
-                    <div class="text-center py-6">
-                        <span class="material-symbols-outlined text-outline text-[32px]">edit_note</span>
-                        <p class="font-body-sm text-body-sm text-outline mt-2">Belum ada catatan. Tambahkan catatan pertama Anda di atas.</p>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-
-            <!-- Jadwal Hari Ini -->
-            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
-                <div class="flex items-start justify-between gap-3 mb-4">
-                    <div>
-                        <h3 class="font-headline text-headline-sm text-on-surface">Jadwal Hari Ini</h3>
-                        <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ ucfirst($todayDay) }}, {{ now()->format('d M Y') }}</p>
-                    </div>
-                    <a href="{{ route('pelatih.schedules.index') }}" class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm hover:underline shrink-0">
-                        Lihat Semua
-                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-                    </a>
-                </div>
-
-                <div class="space-y-3">
-                    @forelse ($todaySchedules as $schedule)
-                        @php
-                            $start = $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '-';
-                            $end = $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '-';
-                        @endphp
-                        <div class="flex items-start gap-3 border border-outline-variant/30 rounded-lg p-3">
-                            <div class="p-2 bg-primary-container/60 rounded-lg shrink-0">
-                                <span class="material-symbols-outlined text-[18px] text-on-primary">event</span>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <p class="font-label-md text-label-md text-on-surface truncate">{{ $schedule->schoolClass?->name ?? 'Tanpa Kelas' }}</p>
-                                    <span class="font-label-sm text-label-sm text-primary whitespace-nowrap">{{ $start }}–{{ $end }}</span>
-                                </div>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">
-                                    @if ($schedule->schoolClass)
-                                        {{ $schedule->schoolClass->level_label }}
-                                    @endif
-                                    @if ($schedule->location)
-                                        · {{ $schedule->location }}
-                                    @endif
-                                    @if ($schedule->session_number)
-                                        · Sesi {{ $schedule->session_number }}
-                                    @endif
-                                </p>
-                                <p class="font-label-sm text-label-sm text-outline mt-1">{{ $schedule->students->count() }} siswa</p>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-center py-6">
-                            <span class="material-symbols-outlined text-outline text-[32px]">event_busy</span>
-                            <p class="font-body-sm text-body-sm text-outline mt-2">Tidak ada jadwal latihan hari ini.</p>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] relative overflow-hidden group">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-surface-container-low rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
-                <div class="p-2.5 bg-[#E6F8FC] text-secondary rounded-lg w-fit relative z-10 mb-3">
+            <div class="bg-gradient-to-br from-[#0047a9] to-[#0b5ed7] rounded-xl p-5 text-white shadow-[0px_8px_24px_rgba(11,94,215,0.25)] relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full opacity-60 group-hover:scale-110 transition-transform"></div>
+                <div class="p-2.5 bg-white/20 rounded-lg w-fit relative z-10 mb-3">
                     <span class="material-symbols-outlined">event_available</span>
                 </div>
-                <p class="font-label-sm text-label-sm text-outline mb-1 uppercase tracking-wider relative z-10">Absensi Hari Ini</p>
-                <h3 class="font-headline text-headline-xl text-on-surface relative z-10">{{ $totalAttendanceToday }}</h3>
+                <p class="font-label-sm text-label-sm text-white/80 mb-1 uppercase tracking-wider relative z-10">Absensi Hari Ini</p>
+                <h3 class="font-headline text-headline-xl relative z-10">{{ $totalAttendanceToday }}</h3>
             </div>
 
             <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] relative overflow-hidden group">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-surface-container-low rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary-container/20 rounded-full opacity-60 group-hover:scale-110 transition-transform"></div>
                 <div class="p-2.5 bg-primary-container text-on-primary rounded-lg w-fit relative z-10 mb-3">
                     <span class="material-symbols-outlined">fact_check</span>
                 </div>
@@ -226,7 +79,7 @@
 
             @if ($canAssess)
                 <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-surface-container-low rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary-fixed/60 rounded-full opacity-60 group-hover:scale-110 transition-transform"></div>
                     <div class="p-2.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-lg w-fit relative z-10 mb-3">
                         <span class="material-symbols-outlined">assessment</span>
                     </div>
@@ -235,7 +88,7 @@
                 </div>
 
                 <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-surface-container-low rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-[#FFF4E0] rounded-full opacity-60 group-hover:scale-110 transition-transform"></div>
                     <div class="p-2.5 bg-[#FFF4E0] text-[#B26A00] rounded-lg w-fit relative z-10 mb-3">
                         <span class="material-symbols-outlined">north_east</span>
                     </div>
@@ -244,7 +97,7 @@
                 </div>
             @else
                 <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-surface-container-low rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-[#FFF4E0] rounded-full opacity-60 group-hover:scale-110 transition-transform"></div>
                     <div class="p-2.5 bg-[#FFF4E0] text-[#B26A00] rounded-lg w-fit relative z-10 mb-3">
                         <span class="material-symbols-outlined">north_east</span>
                     </div>
@@ -257,11 +110,174 @@
             @endif
         </div>
 
-        <!-- Chart + Riwayat -->
+        <!-- Jadwal Hari Ini + Sesi Berikutnya -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Jadwal Hari Ini -->
+            <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
+                <div class="flex items-start justify-between gap-3 mb-5">
+                    <div>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Jadwal Hari Ini</h3>
+                        <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $todayLabel }}</p>
+                    </div>
+                    <a href="{{ route('pelatih.schedules.index') }}" class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm hover:underline shrink-0">
+                        Lihat Semua
+                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </a>
+                </div>
+
+                <div class="space-y-4">
+                    @forelse ($todaySchedules as $schedule)
+                        @php
+                            $start = $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '-';
+                            $end = $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '-';
+                            $avatarStudents = $schedule->students->take(4);
+                        @endphp
+                        <div class="flex items-center gap-4 border border-outline-variant/30 rounded-xl p-4 bg-surface/50 hover:bg-surface-container-low hover:border-primary/30 transition-all group">
+                            <div class="w-14 shrink-0 text-center">
+                                <p class="font-headline text-headline-md text-primary">{{ $start }}</p>
+                                <p class="font-label-sm text-label-sm text-outline">{{ $end }}</p>
+                            </div>
+                            <div class="p-2.5 bg-primary-container/60 rounded-lg shrink-0 group-hover:bg-primary-container transition-colors">
+                                <span class="material-symbols-outlined text-[20px] text-on-primary">pool</span>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <p class="font-label-md text-label-md text-on-surface truncate">{{ $schedule->schoolClass?->name ?? 'Tanpa Kelas' }}</p>
+                                    <span class="px-2 py-0.5 bg-primary/10 text-primary rounded-md font-label-sm text-label-sm whitespace-nowrap">
+                                        {{ $schedule->students->count() }} siswa
+                                    </span>
+                                </div>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">
+                                    @if ($schedule->schoolClass)
+                                        {{ $schedule->schoolClass->level_label }}
+                                    @endif
+                                    @if ($schedule->schoolClass?->program)
+                                        · {{ $schedule->schoolClass->program->name }}
+                                    @endif
+                                    @if ($schedule->location)
+                                        · {{ $schedule->location }}
+                                    @endif
+                                    @if ($schedule->session_number)
+                                        · Sesi {{ $schedule->session_number }}
+                                    @endif
+                                </p>
+                                <div class="flex items-center gap-1.5 mt-2">
+                                    @foreach ($avatarStudents as $st)
+                                        <div class="w-6 h-6 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-label-sm text-label-sm text-[10px] ring-2 ring-surface" title="{{ $st->full_name }}">
+                                            {{ strtoupper(substr($st->full_name, 0, 1)) }}
+                                        </div>
+                                    @endforeach
+                                    @if ($schedule->students->count() > 4)
+                                        <div class="w-6 h-6 rounded-full bg-surface-container-low text-outline flex items-center justify-center font-label-sm text-label-sm text-[10px] ring-2 ring-surface">
+                                            +{{ $schedule->students->count() - 4 }}
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-10">
+                            <span class="material-symbols-outlined text-outline text-[40px]">event_busy</span>
+                            <p class="font-body-sm text-body-sm text-outline mt-2">Tidak ada jadwal latihan hari ini.</p>
+                            <p class="font-body-sm text-body-sm text-outline mt-0.5">Nikmati hari santai atau siapkan materi latihan berikutnya!</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Sesi Berikutnya -->
+            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
+                <div class="flex items-start justify-between gap-3 mb-5">
+                    <div>
+                        <h3 class="font-headline text-headline-sm text-on-surface">Sesi Berikutnya</h3>
+                        <p class="font-body-sm text-body-sm text-outline mt-0.5">Jadwal latihan terdekat</p>
+                    </div>
+                    <span class="p-2 bg-secondary/10 text-secondary rounded-lg shrink-0">
+                        <span class="material-symbols-outlined">schedule</span>
+                    </span>
+                </div>
+
+                @if ($nextSchedule)
+                    @php
+                        $nsStart = $nextSchedule->start_time ? \Carbon\Carbon::parse($nextSchedule->start_time)->format('H:i') : '-';
+                        $nsEnd = $nextSchedule->end_time ? \Carbon\Carbon::parse($nextSchedule->end_time)->format('H:i') : '-';
+                        $nsDays = (int) now()->startOfDay()->diffInDays($nextSchedule->next_occurrence->startOfDay());
+                        $nsLabel = $nsDays === 0 ? 'Hari ini' : ($nsDays === 1 ? 'Besok' : $nsDays.' hari lagi');
+                    @endphp
+                    <div class="text-center py-2">
+                        <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full {{ $nsDays === 0 ? 'bg-error/10 text-error' : 'bg-secondary/10 text-secondary' }} font-label-sm text-label-sm">
+                            <span class="material-symbols-outlined text-[16px]">{{ $nsDays === 0 ? 'bolt' : 'hourglass_top' }}</span>
+                            {{ $nsLabel }}
+                        </span>
+                    </div>
+
+                    <div class="mt-4 border border-outline-variant/30 rounded-xl p-4 bg-surface/50">
+                        <div class="flex items-center justify-between gap-3">
+                            <p class="font-headline text-headline-md text-on-surface">{{ $nextSchedule->schoolClass?->name ?? 'Tanpa Kelas' }}</p>
+                            <span class="font-label-sm text-label-sm text-primary whitespace-nowrap">{{ ucfirst($nextSchedule->day) }}</span>
+                        </div>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                            {{ $nextSchedule->next_occurrence->format('d M Y') }}
+                        </p>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                            {{ $nsStart }}–{{ $nsEnd }}
+                            @if ($nextSchedule->location)
+                                · {{ $nextSchedule->location }}
+                            @endif
+                        </p>
+
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 pt-3 border-t border-outline-variant/30">
+                            @if ($nextSchedule->schoolClass)
+                                <span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-outline">
+                                    <span class="material-symbols-outlined text-[16px]">signal_cellular_alt</span>
+                                    {{ $nextSchedule->schoolClass->level_label }}
+                                </span>
+                            @endif
+                            <span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-outline">
+                                <span class="material-symbols-outlined text-[16px]">group</span>
+                                {{ $nextSchedule->students->count() }} siswa
+                            </span>
+                            @if ($nextSchedule->session_number)
+                                <span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-outline">
+                                    <span class="material-symbols-outlined text-[16px]">tag</span>
+                                    Sesi {{ $nextSchedule->session_number }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <a href="{{ route('pelatih.schedules.index') }}" class="mt-4 w-full inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                        Buka Jadwal Lengkap
+                    </a>
+                @else
+                    <div class="text-center py-10">
+                        <span class="material-symbols-outlined text-outline text-[40px]">event_note</span>
+                        <p class="font-body-sm text-body-sm text-outline mt-2">Belum ada jadwal latihan.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Chart + Absensi Terakhir -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5">
-                <h3 class="font-headline text-headline-sm text-on-surface mb-1">Aktivitas Absensi</h3>
-                <p class="font-body-sm text-body-sm text-outline mb-4">7 Hari Terakhir</p>
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <div>
+                        <h3 class="font-headline text-headline-sm text-on-surface mb-1">Aktivitas Absensi</h3>
+                        <p class="font-body-sm text-body-sm text-outline">7 Hari Terakhir</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="inline-flex items-center gap-1.5 font-label-sm text-label-sm text-outline">
+                            <span class="w-3 h-3 rounded-full bg-[#0B5ED7]"></span>
+                            Total Absensi
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 font-label-sm text-label-sm text-outline">
+                            <span class="w-3 h-3 rounded-full bg-[#FFB300]"></span>
+                            Siswa Unik
+                        </span>
+                    </div>
+                </div>
                 <div class="relative h-[260px] w-full">
                     <canvas id="attendanceChart"></canvas>
                 </div>
@@ -272,7 +288,7 @@
                     <h3 class="font-headline text-headline-sm text-on-surface">Absensi Terakhir</h3>
                     <a href="{{ route('pelatih.attendances.history') }}" class="text-primary font-label-sm text-label-sm hover:underline shrink-0">Lihat Semua</a>
                 </div>
-                <div class="flex-1 space-y-3 overflow-y-auto">
+                <div class="flex-1 space-y-3 overflow-y-auto max-h-[300px] pr-1">
                     @forelse ($recentAttendances as $attendance)
                         <div class="flex items-center gap-3 border border-outline-variant/30 rounded-lg p-3">
                             <div class="p-2 bg-surface-container-low rounded-lg shrink-0">
@@ -291,6 +307,131 @@
                             <p class="font-body-sm text-body-sm text-outline mt-2">Belum ada absensi yang dicatat.</p>
                         </div>
                     @endforelse
+                </div>
+            </div>
+        </div>
+
+        <!-- Catatan Pribadi -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
+            <div class="flex items-start justify-between gap-3 mb-5">
+                <div>
+                    <h3 class="font-headline text-headline-sm text-on-surface">Catatan Pribadi</h3>
+                    <p class="font-body-sm text-body-sm text-outline mt-0.5">Catatan ini hanya dapat dilihat oleh Anda.</p>
+                </div>
+                <span class="p-2 bg-tertiary-fixed/60 text-tertiary rounded-lg shrink-0">
+                    <span class="material-symbols-outlined">sticky_note_2</span>
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <!-- Form Catatan -->
+                <div class="md:col-span-2">
+                    <form action="{{ route('pelatih.notes.store') }}" method="POST" class="bg-surface-container-low/50 border border-outline-variant/30 rounded-xl p-4">
+                        @csrf
+                        <div class="mb-3">
+                            <x-input-label for="note_date" value="Tanggal Catatan" />
+                            <input type="date" name="note_date" id="note_date" value="{{ old('note_date', now()->format('Y-m-d')) }}" required
+                                class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                            @error('note_date')
+                                <p class="font-body-sm text-body-sm text-error mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <textarea name="content" rows="4" placeholder="Tulis catatan Anda di sini..." required
+                            class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all resize-none">{{ old('content') }}</textarea>
+                        @error('content')
+                            <p class="font-body-sm text-body-sm text-error mt-1">{{ $message }}</p>
+                        @enderror
+                        <div class="flex justify-end mt-3">
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-[18px]">add</span>
+                                Simpan Catatan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Daftar Catatan -->
+                <div class="md:col-span-3">
+                    <div x-data="{ editing: null }" class="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+                        @forelse ($notes as $note)
+                            <div class="border border-outline-variant/30 rounded-lg p-4 bg-surface/50">
+                                <template x-if="editing === {{ $note->id }}">
+                                    <form action="{{ route('pelatih.notes.update', $note) }}" method="POST">
+                                        @csrf @method('PATCH')
+                                        <div class="w-full sm:w-44 mb-3">
+                                            <x-input-label for="note_date_{{ $note->id }}" value="Tanggal Catatan" />
+                                            <input type="date" name="note_date" id="note_date_{{ $note->id }}" value="{{ $note->note_date?->format('Y-m-d') }}" required
+                                                class="mt-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                        </div>
+                                        <textarea name="content" rows="2" required
+                                            class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all resize-none">{{ $note->content }}</textarea>
+                                        <div class="flex justify-end gap-2 mt-2">
+                                            <button type="button" @click="editing = null" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">Batal</button>
+                                            <button type="submit" class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">Simpan Perubahan</button>
+                                        </div>
+                                    </form>
+                                </template>
+                                <template x-if="editing !== {{ $note->id }}">
+                                    <div>
+                                        <p class="font-body-sm text-body-sm text-on-surface whitespace-pre-wrap">{{ $note->content }}</p>
+                                        <div class="flex items-center justify-between gap-2 mt-3">
+                                            <p class="font-label-sm text-label-sm text-outline">{{ $note->note_date?->format('d M Y') ?? $note->created_at->format('d M Y') }}</p>
+                                            <div class="flex items-center gap-1">
+                                                <button type="button" @click="editing = {{ $note->id }}" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit Catatan">
+                                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                                </button>
+                                                <div x-data="{ open: false }" class="relative inline-block">
+                                                    <button @click="open = true" type="button" class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus Catatan">
+                                                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                                                    </button>
+
+                                                    <div x-show="open" x-cloak x-transition.opacity
+                                                        class="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+                                                        @click="open = false"></div>
+
+                                                    <div x-show="open" x-cloak x-transition
+                                                        @keydown.escape.window="open = false"
+                                                        class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                                                        <div class="w-full max-w-sm bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden">
+                                                            <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30 bg-surface/50">
+                                                                <div>
+                                                                    <h3 class="font-headline text-headline-sm text-on-surface">Hapus Catatan</h3>
+                                                                    <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $note->note_date?->format('d M Y') }}</p>
+                                                                </div>
+                                                                <button @click="open = false" type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+                                                                    <span class="material-symbols-outlined text-[20px]">close</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="px-6 py-5">
+                                                                <p class="font-body-sm text-body-sm text-on-surface-variant">Yakin ingin menghapus catatan ini? Tindakan ini tidak dapat dibatalkan.</p>
+                                                                <div class="flex items-center justify-end gap-2 mt-4">
+                                                                    <button @click="open = false" type="button" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">
+                                                                        Batal
+                                                                    </button>
+                                                                    <form action="{{ route('pelatih.notes.destroy', $note) }}" method="POST">
+                                                                        @csrf @method('DELETE')
+                                                                        <button type="submit" class="inline-flex items-center justify-center gap-2 bg-error text-on-error px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
+                                                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                                            Hapus
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        @empty
+                            <div class="text-center py-10 border border-dashed border-outline-variant/50 rounded-xl">
+                                <span class="material-symbols-outlined text-outline text-[40px]">edit_note</span>
+                                <p class="font-body-sm text-body-sm text-outline mt-2">Belum ada catatan. Tambahkan catatan pertama Anda di samping.</p>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>
@@ -353,7 +494,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
+                        legend: { display: false },
                         tooltip: {
                             backgroundColor: '#121B2E',
                             padding: 12,
