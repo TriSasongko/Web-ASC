@@ -30,7 +30,7 @@
 
                 @if ($hasData)
                     <div class="p-5 space-y-4">
-                        @foreach (['grup1' => ['kupu_kupu', 'dada', 'punggung'], 'grup2' => ['bebas']] as $grup => $styles)
+                        @foreach (['grup1' => ['kupu_kupu', 'dada', 'punggung'], 'grup2' => ['bebas'], 'grup3' => ['im']] as $grup => $styles)
                             <div class="overflow-x-auto rounded-xl border border-outline-variant/30">
                                 <table class="w-full">
                                     <thead class="bg-surface-container-low">

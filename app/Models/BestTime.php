@@ -17,6 +17,8 @@ class BestTime extends Model
 
     public const STYLE_KUPU_KUPU = 'kupu_kupu';
 
+    public const STYLE_IM = 'im';
+
     protected $fillable = [
         'student_id', 'class_id', 'recorded_by', 'style', 'distance', 'time_ms', 'recorded_at',
     ];
@@ -28,13 +30,13 @@ class BestTime extends Model
         ];
     }
 
-    // Daftar gaya renang (sama dengan penilaian perkembangan)
+    // Daftar gaya renang best time (penilaian perkembangan + IM khusus best time)
     public static function styles(): array
     {
-        return Development::styles();
+        return Development::styles() + [self::STYLE_IM => 'IM (Individual Medley)'];
     }
 
-    // Jarak yang dilombakan per gaya (Gaya Bebas termasuk 400 m)
+    // Jarak yang dilombakan per gaya (Gaya Bebas termasuk 400 m; IM hanya 200 m)
     public static function distancesByStyle(): array
     {
         return [
@@ -42,6 +44,7 @@ class BestTime extends Model
             self::STYLE_DADA => [200, 100, 50, 25],
             self::STYLE_PUNGGUNG => [200, 100, 50, 25],
             self::STYLE_BEBAS => [400, 200, 100, 50, 25],
+            self::STYLE_IM => [200],
         ];
     }
 

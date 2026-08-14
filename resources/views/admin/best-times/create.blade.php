@@ -39,7 +39,7 @@
                     </div>
                 @enderror
 
-                @foreach (['grup1' => ['kupu_kupu', 'dada', 'punggung'], 'grup2' => ['bebas']] as $grup => $styles)
+                @foreach (['grup1' => ['kupu_kupu', 'dada', 'punggung'], 'grup2' => ['bebas'], 'grup3' => ['im']] as $grup => $styles)
                     <div class="border-t border-outline-variant/30 pt-6">
                         <div class="overflow-x-auto rounded-xl border border-outline-variant/30">
                             <table class="w-full">
