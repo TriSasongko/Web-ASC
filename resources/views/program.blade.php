@@ -47,7 +47,16 @@
 
         <!-- Main Content -->
         <main class="flex-grow pb-16 md:pb-24 px-margin_mobile md:px-margin_desktop max-w-container_max_width mx-auto w-full">
-            <section class="text-center mb-12">
+            <!-- Hero -->
+            <section class="relative text-center pt-8 md:pt-14 pb-12 md:pb-16 overflow-hidden">
+                <div class="absolute inset-0 -z-10 pointer-events-none">
+                    <div class="absolute -top-20 -right-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
+                    <div class="absolute top-10 -left-24 w-80 h-80 bg-orange/10 rounded-full blur-3xl"></div>
+                </div>
+                <span class="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full font-body text-label-md font-semibold mb-5">
+                    <span class="material-symbols-outlined text-[18px]">pool</span>
+                    Program Pelatihan
+                </span>
                 <h1 class="font-headline text-headline-lg-mobile md:text-headline-xl text-primary mb-4">{{ $settings['program_heading'] }}</h1>
                 <p class="font-body text-body-lg text-on-surface-variant max-w-2xl mx-auto">{{ $settings['program_subtitle'] }}</p>
             </section>
@@ -55,30 +64,42 @@
             <!-- Programs Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse ($programs as $program)
-                    <div class="bg-surface rounded-xl p-6 pool-shadow border border-outline/10 flex flex-col hover:-translate-y-1 transition-transform duration-300 {{ $program->featured ? 'md:col-span-2 lg:col-span-2 relative overflow-hidden' : 'relative overflow-hidden' }}">
-                        @if ($program->badge)
-                            <div class="absolute top-0 right-0 bg-orange text-white px-3 py-1 rounded-bl-lg font-body text-label-md text-[12px]">{{ $program->badge }}</div>
-                        @endif
-                        <div class="mb-4 {{ $program->featured ? 'mt-2' : '' }}">
-                            <div class="w-12 h-12 bg-tertiary-fixed rounded-lg flex items-center justify-center mb-4 text-primary">
-                                <span class="material-symbols-outlined filled">{{ $program->featured ? 'emoji_events' : 'school' }}</span>
+                    <div class="bg-surface-container-lowest rounded-2xl border p-6 flex flex-col hover:shadow-xl transition-shadow {{ $program->featured ? 'border-primary/40 ring-2 ring-primary/20 shadow-lg' : 'border-outline-variant/30 shadow-md' }}">
+                        <div class="flex items-start justify-between gap-2 mb-4">
+                            <div class="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined filled">school</span>
                             </div>
-                            <h2 class="font-headline text-headline-sm text-primary mb-2">{{ $program->name }}</h2>
-                            <p class="font-body text-label-md text-on-surface-variant mb-1">{{ $program->subtitle }}</p>
-                            <p class="font-headline text-headline-md text-orange mb-4">Rp{{ number_format($program->price, 0, ',', '.') }}<span class="font-body text-body-md text-on-surface-variant"> {{ $program->billing_unit }}</span></p>
+                            @if ($program->featured)
+                                <span class="shrink-0 bg-primary text-on-primary text-[10px] font-bold px-2.5 py-1 rounded-full mt-0.5 inline-flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[12px]">star</span>
+                                    UNGGULAN
+                                </span>
+                            @elseif ($program->badge)
+                                <span class="shrink-0 bg-orange text-white text-[10px] font-bold px-2.5 py-1 rounded-full mt-0.5">{{ $program->badge }}</span>
+                            @endif
                         </div>
-                        <div class="flex-grow">
-                            <ul class="space-y-3 mb-6 text-on-surface-variant">
-                                @foreach ($program->featureList() as $feature)
-                                    <li class="flex items-start gap-2">
-                                        <span class="material-symbols-outlined text-primary text-[20px] filled">check_circle</span>
-                                        <span>{{ $feature }}</span>
-                                    </li>
-                                @endforeach
-                            </ul>
+                        <h2 class="font-headline text-headline-sm text-primary font-bold mb-1">{{ $program->name }}</h2>
+                        @if ($program->subtitle)
+                            <p class="text-on-surface-variant text-label-sm mb-4">{{ $program->subtitle }}</p>
+                        @endif
+                        <div class="mb-6 flex items-baseline gap-2 flex-wrap">
+                            @if ($program->price)
+                                <span class="font-headline text-headline-lg text-orange font-bold">Rp{{ number_format($program->price, 0, ',', '.') }}</span>
+                                <span class="text-on-surface-variant text-body-md">{{ $program->billing_unit }}</span>
+                            @else
+                                <span class="font-headline text-headline-lg text-orange font-bold">Hubungi Kami</span>
+                            @endif
                         </div>
+                        <ul class="space-y-3 mb-8 flex-grow">
+                            @foreach ($program->featureList() as $feature)
+                                <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
+                                    <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
+                                    <span>{{ $feature }}</span>
+                                </li>
+                            @endforeach
+                        </ul>
                         <a href="{{ route('register') }}"
-                            class="w-full text-center {{ $program->featured ? 'bg-primary text-on-primary hover:bg-primary-container' : 'border-2 border-primary text-primary hover:bg-primary hover:text-on-primary' }} py-3 rounded-lg font-body text-label-md transition-colors mt-auto">
+                            class="w-full text-center bg-primary text-on-primary hover:bg-primary-container py-2.5 rounded-lg font-body text-label-md transition-colors mt-auto">
                             {{ $program->button_label }}
                         </a>
                     </div>
@@ -86,6 +107,29 @@
                     <p class="col-span-full text-center text-on-surface-variant">Belum ada program.</p>
                 @endforelse
             </div>
+
+            <!-- CTA Banner -->
+            <section class="mt-16 md:mt-24">
+                <div class="relative overflow-hidden rounded-3xl bg-primary text-on-primary px-6 md:px-12 py-10 md:py-14 text-center shadow-xl shadow-primary/20">
+                    <div class="absolute -top-16 -left-16 w-64 h-64 bg-orange/20 rounded-full blur-3xl"></div>
+                    <div class="absolute -bottom-20 -right-10 w-72 h-72 bg-surface/10 rounded-full blur-3xl"></div>
+                    <div class="relative z-10">
+                        <h2 class="font-headline text-headline-lg-mobile md:text-headline-xl font-bold mb-3">Belum yakin program mana yang tepat?</h2>
+                        <p class="text-on-primary/90 text-body-md md:text-body-lg max-w-2xl mx-auto mb-8">Konsultasikan kebutuhan dan target Anda bersama coach kami. Kami akan bantu memilih program yang paling sesuai dengan tujuan berenang Anda.</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="{{ \App\Models\User::adminWaLink() }}" target="_blank"
+                                class="bg-orange text-white px-8 py-3.5 rounded-lg font-body text-label-md hover:bg-orange-light transition-colors shadow-lg shadow-orange/30 inline-flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">chat</span>
+                                Konsultasi Gratis
+                            </a>
+                            <a href="{{ url('/') }}#jadwal"
+                                class="bg-surface/10 backdrop-blur-sm border-2 border-on-primary text-on-primary px-8 py-3.5 rounded-lg font-body text-label-md hover:bg-surface/20 transition-colors">
+                                Lihat Jadwal Latihan
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- Footer -->

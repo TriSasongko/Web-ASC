@@ -51,17 +51,17 @@
             @endphp
             <!-- Hero Section -->
             <section class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop py-16 md:py-24">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
                     <div>
                         <h1 class="font-headline text-headline-lg-mobile md:text-headline-xl text-primary mb-6">{{ $settings['tentang_heading'] }}</h1>
-                        <p class="font-body text-body-lg text-on-surface-variant mb-6">{{ $settings['tentang_text'] }}</p>
-                        <div class="flex items-center gap-4">
-                            <span class="font-headline text-headline-xl text-orange font-bold">{{ $settings['tentang_years'] }}</span>
-                            <span class="font-body text-body-md text-on-surface-variant">{{ $settings['tentang_years_label'] }}</span>
+                        <p class="font-body text-body-md md:text-body-lg text-on-surface-variant mb-6">{{ $settings['tentang_text'] }}</p>
+                        <div class="inline-flex items-center gap-4 bg-surface-container-low rounded-xl border-l-4 border-orange p-4 md:p-5">
+                            <span class="font-headline text-headline-md md:text-headline-xl text-orange font-bold">{{ $settings['tentang_years'] }}</span>
+                            <span class="font-body text-body-sm md:text-body-md text-on-surface-variant">{{ $settings['tentang_years_label'] }}</span>
                         </div>
                     </div>
                     <div class="rounded-xl overflow-hidden pool-shadow">
-                        <img class="w-full h-[400px] object-cover"
+                        <img class="w-full h-64 md:h-[400px] object-cover"
                              alt="Perenang profesional saat latihan di kolam renang"
                              src="{{ $settings['tentang_image'] }}">
                     </div>
@@ -71,7 +71,7 @@
             <!-- Visi Misi Section -->
             <section class="bg-surface-container-low py-16 md:py-24">
                 <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                         <div class="bg-surface p-6 rounded-xl pool-shadow border border-outline/10">
                             <div class="flex items-center gap-3 mb-4">
                                 <span class="material-symbols-outlined text-orange text-[32px]">visibility</span>
@@ -98,31 +98,110 @@
 
             <!-- Tim Pelatih Section -->
             <section class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop py-16 md:py-24">
-                <h2 class="font-headline text-headline-lg-mobile md:text-headline-xl text-primary text-center mb-12">Tim Pelatih Profesional Kami</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    @forelse ($coaches as $coach)
-                        <div class="bg-surface rounded-xl pool-shadow border border-outline/10 overflow-hidden flex flex-col">
-                            @if ($coach->photo_url)
-                                <img class="w-full h-64 object-cover"
-                                     alt="{{ $coach->name }}, {{ $coach->position }}"
-                                     src="{{ $coach->photo_url }}">
-                            @else
-                                <div class="w-full h-64 bg-surface-container-low flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-on-surface-variant text-[64px]">person</span>
-                                </div>
-                            @endif
-                            <div class="p-6 flex-grow flex flex-col justify-between">
-                                <div>
-                                    <h3 class="font-headline text-headline-sm text-primary mb-1">{{ $coach->name }}</h3>
-                                    <p class="font-body text-label-md text-orange mb-4">{{ $coach->position }}</p>
-                                    <p class="font-body text-body-md text-on-surface-variant">{{ $coach->description }}</p>
-                                </div>
+                <h2 class="font-headline text-headline-lg-mobile md:text-headline-xl text-primary text-center mb-8 md:mb-12">Tim Pelatih Profesional Kami</h2>
+                @if ($coaches->isNotEmpty())
+                    <div class="relative"
+                         x-data="{
+                             index: 0,
+                             startX: null,
+                             timer: null,
+                             step() {
+                                 const t = this.$refs.track;
+                                 const card = t.querySelector(':scope > *');
+                                 const gap = parseFloat(getComputedStyle(t).gap) || 0;
+                                 return card ? card.offsetWidth + gap : 0;
+                             },
+                             maxIndex() {
+                                 const t = this.$refs.track;
+                                 const s = this.step();
+                                 return s > 0 ? Math.round((t.scrollWidth - t.clientWidth) / s) : 0;
+                             },
+                             slideTo(i) {
+                                 const s = this.step();
+                                 const max = this.maxIndex();
+                                 this.index = i > max ? 0 : (i < 0 ? max : i);
+                                 this.$refs.track.style.transform = `translateX(-${this.index * s}px)`;
+                             },
+                             play() {
+                                 if (this.timer) return;
+                                 this.timer = setInterval(() => {
+                                     if (!this.startX) this.slideTo(this.index + 1);
+                                 }, 3000);
+                             },
+                             pause() {
+                                 clearInterval(this.timer);
+                                 this.timer = null;
+                             },
+                             restart() {
+                                 clearInterval(this.timer);
+                                 this.timer = null;
+                                 this.play();
+                             },
+                             prev() {
+                                 this.slideTo(this.index - 1);
+                                 this.restart();
+                             },
+                             next() {
+                                 this.slideTo(this.index + 1);
+                                 this.restart();
+                             },
+                             touchStart(e) {
+                                 this.startX = e.changedTouches[0].clientX;
+                             },
+                             touchEnd(e) {
+                                 if (this.startX === null) return;
+                                 const dx = e.changedTouches[0].clientX - this.startX;
+                                 this.startX = null;
+                                 if (Math.abs(dx) >= 40) this.slideTo(this.index + (dx < 0 ? 1 : -1));
+                                 this.restart();
+                             },
+                             init() {
+                                 this.play();
+                                 window.addEventListener('resize', () => this.slideTo(this.index));
+                             }
+                         }"
+                         @mouseenter="pause()"
+                         @mouseleave="play()">
+                        <div class="overflow-hidden"
+                             @touchstart.passive="touchStart($event)"
+                             @touchend.passive="touchEnd($event)">
+                            <div x-ref="track"
+                                 class="flex gap-6 transition-transform duration-700 ease-in-out will-change-transform">
+                                @foreach ($coaches as $coach)
+                                    <div class="shrink-0 w-[85%] sm:w-[48%] lg:w-[31.5%]">
+                                        <div class="relative h-full bg-surface-container-lowest rounded-2xl overflow-hidden shadow-md group aspect-[3/4]">
+                                            @if ($coach->photo_url)
+                                                <img alt="{{ $coach->name }}"
+                                                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                     src="{{ $coach->photo_url }}">
+                                            @else
+                                                <div class="absolute inset-0 bg-surface-container flex items-center justify-center">
+                                                    <span class="material-symbols-outlined text-on-surface-variant text-[64px]">person</span>
+                                                </div>
+                                            @endif
+                                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
+                                            <div class="absolute inset-x-0 bottom-0 p-4 md:p-5">
+                                                <p class="text-orange-lighter font-body text-label-md font-semibold mb-1">{{ $coach->position }}</p>
+                                                <h3 class="text-white font-headline text-headline-sm font-bold">{{ $coach->name }}</h3>
+                                                <p class="text-white/85 text-body-sm mt-2 line-clamp-3 max-h-24 opacity-100 transition-all duration-300 md:max-h-0 md:opacity-0 md:group-hover:max-h-24 md:group-hover:opacity-100">{{ $coach->description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
-                    @empty
-                        <p class="col-span-full text-center text-on-surface-variant">Belum ada coach.</p>
-                    @endforelse
-                </div>
+                        <button type="button" @click="prev()" aria-label="Coach sebelumnya"
+                            class="hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-primary text-on-primary items-center justify-center shadow-lg hover:bg-primary-container transition-colors">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <button type="button" @click="next()" aria-label="Coach berikutnya"
+                            class="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-primary text-on-primary items-center justify-center shadow-lg hover:bg-primary-container transition-colors">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                @else
+                    <p class="text-center text-on-surface-variant">Belum ada coach.</p>
+                @endif
             </section>
         </main>
 
