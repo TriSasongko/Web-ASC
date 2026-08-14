@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendance;
+use App\Http\Controllers\Admin\BestTimeController as AdminBestTime;
 use App\Http\Controllers\Admin\ClassScheduleController;
 use App\Http\Controllers\Admin\ClassStudentController;
 use App\Http\Controllers\Admin\CoachController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\ERaportController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\OrangTua\BestTimeController as OrangTuaBestTime;
 use App\Http\Controllers\OrangTua\DashboardController as OrangTuaDashboard;
 use App\Http\Controllers\OrangTua\ERaportController as OrangTuaERaport;
 use App\Http\Controllers\OrangTua\RegistrationController as OrangTuaRegistration;
@@ -105,6 +107,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('classes/{class}/developments/{student}', [AdminDevelopment::class, 'store'])->name('classes.developments.store');
     Route::get('classes/{class}/developments/{student}/history', [AdminDevelopment::class, 'history'])->name('classes.developments.history');
 
+    // Route Best Time Siswa untuk Admin (khusus kelas Kompetitif)
+    Route::get('best-times', [AdminBestTime::class, 'index'])->name('best-times.index');
+    Route::delete('best-times/{bestTime}', [AdminBestTime::class, 'destroy'])->name('best-times.destroy');
+    Route::get('classes/{class}/best-times', [AdminBestTime::class, 'classIndex'])->name('classes.best-times.index');
+    Route::get('classes/{class}/best-times/{student}/create', [AdminBestTime::class, 'create'])->name('classes.best-times.create');
+    Route::post('classes/{class}/best-times/{student}', [AdminBestTime::class, 'store'])->name('classes.best-times.store');
+    Route::post('classes/{class}/best-times/{student}/delete-many', [AdminBestTime::class, 'destroyMany'])->name('classes.best-times.destroy-many');
+    Route::get('classes/{class}/best-times/{student}/history', [AdminBestTime::class, 'history'])->name('classes.best-times.history');
+
     // Route Rekomendasi Naik Kelas untuk Admin
     Route::get('recommendations', [AdminRecommendation::class, 'index'])->name('recommendations.index');
     Route::post('recommendations', [AdminRecommendation::class, 'store'])->name('recommendations.store');
@@ -183,6 +194,9 @@ Route::middleware(['auth', 'role:orang_tua'])->prefix('orangtua')->name('orangtu
     Route::get('schedules', [OrangTuaSchedule::class, 'index'])->name('schedules.index');
 
     Route::get('eraports', [OrangTuaERaport::class, 'index'])->name('eraports.index');
+
+    // Route Best Time Anak untuk Orang Tua (read-only)
+    Route::get('best-times', [OrangTuaBestTime::class, 'index'])->name('best-times.index');
 });
 
 // Router: arahkan /dashboard sesuai role user yang login

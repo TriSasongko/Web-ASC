@@ -22,6 +22,7 @@
         ],
         'EVALUASI & AKADEMIK' => [
             ['label' => 'Perkembangan', 'icon' => 'assessment', 'route' => 'admin.developments.index', 'active' => request()->routeIs('admin.developments.*') || request()->routeIs('admin.classes.developments.*')],
+            ['label' => 'Best Time', 'icon' => 'timer', 'route' => 'admin.best-times.index', 'active' => request()->routeIs('admin.best-times.*') || request()->routeIs('admin.classes.best-times.*')],
             ['label' => 'Rekomendasi', 'icon' => 'star', 'route' => 'admin.recommendations.index', 'active' => request()->routeIs('admin.recommendations.*')],
             ['label' => 'E-Raport', 'icon' => 'description', 'route' => 'admin.eraports.index', 'active' => request()->routeIs('admin.eraports.*') || request()->routeIs('eraport.*')],
         ],

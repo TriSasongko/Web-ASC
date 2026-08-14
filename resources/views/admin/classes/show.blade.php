@@ -109,7 +109,15 @@
                     <span class="material-symbols-outlined text-primary">groups</span>
                     <h3 class="font-headline text-headline-sm text-on-surface">Siswa di Kelas Ini</h3>
                 </div>
-                <a href="{{ route('admin.classes.developments.index', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Perkembangan Siswa</a>
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="{{ route('admin.classes.developments.index', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Perkembangan Siswa</a>
+                    @if ($class->isKompetitif())
+                        <a href="{{ route('admin.classes.best-times.index', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+                            <span class="material-symbols-outlined text-[16px]">timer</span>
+                            Best Time
+                        </a>
+                    @endif
+                </div>
             </div>
 
             <div class="overflow-x-auto">
@@ -212,6 +220,9 @@
                                         @endif
 
                                         <a href="{{ route('admin.classes.developments.history', [$class, $student]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Perkembangan</a>
+                                        @if ($class->isKompetitif())
+                                            <a href="{{ route('admin.classes.best-times.history', [$class, $student]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Best Time</a>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

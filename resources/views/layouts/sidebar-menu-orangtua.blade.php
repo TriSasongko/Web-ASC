@@ -8,6 +8,7 @@
         ['label' => 'Pendaftaran Anak', 'icon' => 'app_registration', 'route' => 'orangtua.registrations.index', 'active' => request()->routeIs('orangtua.registrations.*')],
         ['label' => 'Jadwal Latihan', 'icon' => 'calendar_month', 'route' => 'orangtua.schedules.index', 'active' => request()->routeIs('orangtua.schedules.*')],
         ['label' => 'E-Raport', 'icon' => 'description', 'route' => 'orangtua.eraports.index', 'active' => request()->routeIs('orangtua.eraports.*')],
+        ['label' => 'Best Time', 'icon' => 'timer', 'route' => 'orangtua.best-times.index', 'active' => request()->routeIs('orangtua.best-times.*')],
     ];
 @endphp
 

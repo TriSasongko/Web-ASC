@@ -65,6 +65,11 @@ class Student extends Model
         return $this->hasMany(ClassRecommendation::class);
     }
 
+    public function bestTimes()
+    {
+        return $this->hasMany(BestTime::class);
+    }
+
     public function scopeActiveProgram($query)
     {
         return $query->whereHas('enrollments', fn ($q) => $q->where('is_active', true));

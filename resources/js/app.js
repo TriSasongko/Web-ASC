@@ -26,6 +26,23 @@ window.confirmToggleDevelopment = function (event, form, coachName, isOn) {
     return false;
 };
 
+// Format input waktu best time: hanya menerima angka, titik dua ":" otomatis.
+// Pola: Menit(2):Detik(2):MiliDetik(2), contoh ketik 012537 -> "01:25:37".
+window.formatTimeInput = function (input) {
+    var digits = input.value.replace(/\D/g, '').slice(0, 6);
+    var out = digits;
+
+    if (digits.length > 2) {
+        out = digits.slice(0, 2) + ':' + digits.slice(2);
+    }
+
+    if (digits.length > 4) {
+        out = out.slice(0, 5) + ':' + digits.slice(4);
+    }
+
+    input.value = out;
+};
+
 window.confirmMoveToClass = function (event, form, studentName) {
     event.preventDefault();
 
