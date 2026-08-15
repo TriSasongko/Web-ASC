@@ -3,3 +3,9 @@
 @tailwind utilities;
 
 [x-cloak] { display: none !important; }
+
+/* Panah dropdown bawaan forms plugin diposisikan di right 0.5rem; beri ruang
+   agar teks tidak bertumpuk dengan panah ketika pakai padding px-3/px-4. */
+select:not([multiple]) {
+    padding-right: 2.5rem;
+}

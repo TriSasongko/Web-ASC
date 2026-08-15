@@ -9,14 +9,15 @@
 
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
             <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
-                <form method="GET" class="flex items-center gap-2">
-                    <div class="relative">
+                <form method="GET" class="flex items-center gap-2 w-full">
+                    <div class="relative flex-1 min-w-0">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
                         <input type="text" name="search" value="{{ request('search') }}"
-                               placeholder="Cari nama siswa..." class="w-full sm:w-64 pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/50 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-body-sm text-body-sm transition-all">
+                               placeholder="Cari nama siswa..." class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant/50 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary font-body-sm text-body-sm transition-all">
                     </div>
-                    <button type="submit" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">
-                        Cari
+                    <button type="submit" class="shrink-0 inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">
+                        <span class="material-symbols-outlined text-[18px]">search</span>
+                        <span class="sm:hidden">Cari</span>
                     </button>
                 </form>
             </div>

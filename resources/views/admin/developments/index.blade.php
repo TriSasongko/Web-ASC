@@ -20,12 +20,15 @@
                     <span class="material-symbols-outlined text-primary text-[20px]">insights</span>
                     <h3 class="font-headline text-headline-sm text-on-surface">Data Perkembangan</h3>
                 </div>
-                <form method="GET" class="flex items-center gap-2">
-                    <div class="relative">
+                <form method="GET" class="flex items-center gap-2 w-full">
+                    <div class="relative flex-1 min-w-0">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama siswa..." class="pl-10 bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama siswa..." class="w-full pl-10 bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-2.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
                     </div>
-                    <button type="submit" class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all hover:scale-[0.98] shadow-sm active:scale-95">Cari</button>
+                    <button type="submit" class="shrink-0 inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all hover:scale-[0.98] shadow-sm active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">search</span>
+                        <span class="sm:hidden">Cari</span>
+                    </button>
                 </form>
             </div>
 
