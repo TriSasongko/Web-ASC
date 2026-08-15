@@ -97,16 +97,18 @@
 
             @if ($registration->status === 'menunggu_verifikasi')
                 <div class="flex gap-3">
-                    <form action="{{ route('admin.registrations.accept', $registration) }}" method="POST">
+                    <form action="{{ route('admin.registrations.accept', $registration) }}" method="POST"
+                          onsubmit="return confirmAcceptRegistration(event, this, '{{ $registration->student->full_name }}')">
                         @csrf @method('PATCH')
-                        <x-primary-button onclick="return confirm('Terima pendaftaran ini?')">Terima</x-primary-button>
+                        <x-primary-button>Terima</x-primary-button>
                     </form>
 
                     <x-secondary-button onclick="document.getElementById('rejectForm').classList.toggle('hidden')">Tolak</x-secondary-button>
                 </div>
 
                 <form id="rejectForm" action="{{ route('admin.registrations.reject', $registration) }}"
-                    method="POST" class="hidden space-y-4 bg-surface-container-low rounded-xl border border-outline-variant/30 p-5">
+                    method="POST" class="hidden space-y-4 bg-surface-container-low rounded-xl border border-outline-variant/30 p-5"
+                    onsubmit="return confirmRejectRegistration(event, this, '{{ $registration->student->full_name }}')">
                     @csrf @method('PATCH')
                     <div>
                         <x-input-label for="rejection_reason" value="Alasan Penolakan" />

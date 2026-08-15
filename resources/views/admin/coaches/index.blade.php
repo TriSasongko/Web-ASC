@@ -81,19 +81,22 @@
                                         <a href="{{ route('admin.coaches.edit', $coach) }}" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit">
                                             <span class="material-symbols-outlined text-[20px]">edit</span>
                                         </a>
-                                        <form action="{{ route('admin.coaches.toggle-active', $coach) }}" method="POST" class="inline">
+                                        <form action="{{ route('admin.coaches.toggle-active', $coach) }}" method="POST" class="inline"
+                                              onsubmit="return confirmToggleActive(event, this, '{{ $coach->name }}', {{ $coach->is_active ? 'true' : 'false' }}, 'pelatih')">
                                             @csrf @method('PATCH')
                                             <button type="submit" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="{{ $coach->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
                                                 <span class="material-symbols-outlined text-[20px]">{{ $coach->is_active ? 'person_off' : 'person_add' }}</span>
                                             </button>
                                         </form>
-                                        <form action="{{ route('admin.coaches.reset-password', $coach) }}" method="POST" class="inline" onsubmit="return confirm('Reset password ke default?')">
+                                        <form action="{{ route('admin.coaches.reset-password', $coach) }}" method="POST" class="inline"
+                                              onsubmit="return confirmResetPassword(event, this, '{{ $coach->name }}')">
                                             @csrf @method('PATCH')
                                             <button type="submit" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Reset Password">
                                                 <span class="material-symbols-outlined text-[20px]">key</span>
                                             </button>
                                         </form>
-                                        <form action="{{ route('admin.coaches.destroy', $coach) }}" method="POST" class="inline" onsubmit="return confirm('Hapus pelatih ini?')">
+                                        <form action="{{ route('admin.coaches.destroy', $coach) }}" method="POST" class="inline"
+                                              onsubmit="return confirmDeleteUser(event, this, '{{ $coach->name }}', 'pelatih')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus">
                                                 <span class="material-symbols-outlined text-[20px]">delete</span>

@@ -52,7 +52,8 @@
                 </div>
             </dl>
 
-            <form action="{{ route('admin.parents.toggle-active', $parent) }}" method="POST" class="mt-6 pt-5 border-t border-outline-variant/30">
+            <form action="{{ route('admin.parents.toggle-active', $parent) }}" method="POST" class="mt-6 pt-5 border-t border-outline-variant/30"
+                  onsubmit="return confirmToggleActive(event, this, '{{ $parent->name }}', {{ $parent->is_active ? 'true' : 'false' }}, 'orang tua')">
                 @csrf @method('PATCH')
                 <button type="submit" class="inline-flex items-center justify-center gap-2 border rounded-lg px-4 py-2.5 font-label-md text-label-md transition-all {{ $parent->is_active ? 'border-error text-error hover:bg-error-container hover:text-on-error-container' : 'border-primary text-primary hover:bg-primary-container hover:text-on-primary' }}">
                     <span class="material-symbols-outlined text-[18px]">{{ $parent->is_active ? 'person_off' : 'person_add' }}</span>

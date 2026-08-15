@@ -57,7 +57,7 @@
                                         <a href="{{ route('admin.classes.show', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Detail</a>
                                         <a href="{{ route('admin.classes.edit', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Edit</a>
                                         <form action="{{ route('admin.classes.destroy', $class) }}" method="POST" class="inline"
-                                              onsubmit="return confirm('Hapus kelas ini?')">
+                                              onsubmit="return confirmDeleteClass(event, this, '{{ $class->name }}', {{ $class->students()->count() }})">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="inline-flex items-center gap-1 text-error font-label-md text-label-md hover:underline">Hapus</button>
                                         </form>

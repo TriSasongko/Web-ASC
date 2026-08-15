@@ -78,19 +78,22 @@
                                         <a href="{{ route('admin.parents.edit', $parent) }}" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit">
                                             <span class="material-symbols-outlined text-[20px]">edit</span>
                                         </a>
-                                        <form action="{{ route('admin.parents.toggle-active', $parent) }}" method="POST" class="inline">
+                                        <form action="{{ route('admin.parents.toggle-active', $parent) }}" method="POST" class="inline"
+                                              onsubmit="return confirmToggleActive(event, this, '{{ $parent->name }}', {{ $parent->is_active ? 'true' : 'false' }}, 'orang tua')">
                                             @csrf @method('PATCH')
                                             <button type="submit" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="{{ $parent->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
                                                 <span class="material-symbols-outlined text-[20px]">{{ $parent->is_active ? 'person_off' : 'person_add' }}</span>
                                             </button>
                                         </form>
-                                        <form action="{{ route('admin.parents.reset-password', $parent) }}" method="POST" class="inline" onsubmit="return confirm('Reset password ke default?')">
+                                        <form action="{{ route('admin.parents.reset-password', $parent) }}" method="POST" class="inline"
+                                              onsubmit="return confirmResetPassword(event, this, '{{ $parent->name }}')">
                                             @csrf @method('PATCH')
                                             <button type="submit" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Reset Password">
                                                 <span class="material-symbols-outlined text-[20px]">key</span>
                                             </button>
                                         </form>
-                                        <form action="{{ route('admin.parents.destroy', $parent) }}" method="POST" class="inline" onsubmit="return confirm('Hapus orang tua ini?')">
+                                        <form action="{{ route('admin.parents.destroy', $parent) }}" method="POST" class="inline"
+                                              onsubmit="return confirmDeleteUser(event, this, '{{ $parent->name }}', 'orang tua')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus">
                                                 <span class="material-symbols-outlined text-[20px]">delete</span>

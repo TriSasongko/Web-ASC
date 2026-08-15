@@ -77,7 +77,7 @@
                                             Edit
                                         </a>
                                         <form action="{{ route('admin.attendances.destroy', $a) }}" method="POST" class="inline"
-                                              onsubmit="return confirm('Hapus data absensi ini?')">
+                                              onsubmit="return confirmDeleteAttendance(event, this, '{{ $a->student->full_name }}', '{{ $a->attendance_date->format('d-m-Y') }}', '{{ $a->schoolClass?->name ?? '' }}')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="inline-flex items-center gap-1 text-error font-label-md text-label-md hover:underline">
                                                 <span class="material-symbols-outlined text-[16px]">delete</span>

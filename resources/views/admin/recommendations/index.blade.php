@@ -141,14 +141,14 @@
 
                                         @if ($rec->status === 'pending')
                                             <form action="{{ route('admin.recommendations.approve', $rec) }}" method="POST"
-                                                  onsubmit="return confirm('Setujui rekomendasi? Siswa dipindahkan setelah orang tua mengonfirmasi.')">
+                                                  onsubmit="return confirmRecommendationApprove(event, this, '{{ $rec->student?->full_name ?? 'Siswa' }}')">
                                                 @csrf
                                                 <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-container text-on-primary hover:opacity-90 transition-all" title="Setujui">
                                                     <span class="material-symbols-outlined text-[18px]">check_circle</span>
                                                 </button>
                                             </form>
                                             <form action="{{ route('admin.recommendations.reject', $rec) }}" method="POST"
-                                                  onsubmit="return confirm('Tolak rekomendasi ini?')">
+                                                  onsubmit="return confirmRecommendationReject(event, this, '{{ $rec->student?->full_name ?? 'Siswa' }}')">
                                                 @csrf
                                                 <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-error-container text-on-error-container hover:opacity-90 transition-all" title="Tolak">
                                                     <span class="material-symbols-outlined text-[18px]">block</span>
@@ -161,14 +161,14 @@
                                                 </a>
                                             @endif
                                             <form action="{{ route('admin.recommendations.confirm', $rec) }}" method="POST"
-                                                  onsubmit="return confirm('Orang tua sudah konfirmasi? Siswa akan dipindahkan ke kelas target.')">
+                                                  onsubmit="return confirmRecommendationConfirm(event, this, '{{ $rec->student?->full_name ?? 'Siswa' }}', '{{ $targetLabel }}')">
                                                 @csrf
                                                 <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-container text-on-primary hover:opacity-90 transition-all" title="Selesaikan">
                                                     <span class="material-symbols-outlined text-[18px]">verified</span>
                                                 </button>
                                             </form>
                                             <form action="{{ route('admin.recommendations.reject', $rec) }}" method="POST"
-                                                  onsubmit="return confirm('Tandai bahwa orang tua menolak? Siswa tetap di kelas sekarang.')">
+                                                  onsubmit="return confirmRecommendationRejectByParent(event, this, '{{ $rec->student?->full_name ?? 'Siswa' }}')">
                                                 @csrf
                                                 <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-error-container text-on-error-container hover:opacity-90 transition-all" title="Ortu menolak">
                                                     <span class="material-symbols-outlined text-[18px]">block</span>
@@ -177,7 +177,7 @@
                                         @endif
 
                                         <form action="{{ route('admin.recommendations.destroy', $rec) }}" method="POST"
-                                              onsubmit="return confirm('Hapus rekomendasi ini?')">
+                                              onsubmit="return confirmRecommendationDelete(event, this, '{{ $rec->student?->full_name ?? 'Siswa' }}')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-error border border-error/30 hover:bg-error-container/50 transition-all" title="Hapus">
                                                 <span class="material-symbols-outlined text-[18px]">delete</span>
