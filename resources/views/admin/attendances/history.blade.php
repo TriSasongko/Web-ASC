@@ -46,7 +46,54 @@
                 </form>
             </div>
 
-            <div class="overflow-x-auto">
+            {{-- Mobile: kartu absensi --}}
+            <div class="md:hidden divide-y divide-outline-variant/30">
+                @forelse ($attendances as $a)
+                    <div class="p-4 hover:bg-surface-container-low/50 transition-colors">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <p class="font-label-md text-label-md text-on-surface truncate">{{ $a->student->full_name }}</p>
+                                    <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary">{{ $a->schoolClass?->level_label ?? '-' }}</span>
+                                </div>
+                                <p class="font-body-sm text-body-sm text-outline truncate mt-0.5">{{ $a->schoolClass?->name ?? '-' }}</p>
+                            </div>
+                            <span class="shrink-0 font-label-sm text-label-sm text-on-surface whitespace-nowrap">{{ $a->attendance_date->format('d-m-Y') }}</span>
+                        </div>
+                        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-body-sm text-body-sm text-outline">
+                            @if ($a->location)
+                                <span class="inline-flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">place</span>
+                                    {{ $a->location }}
+                                </span>
+                            @endif
+                            <span class="inline-flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px]">person</span>
+                                {{ $a->recorder->name }}
+                            </span>
+                        </div>
+                        <div class="mt-3 flex items-center gap-4">
+                            <a href="{{ route('admin.attendances.edit', $a) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+                                <span class="material-symbols-outlined text-[16px]">edit</span>
+                                Edit
+                            </a>
+                            <form action="{{ route('admin.attendances.destroy', $a) }}" method="POST" class="inline"
+                                  onsubmit="return confirmDeleteAttendance(event, this, '{{ $a->student->full_name }}', '{{ $a->attendance_date->format('d-m-Y') }}', '{{ $a->schoolClass?->name ?? '' }}')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="inline-flex items-center gap-1 text-error font-label-md text-label-md hover:underline">
+                                    <span class="material-symbols-outlined text-[16px]">delete</span>
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-8 text-center font-body-sm text-body-sm text-outline">Belum ada riwayat absensi.</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop: tabel absensi --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left">
                     <thead class="bg-surface-container-low">
                         <tr>

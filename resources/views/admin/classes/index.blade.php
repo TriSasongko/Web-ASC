@@ -26,7 +26,56 @@
                 </a>
             </div>
 
-            <div class="overflow-x-auto">
+            {{-- Mobile: kartu kelas --}}
+            <div class="md:hidden divide-y divide-outline-variant/30">
+                @forelse ($classes as $class)
+                    <div class="p-4 hover:bg-surface-container-low/50 transition-colors">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <p class="font-label-md text-label-md text-on-surface truncate">{{ $class->name }}</p>
+                                    <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary">{{ $class->level_label ?? '-' }}</span>
+                                </div>
+                                <p class="font-body-sm text-body-sm text-outline truncate mt-0.5">{{ $class->program->name }}</p>
+                            </div>
+                            <div class="shrink-0 text-right">
+                                <p class="font-label-md text-label-md text-on-surface">{{ $class->students()->count() }}</p>
+                                <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Murid</p>
+                            </div>
+                        </div>
+                        <div class="mt-2 space-y-1">
+                            @forelse ($class->schedules as $s)
+                                <div class="flex items-center gap-1.5 font-body-sm text-body-sm text-on-surface-variant">
+                                    <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                    {{ ucfirst($s->day) }}, {{ \Carbon\Carbon::parse($s->start_time)->format('H:i') }} WIB
+                                </div>
+                            @empty
+                                <span class="font-body-sm text-body-sm text-outline">Belum ada jadwal</span>
+                            @endforelse
+                        </div>
+                        <div class="mt-3 flex items-center gap-4">
+                            <a href="{{ route('admin.classes.show', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+                                Detail
+                            </a>
+                            <a href="{{ route('admin.classes.edit', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+                                Edit
+                            </a>
+                            <form action="{{ route('admin.classes.destroy', $class) }}" method="POST" class="inline"
+                                  onsubmit="return confirmDeleteClass(event, this, '{{ $class->name }}', {{ $class->students()->count() }})">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="inline-flex items-center gap-1 text-error font-label-md text-label-md hover:underline">
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-10 text-center font-body-sm text-body-sm text-outline">Belum ada kelas.</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop: tabel kelas --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left">
                     <thead class="bg-surface-container-low">
                         <tr>

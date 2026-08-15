@@ -39,7 +39,7 @@
         </div>
 
         {{-- Stat overview --}}
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 flex items-center gap-3">
                 <div class="w-11 h-11 rounded-full bg-primary-container/60 flex items-center justify-center shrink-0">
                     <span class="material-symbols-outlined text-primary text-[22px]">group</span>
@@ -275,7 +275,63 @@
             @endif
 
             @if ($coaches->isNotEmpty())
-                <div class="overflow-x-auto border-t border-outline-variant/30">
+                {{-- Mobile: kartu pelatih --}}
+                <div class="md:hidden divide-y divide-outline-variant/30 border-t border-outline-variant/30">
+                    @foreach ($coaches as $coach)
+                        @php
+                            $sessionCount = $coach->sessions->count();
+                            $progress = $coach->session_limit > 0 ? min(100, ($sessionCount / $coach->session_limit) * 100) : 0;
+                        @endphp
+                        <div class="p-4 hover:bg-surface-container-low/50 transition-colors">
+                            <div class="flex items-start justify-between gap-3">
+                                <button type="button" @click="openDetail({{ $coach->id }})"
+                                        class="flex items-center gap-2 group text-left min-w-0">
+                                    <span class="material-symbols-outlined text-primary text-[20px] shrink-0">group</span>
+                                    <span class="min-w-0">
+                                        <span class="block font-label-md text-label-md text-primary truncate group-hover:underline">{{ $coach->name }}</span>
+                                        <span class="block font-body-sm text-body-sm text-outline">Lihat rincian & riwayat</span>
+                                    </span>
+                                </button>
+                                <span class="shrink-0 font-label-md text-label-md text-on-surface whitespace-nowrap">{{ $fmt($coach->total) }}</span>
+                            </div>
+                            <div class="mt-3">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="font-label-sm text-label-sm text-on-surface">{{ $sessionCount }}/{{ $coach->session_limit }} sesi</span>
+                                    <span class="font-label-sm text-label-sm text-outline">{{ $progress }}%</span>
+                                </div>
+                                <div class="h-1.5 w-full rounded-full bg-surface-container overflow-hidden mt-1.5">
+                                    <div class="h-full rounded-full bg-primary transition-all" style="width: {{ $progress }}%"></div>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex flex-wrap items-center gap-2">
+                                <form action="{{ route('admin.salaries.limit', $coach->id) }}" method="POST" class="flex items-center gap-2">
+                                    @csrf @method('PUT')
+                                    <select name="session_limit"
+                                            class="bg-surface-container-low border border-outline-variant/50 rounded-lg px-2 py-1.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                        @foreach ($limitOptions as $option)
+                                            <option value="{{ $option }}" @selected($coach->session_limit === $option)>{{ $option }} sesi</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="submit" class="inline-flex items-center justify-center border border-primary text-primary px-2.5 py-1.5 rounded-lg font-label-sm text-label-sm hover:bg-primary-container hover:text-on-primary transition-all">
+                                        Set
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.salaries.pay', $coach->id) }}" method="POST"
+                                      onsubmit="return confirm('Tandai honor {{ addslashes($coach->name) }} sebesar {{ $fmt($coach->total) }} ({{ $sessionCount }} sesi) sebagai dibayar?')">
+                                    @csrf
+                                    <button type="submit" @disabled($sessionCount === 0)
+                                            class="ml-auto inline-flex items-center justify-center gap-2 bg-primary text-on-primary px-3 py-2 rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
+                                        <span class="material-symbols-outlined text-[16px]">payments</span>
+                                        Tandai Dibayar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Desktop: tabel pelatih --}}
+                <div class="hidden md:block overflow-x-auto border-t border-outline-variant/30">
                     <table class="w-full text-left">
                         <thead class="bg-surface-container-low">
                             <tr>
