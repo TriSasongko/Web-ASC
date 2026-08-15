@@ -31,7 +31,37 @@
                 </form>
             </div>
 
-            <div class="overflow-x-auto">
+            {{-- Mobile: kartu siswa --}}
+            <div class="md:hidden divide-y divide-outline-variant/30">
+                @forelse ($students as $student)
+                    @php
+                        $latest = $student->bestTimes->first();
+                    @endphp
+                    <div class="p-4 hover:bg-surface-container-low/50 transition-colors">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="font-label-md text-label-md text-on-surface truncate">{{ $student->full_name }}</p>
+                                <p class="font-body-sm text-body-sm text-outline truncate mt-0.5">{{ $latest?->schoolClass?->name ?? '-' }}</p>
+                            </div>
+                            <span class="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary">
+                                <span class="material-symbols-outlined text-[14px]">timer</span>
+                                {{ $student->bestTimes->count() }}x
+                            </span>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{{ route('admin.classes.best-times.history', [$latest->schoolClass, $student]) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
+                                <span class="material-symbols-outlined text-[16px]">timer</span>
+                                Lihat Riwayat
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-10 text-center font-body-sm text-body-sm text-outline">Belum ada data best time.</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop: tabel siswa --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left">
                     <thead class="bg-surface-container-low">
                         <tr>

@@ -33,7 +33,74 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
+            {{-- Mobile: kartu rekomendasi --}}
+            <div class="md:hidden divide-y divide-outline-variant/30">
+                @forelse ($recommendations as $rec)
+                    @php
+                        $targetLabel = $rec->recommendedClass?->name
+                            ?? (\App\Models\SchoolClass::levelOptions()[$rec->recommended_level] ?? 'Level '.($rec->recommended_level ?? '-'));
+                        $targetLevel = $rec->recommendedClass?->level
+                            ?? $rec->recommended_level;
+                        $currentLevel = $rec->currentClass?->level;
+                    @endphp
+                    <div class="p-4 hover:bg-surface-container-low/50 transition-colors">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="font-label-md text-label-md text-on-surface truncate">{{ $rec->student?->full_name }}</p>
+                                <p class="font-body-sm text-body-sm text-outline truncate mt-0.5">{{ $rec->currentClass?->name ?? 'Tanpa kelas aktif' }}</p>
+                            </div>
+                            @if ($rec->status === 'pending')
+                                <span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#FFF8E1] text-[#B26A00]">
+                                    <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                    Menunggu
+                                </span>
+                            @elseif ($rec->status === 'menunggu_ortu')
+                                <span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E3F2FD] text-[#1565C0]">
+                                    <span class="material-symbols-outlined text-[14px]">forum</span>
+                                    Menunggu ortu
+                                </span>
+                            @elseif ($rec->status === 'diterima')
+                                <span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-[#E8F5E9] text-[#2E7D32]">
+                                    <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                    Disetujui
+                                </span>
+                            @else
+                                <span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">
+                                    <span class="material-symbols-outlined text-[14px]">block</span>
+                                    Ditolak
+                                </span>
+                            @endif
+                        </div>
+                        <div class="mt-2 flex flex-wrap items-center gap-2">
+                            <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $currentLevel ? $currentLevel.' → ' : '' }}</span>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-container/60 text-on-primary">{{ $targetLabel }}</span>
+                            @if ($targetLevel !== null && $targetLevel !== $currentLevel)
+                                <span class="font-body-sm text-body-sm text-outline">(Level {{ $targetLevel }})</span>
+                            @endif
+                        </div>
+                        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-body-sm text-body-sm text-on-surface">
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[14px] text-outline">person</span>
+                                {{ $rec->from?->name }}
+                            </span>
+                            <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant">
+                                {{ $rec->from?->isAdmin() ? 'Admin' : 'Pelatih' }}
+                            </span>
+                        </div>
+                        @if ($rec->note)
+                            <p class="font-body-sm text-body-sm text-on-surface-variant mt-2">{{ $rec->note }}</p>
+                        @endif
+                        <div class="mt-3">
+                            @include('admin.recommendations._actions', ['rec' => $rec])
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-10 text-center font-body-sm text-body-sm text-outline">Belum ada rekomendasi.</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop: tabel rekomendasi --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left">
                     <thead class="bg-surface-container-low">
                         <tr>
@@ -128,62 +195,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
-                                    <div class="flex items-center justify-end gap-1">
-                                        @if ($rec->currentClass)
-                                            <a href="{{ route('admin.classes.developments.history', [$rec->currentClass, $rec->student]) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container transition-all" title="Lihat perkembangan">
-                                                <span class="material-symbols-outlined text-[18px]">assessment</span>
-                                            </a>
-                                        @else
-                                            <a href="{{ route('admin.students.show', $rec->student) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-outline-variant/40 text-on-surface-variant hover:bg-surface-container transition-all" title="Lihat detail siswa">
-                                                <span class="material-symbols-outlined text-[18px]">person</span>
-                                            </a>
-                                        @endif
-
-                                        @if ($rec->status === 'pending')
-                                            <form action="{{ route('admin.recommendations.approve', $rec) }}" method="POST"
-                                                  onsubmit="return confirmRecommendationApprove(event, this, '{{ $rec->student?->full_name ?? 'Siswa' }}')">
-                                                @csrf
-                                                <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-container text-on-primary hover:opacity-90 transition-all" title="Setujui">
-                                                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                                                </button>
-                                            </form>
-                                            <form action="{{ route('admin.recommendations.reject', $rec) }}" method="POST"
-                                                  onsubmit="return confirmRecommendationReject(event, this, '{{ $rec->student?->full_name ?? 'Siswa' }}')">
-                                                @csrf
-                                                <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-error-container text-on-error-container hover:opacity-90 transition-all" title="Tolak">
-                                                    <span class="material-symbols-outlined text-[18px]">block</span>
-                                                </button>
-                                            </form>
-                                        @elseif ($rec->status === 'menunggu_ortu')
-                                            @if ($waUrl)
-                                                <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-[#E8F5E9] text-[#2E7D32] hover:opacity-90 transition-all" title="Konfirmasi ke orang tua via WhatsApp">
-                                                    <span class="material-symbols-outlined text-[18px]">chat</span>
-                                                </a>
-                                            @endif
-                                            <form action="{{ route('admin.recommendations.confirm', $rec) }}" method="POST"
-                                                  onsubmit="return confirmRecommendationConfirm(event, this, '{{ $rec->student?->full_name ?? 'Siswa' }}', '{{ $targetLabel }}')">
-                                                @csrf
-                                                <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-container text-on-primary hover:opacity-90 transition-all" title="Selesaikan">
-                                                    <span class="material-symbols-outlined text-[18px]">verified</span>
-                                                </button>
-                                            </form>
-                                            <form action="{{ route('admin.recommendations.reject', $rec) }}" method="POST"
-                                                  onsubmit="return confirmRecommendationRejectByParent(event, this, '{{ $rec->student?->full_name ?? 'Siswa' }}')">
-                                                @csrf
-                                                <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-error-container text-on-error-container hover:opacity-90 transition-all" title="Ortu menolak">
-                                                    <span class="material-symbols-outlined text-[18px]">block</span>
-                                                </button>
-                                            </form>
-                                        @endif
-
-                                        <form action="{{ route('admin.recommendations.destroy', $rec) }}" method="POST"
-                                              onsubmit="return confirmRecommendationDelete(event, this, '{{ $rec->student?->full_name ?? 'Siswa' }}')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-error border border-error/30 hover:bg-error-container/50 transition-all" title="Hapus">
-                                                <span class="material-symbols-outlined text-[18px]">delete</span>
-                                            </button>
-                                        </form>
-                                    </div>
+                                    @include('admin.recommendations._actions', ['rec' => $rec])
                                 </td>
                             </tr>
                         @empty
