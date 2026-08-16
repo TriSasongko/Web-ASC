@@ -43,7 +43,7 @@
 
                 <div class="overflow-x-auto rounded-xl border border-outline-variant/30">
                     <table class="w-full text-left">
-                        <thead class="bg-surface-container-low">
+                        <thead class="hidden md:table-header-group bg-surface-container-low">
                             <tr>
                                 <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Hari</th>
                                 <th class="px-4 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Jam</th>
@@ -52,40 +52,42 @@
                                 <th class="px-4 py-3 w-20"><span class="sr-only">Aksi</span></th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-outline-variant/30">
+                        <tbody>
                             <template x-for="(row, index) in rows" :key="index">
-                                <tr>
-                                    <td class="px-4 py-3">
+                                <tr class="flex flex-col gap-1.5 py-3 border-b border-outline-variant/30 last:border-b-0 md:table-row md:gap-0 md:py-0">
+                                    <td class="flex items-center gap-2 px-4 py-0.5 md:table-cell md:px-4 md:py-3">
+                                        <span class="md:hidden w-24 shrink-0 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Hari</span>
                                         <input type="text" x-model="row.day" :name="'rows['+index+'][day]'" required
-                                            class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                                            class="min-w-0 flex-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                             placeholder="Senin & Rabu">
                                     </td>
-                                    <td class="px-4 py-3">
+                                    <td class="flex items-center gap-2 px-4 py-0.5 md:table-cell md:px-4 md:py-3">
+                                        <span class="md:hidden w-24 shrink-0 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Jam</span>
                                         <input type="text" x-model="row.time" :name="'rows['+index+'][time]'" required
-                                            class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                                            class="min-w-0 flex-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                             placeholder="15:30 - 17:00">
                                     </td>
-                                    <td class="px-4 py-3">
+                                    <td class="flex items-center gap-2 px-4 py-0.5 md:table-cell md:px-4 md:py-3">
+                                        <span class="md:hidden w-24 shrink-0 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Program</span>
                                         <input type="text" x-model="row.program" :name="'rows['+index+'][program]'" required
-                                            class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                                            class="min-w-0 flex-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                             placeholder="Reguler Pemula & Lanjutan">
                                     </td>
-                                    <td class="px-4 py-3">
+                                    <td class="flex items-center gap-2 px-4 py-0.5 md:table-cell md:px-4 md:py-3">
+                                        <span class="md:hidden w-24 shrink-0 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Lokasi</span>
                                         <input type="text" x-model="row.location" :name="'rows['+index+'][location]'" required
-                                            class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
+                                            class="min-w-0 flex-1 w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                                             placeholder="Kolam Renang Universitas Lampung">
                                     </td>
-                                    <td class="px-4 py-3">
-                                        <div class="flex items-center gap-1">
-                                            <button type="button" @click="editRow(index)"
-                                                class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit baris">
-                                                <span class="material-symbols-outlined text-[20px]">edit</span>
-                                            </button>
-                                            <button type="button" @click="confirmDeleteRow(index)"
-                                                class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus baris">
-                                                <span class="material-symbols-outlined text-[20px]">delete</span>
-                                            </button>
-                                        </div>
+                                    <td class="flex items-center justify-end gap-1 px-4 py-2 md:table-cell md:px-4 md:py-3">
+                                        <button type="button" @click="editRow(index)"
+                                            class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit baris">
+                                            <span class="material-symbols-outlined text-[20px]">edit</span>
+                                        </button>
+                                        <button type="button" @click="confirmDeleteRow(index)"
+                                            class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus baris">
+                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        </button>
                                     </td>
                                 </tr>
                             </template>
