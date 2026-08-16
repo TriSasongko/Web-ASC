@@ -6,6 +6,7 @@ use App\Models\ClassSchedule;
 use App\Models\ClassStudent;
 use App\Models\Development;
 use App\Models\Program;
+use App\Models\Registration;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
@@ -84,6 +85,55 @@ class OrangTuaDashboardTest extends TestCase
             ->get(route('orangtua.dashboard'))
             ->assertOk()
             ->assertSee('Daftarkan anak sekarang');
+    }
+
+    public function test_dashboard_shows_onboarding_guide_when_no_children_registered()
+    {
+        $parent = $this->makeParent();
+
+        $this->actingAs($parent)
+            ->get(route('orangtua.dashboard'))
+            ->assertOk()
+            ->assertSee('Lengkapi Pendaftaran Anak Anda')
+            ->assertSee('Isi Data Anak')
+            ->assertSee('Pilih Program & Paket')
+            ->assertSee('Kirim Pendaftaran')
+            ->assertSee('Konfirmasi via WhatsApp')
+            ->assertSee('Daftarkan Anak');
+    }
+
+    public function test_dashboard_shows_pending_registration_status_when_no_active_package()
+    {
+        $parent = $this->makeParent();
+
+        $program = Program::create([
+            'name' => 'Reguler',
+            'slug' => 'reguler',
+            'total_sessions' => 8,
+            'price' => 350000,
+            'billing_type' => 'per_paket',
+            'is_active' => true,
+        ]);
+
+        $student = Student::create([
+            'parent_id' => $parent->id,
+            'full_name' => 'Anak Baru',
+            'gender' => 'L',
+        ]);
+
+        Registration::create([
+            'student_id' => $student->id,
+            'program_id' => $program->id,
+            'status' => 'menunggu_verifikasi',
+        ]);
+
+        $this->actingAs($parent)
+            ->get(route('orangtua.dashboard'))
+            ->assertOk()
+            ->assertSee('Pendaftaran Sedang Diproses')
+            ->assertSee('Menunggu verifikasi')
+            ->assertSee('Lihat Status Pendaftaran')
+            ->assertSee('Anak Baru');
     }
 
     public function test_dashboard_shows_development_pie_chart_per_child()

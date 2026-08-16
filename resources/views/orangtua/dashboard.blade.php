@@ -52,6 +52,70 @@
             </div>
         </div>
 
+        @if ($totalChildren > 0 && $activePrograms === 0)
+            {{-- Modul status pendaftaran (anak terdaftar, belum ada paket aktif) --}}
+            @php
+                $regStatus = $latestRegistration?->status;
+                $regBadge = match ($regStatus) {
+                    'diterima' => 'bg-[#E8F5E9] text-[#2E7D32]',
+                    'ditolak' => 'bg-error-container text-on-error-container',
+                    default => 'bg-[#FFF8E1] text-[#B26A00]',
+                };
+                $regLabel = match ($regStatus) {
+                    'diterima' => 'Diterima',
+                    'ditolak' => 'Ditolak',
+                    default => 'Menunggu verifikasi',
+                };
+            @endphp
+            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
+                <div class="px-5 py-5 sm:px-6 border-b border-outline-variant/30 bg-surface/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 min-w-0">
+                        <div class="w-12 h-12 rounded-xl bg-[#FFF8E1] text-[#B26A00] flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[24px]">hourglass_top</span>
+                        </div>
+                        <div class="min-w-0">
+                            <h3 class="font-headline text-headline-sm text-on-surface">Pendaftaran Sedang Diproses</h3>
+                            <p class="font-body-sm text-body-sm text-outline mt-0.5">Data anak Anda sudah dikirim. Tunggu verifikasi admin agar anak bisa mulai berlatih.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('orangtua.registrations.index') }}"
+                        class="shrink-0 inline-flex items-center justify-center gap-2 border border-primary text-primary px-5 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all">
+                        <span class="material-symbols-outlined text-[18px]">list_alt</span>
+                        Lihat Status Pendaftaran
+                    </a>
+                </div>
+
+                <div class="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="flex flex-wrap items-center gap-3 min-w-0">
+                        @if ($latestRegistration)
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-label-sm text-label-sm {{ $regBadge }}">
+                                <span class="material-symbols-outlined text-[16px]">{{ $regStatus === 'ditolak' ? 'close' : ($regStatus === 'diterima' ? 'check_circle' : 'schedule') }}</span>
+                                {{ $regLabel }}
+                            </span>
+                            <span class="font-body-sm text-body-sm text-on-surface truncate">{{ $latestRegistration->student?->full_name }} · {{ $latestRegistration->program?->name }}</span>
+                        @else
+                            <span class="font-body-sm text-body-sm text-on-surface">Belum ada pendaftaran terbaru.</span>
+                        @endif
+                    </div>
+
+                    @if ($regStatus === 'ditolak')
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3 shrink-0">
+                            @if ($latestRegistration->rejection_reason)
+                                <p class="font-body-sm text-body-sm text-error">{{ $latestRegistration->rejection_reason }}</p>
+                            @endif
+                            <a href="{{ route('orangtua.registrations.create') }}"
+                                class="inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all">
+                                <span class="material-symbols-outlined text-[18px]">refresh</span>
+                                Daftar Ulang
+                            </a>
+                        </div>
+                    @else
+                        <p class="font-body-sm text-body-sm text-outline shrink-0">Cek menu <span class="font-label-md text-label-md text-primary">Pendaftaran Anak Saya</span> untuk konfirmasi via WhatsApp.</p>
+                    @endif
+                </div>
+            </div>
+        @endif
+
         @if ($pendingRecommendations > 0)
             <div class="flex items-center gap-3 bg-[#E3F2FD] text-[#1565C0] border border-[#1565C0]/20 px-4 py-3 rounded-lg font-body-sm text-body-sm">
                 <span class="material-symbols-outlined text-[20px]">forum</span>
@@ -501,5 +565,73 @@
                 });
             });
         </script>
+    @endif
+
+    @if ($totalChildren === 0)
+        {{-- Popup panduan pendaftaran untuk orang tua baru (muncul setiap login) --}}
+        @php
+            $dismissOnboarding = "open = false";
+        @endphp
+        <div x-data="{ open: true }">
+            <div x-show="open" x-cloak x-transition.opacity
+                class="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+                @click="{{ $dismissOnboarding }}"></div>
+
+            <div x-show="open" x-cloak x-transition
+                @keydown.escape.window="open = false"
+                class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="w-full max-w-lg bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden max-h-[88vh] flex flex-col">
+                    {{-- Header merah --}}
+                    <div class="relative bg-error text-on-error px-6 py-5 overflow-hidden">
+                        {{-- <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full"></div>
+                        <div class="absolute -right-2 -top-10 w-20 h-20 bg-white/10 rounded-full"></div> --}}
+                        <div class="flex items-start gap-4 relative">
+                            <div class="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[26px]">how_to_reg</span>
+                            </div>
+                            <div class="min-w-0 pr-8">
+                                <h3 class="font-headline text-headline-sm">Lengkapi Pendaftaran Anak Anda</h3>
+                                <p class="font-body-sm text-body-sm text-on-error/85 mt-1">Agar anak Anda bisa segera mulai berlatih renang, lengkapi data dan pilih paket latihan.</p>
+                            </div>
+                            <button @click="{{ $dismissOnboarding }}" type="button"
+                                class="absolute top-3 right-3 inline-flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/15 transition-colors" title="Tutup">
+                                <span class="material-symbols-outlined text-[20px]">close</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Langkah panduan --}}
+                    <div class="px-6 py-5 overflow-y-auto space-y-4">
+                        @foreach ([
+                            [1, 'Isi Data Anak', 'Lengkapi nama, tempat & tanggal lahir, jenis kelamin, berat dan tinggi badan anak Anda.'],
+                            [2, 'Pilih Program & Paket', 'Pilih program latihan yang sesuai beserta paketnya (per pertemuan atau per bulan), lengkap dengan rincian biaya.'],
+                            [3, 'Kirim Pendaftaran', 'Data masuk ke admin untuk diverifikasi. Pantau statusnya di menu Pendaftaran Anak Saya.'],
+                            [4, 'Konfirmasi via WhatsApp', 'Admin akan menghubungi Anda. Bisa juga mengonfirmasi lewat WhatsApp agar proses lebih cepat.'],
+                        ] as [$step, $title, $desc])
+                            <div class="flex items-start gap-3">
+                                <span class="w-8 h-8 rounded-full bg-error-container text-on-error-container flex items-center justify-center font-label-md text-label-md shrink-0">{{ $step }}</span>
+                                <div class="min-w-0">
+                                    <p class="font-label-md text-label-md text-on-surface">{{ $title }}</p>
+                                    <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $desc }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Footer aksi --}}
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-4 border-t border-outline-variant/30 bg-surface/50">
+                        <a href="{{ route('orangtua.registrations.create') }}" @click="{{ $dismissOnboarding }}"
+                            class="inline-flex items-center justify-center gap-2 bg-error text-on-error px-5 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95 shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">person_add</span>
+                            Daftarkan Anak Sekarang
+                        </a>
+                        <button @click="{{ $dismissOnboarding }}" type="button"
+                            class="inline-flex items-center justify-center gap-2 border border-error text-error px-5 py-2.5 rounded-lg font-label-md text-label-md hover:bg-error-container transition-all">
+                            Nanti Saja
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endif
 </x-sidebar-layout>

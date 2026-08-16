@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ClassRecommendation;
 use App\Models\ClassSchedule;
 use App\Models\Development;
+use App\Models\Registration;
 
 class DashboardController extends Controller
 {
@@ -21,6 +22,14 @@ class DashboardController extends Controller
 
         $activeClassIds = $students->flatMap(fn ($s) => $s->classes->pluck('id'))->unique()->values();
         $totalChildren = $students->count();
+
+        // Pendaftaran (untuk panduan orang tua baru / menunggu verifikasi)
+        $registrations = Registration::whereHas('student', fn ($q) => $q->where('parent_id', $user->id))
+            ->with(['student', 'program'])
+            ->latest()
+            ->get();
+
+        $latestRegistration = $registrations->first();
 
         $activePrograms = 0;
         $totalSessionsLeft = 0;
@@ -166,6 +175,8 @@ class DashboardController extends Controller
             'totalSessionsLeft',
             'recommendations',
             'pendingRecommendations',
+            'registrations',
+            'latestRegistration',
             'todayDay',
             'todaySchedules',
             'upcomingSchedules',
