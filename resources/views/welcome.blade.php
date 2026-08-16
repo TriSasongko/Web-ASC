@@ -1,317 +1,384 @@
 <!DOCTYPE html>
 <html lang="id">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Antasena Swimming Club - Belajar Renang Bersama Coach Berpengalaman</title>
 
-        <!-- Fonts: Montserrat, Inter & Material Symbols -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:wght@100..900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Antasena Swimming Club - Belajar Renang Bersama Coach Berpengalaman</title>
 
-        <!-- Styles / Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Fonts: Montserrat, Inter & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:wght@100..900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
 
-        <style>
-            body {
-                font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-            }
-            .font-body {
-                font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-            }
-            .font-headline {
-                font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
-            }
-            .material-symbols-outlined {
-                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            }
-            .material-symbols-outlined.filled {
-                font-variation-settings: 'FILL' 1;
-            }
-            html {
-                scroll-behavior: smooth;
-            }
-            [x-cloak] {
-                display: none !important;
-            }
-        </style>
-    </head>
-    <body class="bg-background text-on-background font-body text-body-md antialiased selection:bg-primary-container selection:text-on-primary">
+    <!-- Styles / Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- 1. Navbar -->
-        @include('partials.header')
+    <style>
+        body {
+            font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        }
 
-        @php $s = $settings; @endphp
+        .font-body {
+            font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        }
 
-        <!-- 2. Hero Section -->
-        <section class="relative pt-28 pb-16 md:pt-32 md:pb-24 min-h-[80vh] md:min-h-[90vh] flex items-center overflow-hidden">
-            <!-- Background Image with Overlay -->
-            <div class="absolute inset-0 z-0">
-                <div class="bg-cover bg-center w-full h-full"
-                     style="background-image: url('{{ $s['hero_image'] ?? '' }}')"></div>
-                <div class="absolute inset-0 bg-primary/80 mix-blend-multiply backdrop-blur-[2px]"></div>
+        .font-headline {
+            font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body
+    class="antialiased bg-background text-on-background font-body text-body-md selection:bg-primary-container selection:text-on-primary">
+
+    <!-- 1. Navbar -->
+    @include('partials.header')
+
+    @php $s = $settings; @endphp
+
+    <!-- 2. Hero Section -->
+    <section
+        class="relative pt-28 pb-16 md:pt-32 md:pb-24 min-h-[80vh] md:min-h-[90vh] flex items-center overflow-hidden">
+        <!-- Background Image with Overlay -->
+        <div class="absolute inset-0 z-0">
+            <div class="w-full h-full bg-center bg-cover" style="background-image: url('{{ $s['hero_image'] ?? '' }}')">
+            </div>
+            <div class="absolute inset-0 bg-primary/80 mix-blend-multiply backdrop-blur-[2px]"></div>
+        </div>
+
+        <div
+            class="relative z-10 grid items-center w-full grid-cols-1 gap-12 mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop lg:grid-cols-2">
+            <!-- Text Content -->
+            <div class="space-y-6 text-on-primary">
+                <h1 class="leading-tight font-headline text-headline-lg-mobile md:text-headline-xl text-on-primary">
+                    {{ $s['hero_title'] ?? 'Belajar Renang Bersama ' }}<span
+                        class="text-orange-lighter">{{ $s['hero_highlight'] ?? 'Coach Berpengalaman' }}</span>
+                </h1>
+                <p class="max-w-xl font-body text-body-lg text-on-primary/90">
+                    {{ $s['hero_subtitle'] ?? 'Program latihan aman, menyenangkan, dan berorientasi pada pencapaian, didampingi secara khusus oleh coach ahli bersertifikat.' }}
+                </p>
+                <div class="flex flex-col gap-4 pt-4 sm:flex-row">
+                    <a href="{{ route('register') }}"
+                        class="px-8 py-4 text-center text-white transition-colors rounded-lg shadow-lg bg-orange font-body text-label-md hover:bg-orange-light shadow-orange/30">
+                        {{ $s['hero_cta_primary'] ?? 'Daftar Sekarang' }}
+                    </a>
+                    <a href="{{ url('/program') }}"
+                        class="px-8 py-4 text-center transition-colors border-2 rounded-lg bg-surface/10 backdrop-blur-sm border-on-primary text-on-primary font-body text-label-md hover:bg-surface/20">
+                        {{ $s['hero_cta_secondary'] ?? 'Lihat Program' }}
+                    </a>
+                </div>
             </div>
 
-            <div class="relative z-10 w-full max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <!-- Text Content -->
-                <div class="text-on-primary space-y-6">
-                    <h1 class="font-headline text-headline-lg-mobile md:text-headline-xl text-on-primary leading-tight">
-                        {{ $s['hero_title'] ?? 'Belajar Renang Bersama ' }}<span class="text-orange-lighter">{{ $s['hero_highlight'] ?? 'Coach Berpengalaman' }}</span>
-                    </h1>
-                    <p class="font-body text-body-lg text-on-primary/90 max-w-xl">
-                        {{ $s['hero_subtitle'] ?? 'Program latihan aman, menyenangkan, dan berorientasi pada pencapaian, didampingi secara khusus oleh coach ahli bersertifikat.' }}
+            <!-- Illustration/Photo -->
+            <div class="relative hidden lg:block">
+                <div class="absolute inset-0 bg-orange/20 rounded-[2rem] transform rotate-3 scale-105 z-0 blur-xl">
+                </div>
+                <img class="relative z-10 w-full h-auto rounded-[2rem] shadow-2xl object-cover aspect-[4/3] border-4 border-surface/30"
+                    alt="{{ $s['hero_side_image_alt'] ?? 'Anak-anak belajar renang bersama coach ASC' }}"
+                    src="{{ $s['hero_side_image'] ?? '' }}">
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Tentang ASC -->
+    <section class="py-16 md:py-24 bg-surface" id="tentang">
+        <div class="mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop">
+            <!-- Statistik -->
+            <div class="grid grid-cols-2 gap-3 mb-10 lg:grid-cols-4 md:gap-6 md:mb-16">
+                <div class="p-4 text-center shadow-lg bg-primary text-on-primary rounded-2xl md:p-6 shadow-primary/20">
+                    <p class="font-bold font-headline text-headline-md md:text-headline-lg">
+                        {{ $s['tentang_years'] ?? '10+' }}</p>
+                    <p class="mt-1 tracking-wider uppercase font-body text-label-sm text-on-primary/90">
+                        {{ $s['tentang_years_label'] ?? 'Tahun Pengalaman' }}</p>
+                </div>
+                <div
+                    class="p-4 text-center border bg-surface-container-low rounded-2xl md:p-6 border-outline-variant/30">
+                    <p class="font-bold font-headline text-headline-md md:text-headline-lg text-primary">
+                        {{ $programs->count() }}</p>
+                    <p class="mt-1 tracking-wider uppercase font-body text-label-sm text-on-surface-variant">Program
+                        Kelas</p>
+                </div>
+                <div
+                    class="p-4 text-center border bg-surface-container-low rounded-2xl md:p-6 border-outline-variant/30">
+                    <p class="font-bold font-headline text-headline-md md:text-headline-lg text-primary">
+                        {{ $coaches->count() }}</p>
+                    <p class="mt-1 tracking-wider uppercase font-body text-label-sm text-on-surface-variant">Coach
+                        Profesional</p>
+                </div>
+                <div
+                    class="p-4 text-center border bg-surface-container-low rounded-2xl md:p-6 border-outline-variant/30">
+                    <p class="font-bold font-headline text-headline-md md:text-headline-lg text-primary">
+                        {{ $gallery->count() }}</p>
+                    <p class="mt-1 tracking-wider uppercase font-body text-label-sm text-on-surface-variant">Foto Galeri
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
-                        <a href="{{ route('register') }}"
-                            class="bg-orange text-white px-8 py-4 rounded-lg font-body text-label-md text-center hover:bg-orange-light transition-colors shadow-lg shadow-orange/30">
-                            {{ $s['hero_cta_primary'] ?? 'Daftar Sekarang' }}
-                        </a>
-                        <a href="{{ url('/program') }}"
-                            class="bg-surface/10 backdrop-blur-sm border-2 border-on-primary text-on-primary px-8 py-4 rounded-lg font-body text-label-md text-center hover:bg-surface/20 transition-colors">
-                            {{ $s['hero_cta_secondary'] ?? 'Lihat Program' }}
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Illustration/Photo -->
-                <div class="hidden lg:block relative">
-                    <div class="absolute inset-0 bg-orange/20 rounded-[2rem] transform rotate-3 scale-105 z-0 blur-xl"></div>
-                    <img class="relative z-10 w-full h-auto rounded-[2rem] shadow-2xl object-cover aspect-[4/3] border-4 border-surface/30"
-                         alt="{{ $s['hero_side_image_alt'] ?? 'Anak-anak belajar renang bersama coach ASC' }}"
-                         src="{{ $s['hero_side_image'] ?? '' }}">
                 </div>
             </div>
-        </section>
 
-        <!-- 3. Tentang ASC -->
-        <section class="py-16 md:py-24 bg-surface" id="tentang">
-            <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
-                <!-- Statistik -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-10 md:mb-16">
-                    <div class="bg-primary text-on-primary rounded-2xl p-4 md:p-6 text-center shadow-lg shadow-primary/20">
-                        <p class="font-headline text-headline-md md:text-headline-lg font-bold">{{ $s['tentang_years'] ?? '10+' }}</p>
-                        <p class="font-body text-label-sm uppercase tracking-wider mt-1 text-on-primary/90">{{ $s['tentang_years_label'] ?? 'Tahun Pengalaman' }}</p>
-                    </div>
-                    <div class="bg-surface-container-low rounded-2xl p-4 md:p-6 text-center border border-outline-variant/30">
-                        <p class="font-headline text-headline-md md:text-headline-lg text-primary font-bold">{{ $programs->count() }}</p>
-                        <p class="font-body text-label-sm uppercase tracking-wider mt-1 text-on-surface-variant">Program Kelas</p>
-                    </div>
-                    <div class="bg-surface-container-low rounded-2xl p-4 md:p-6 text-center border border-outline-variant/30">
-                        <p class="font-headline text-headline-md md:text-headline-lg text-primary font-bold">{{ $coaches->count() }}</p>
-                        <p class="font-body text-label-sm uppercase tracking-wider mt-1 text-on-surface-variant">Coach Profesional</p>
-                    </div>
-                    <div class="bg-surface-container-low rounded-2xl p-4 md:p-6 text-center border border-outline-variant/30">
-                        <p class="font-headline text-headline-md md:text-headline-lg text-primary font-bold">{{ $gallery->count() }}</p>
-                        <p class="font-body text-label-sm uppercase tracking-wider mt-1 text-on-surface-variant">Foto Galeri</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-                    <div class="space-y-5 md:space-y-6">
-                        <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-primary font-bold">{{ $s['tentang_heading'] ?? 'Tentang Antasena Swimming Club' }}</h2>
-                        <p class="text-on-surface-variant font-body text-body-md md:text-body-lg">{{ $s['tentang_text'] ?? 'Berdiri sejak tahun 2010, Antasena Swimming Club (ASC) telah mendedikasikan diri untuk mencetak generasi perenang yang tangguh, percaya diri, dan berprestasi. Kami percaya bahwa berenang bukan sekadar olahraga, melainkan keterampilan hidup (life skill) yang esensial.' }}</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="bg-surface-container-low rounded-xl p-5 border-t-4 border-orange">
-                                <div class="w-10 h-10 rounded-lg bg-orange/15 flex items-center justify-center mb-3">
-                                    <span class="material-symbols-outlined text-orange">visibility</span>
-                                </div>
-                                <h3 class="font-headline text-headline-sm text-primary font-semibold mb-1">Visi</h3>
-                                <p class="text-on-surface-variant text-body-sm md:text-body-md">{{ $s['tentang_visi'] ?? 'Menjadi klub renang terbaik yang menginspirasi gaya hidup sehat dan mencetak atlet berprestasi di tingkat nasional maupun internasional.' }}</p>
+            <div class="grid items-center grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
+                <div class="space-y-5 md:space-y-6">
+                    <h2 class="font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">
+                        {{ $s['tentang_heading'] ?? 'Tentang Antasena Swimming Club' }}</h2>
+                    <p class="text-on-surface-variant font-body text-body-md md:text-body-lg">
+                        {{ $s['tentang_text'] ?? 'Berdiri sejak tahun 2010, Antasena Swimming Club (ASC) telah mendedikasikan diri untuk mencetak generasi perenang yang tangguh, percaya diri, dan berprestasi. Kami percaya bahwa berenang bukan sekadar olahraga, melainkan keterampilan hidup (life skill) yang esensial.' }}
+                    </p>
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="p-5 border-t-4 bg-surface-container-low rounded-xl border-orange">
+                            <div class="flex items-center justify-center w-10 h-10 mb-3 rounded-lg bg-orange/15">
+                                <span class="material-symbols-outlined text-orange">visibility</span>
                             </div>
-                            <div class="bg-surface-container-low rounded-xl p-5 border-t-4 border-primary">
-                                <div class="w-10 h-10 rounded-lg bg-primary/15 flex items-center justify-center mb-3">
-                                    <span class="material-symbols-outlined text-primary">flag</span>
-                                </div>
-                                <h3 class="font-headline text-headline-sm text-primary font-semibold mb-1">Misi</h3>
-                                <ul class="list-disc list-inside text-on-surface-variant text-body-sm md:text-body-md mt-2 space-y-1.5">
-                                    @foreach (collect(preg_split('/\r\n|\r|\n/', $s['tentang_misi'] ?? ''))->map(fn ($line) => trim($line))->filter() as $misi)
-                                        <li>{{ $misi }}</li>
-                                    @endforeach
-                                </ul>
+                            <h3 class="mb-1 font-semibold font-headline text-headline-sm text-primary">Visi</h3>
+                            <p class="text-on-surface-variant text-body-sm md:text-body-md">
+                                {{ $s['tentang_visi'] ?? 'Menjadi klub renang terbaik yang menginspirasi gaya hidup sehat dan mencetak atlet berprestasi di tingkat nasional maupun internasional.' }}
+                            </p>
+                        </div>
+                        <div class="p-5 border-t-4 bg-surface-container-low rounded-xl border-primary">
+                            <div class="flex items-center justify-center w-10 h-10 mb-3 rounded-lg bg-primary/15">
+                                <span class="material-symbols-outlined text-primary">flag</span>
                             </div>
+                            <h3 class="mb-1 font-semibold font-headline text-headline-sm text-primary">Misi</h3>
+                            <ul
+                                class="list-disc list-inside text-on-surface-variant text-body-sm md:text-body-md mt-2 space-y-1.5">
+                                @foreach (collect(preg_split('/\r\n|\r|\n/', $s['tentang_misi'] ?? ''))->map(fn($line) => trim($line))->filter() as $misi)
+                                    <li>{{ $misi }}</li>
+                                @endforeach
+                            </ul>
                         </div>
                     </div>
-                    <div class="relative">
-                        <img alt="Kegiatan latihan renang di ASC"
-                             class="rounded-2xl shadow-xl w-full object-cover aspect-[4/3]"
-                             src="{{ $s['tentang_image'] ?? '' }}">
+                </div>
+                <div class="relative">
+                    <img alt="Kegiatan latihan renang di ASC"
+                        class="rounded-2xl shadow-xl w-full object-cover aspect-[4/3]"
+                        src="{{ $s['tentang_image'] ?? '' }}">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Keunggulan ASC -->
+    <section class="py-16 md:py-24 bg-surface-container-lowest">
+        <div class="mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop">
+            <div class="mb-8 text-center md:mb-12">
+                <h2 class="font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">Mengapa
+                    Memilih ASC?</h2>
+                <p class="max-w-2xl mx-auto mt-4 text-on-surface-variant font-body text-body-lg">Kami memberikan yang
+                    terbaik untuk perkembangan dan kenyamanan proses belajar renang Anda.</p>
+            </div>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 md:gap-6">
+                <!-- Card 1 -->
+                <div
+                    class="flex items-center gap-4 p-5 transition-shadow border shadow-sm bg-surface sm:p-6 rounded-xl border-outline-variant/30 hover:shadow-md sm:flex-col sm:items-center sm:text-center group">
+                    <div
+                        class="flex items-center justify-center transition-colors rounded-full w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 shrink-0 group-hover:bg-primary/20">
+                        <span class="text-3xl material-symbols-outlined text-primary">sports</span>
+                    </div>
+                    <div class="min-w-0 sm:text-center">
+                        <h3 class="mb-1 font-semibold font-headline text-headline-sm text-primary sm:mb-2">Coach
+                            Berpengalaman</h3>
+                        <p class="text-on-surface-variant text-body-md">Didampingi oleh pelatih profesional dan
+                            bersertifikat yang ahli di bidangnya.</p>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div
+                    class="flex items-center gap-4 p-5 transition-shadow border shadow-sm bg-surface sm:p-6 rounded-xl border-outline-variant/30 hover:shadow-md sm:flex-col sm:items-center sm:text-center group">
+                    <div
+                        class="flex items-center justify-center transition-colors rounded-full w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 shrink-0 group-hover:bg-primary/20">
+                        <span class="text-3xl material-symbols-outlined text-primary">mood</span>
+                    </div>
+                    <div class="min-w-0 sm:text-center">
+                        <h3 class="mb-1 font-semibold font-headline text-headline-sm text-primary sm:mb-2">Metode
+                            Belajar Menyenangkan</h3>
+                        <p class="text-on-surface-variant text-body-md">Pendekatan yang ramah dan interaktif membuat
+                            proses belajar renang jadi lebih seru.</p>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div
+                    class="flex items-center gap-4 p-5 transition-shadow border shadow-sm bg-surface sm:p-6 rounded-xl border-outline-variant/30 hover:shadow-md sm:flex-col sm:items-center sm:text-center group">
+                    <div
+                        class="flex items-center justify-center transition-colors rounded-full w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 shrink-0 group-hover:bg-primary/20">
+                        <span class="text-3xl material-symbols-outlined text-primary">pool</span>
+                    </div>
+                    <div class="min-w-0 sm:text-center">
+                        <h3 class="mb-1 font-semibold font-headline text-headline-sm text-primary sm:mb-2">Fasilitas
+                            Lengkap</h3>
+                        <p class="text-on-surface-variant text-body-md">Kolam renang berstandar dengan fasilitas
+                            pendukung yang memadai untuk berlatih.</p>
+                    </div>
+                </div>
+                <!-- Card 4 -->
+                <div
+                    class="flex items-center gap-4 p-5 transition-shadow border shadow-sm bg-surface sm:p-6 rounded-xl border-outline-variant/30 hover:shadow-md sm:flex-col sm:items-center sm:text-center group">
+                    <div
+                        class="flex items-center justify-center transition-colors rounded-full w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 shrink-0 group-hover:bg-primary/20">
+                        <span class="text-3xl material-symbols-outlined text-primary">health_and_safety</span>
+                    </div>
+                    <div class="min-w-0 sm:text-center">
+                        <h3 class="mb-1 font-semibold font-headline text-headline-sm text-primary sm:mb-2">Aman dan
+                            Nyaman</h3>
+                        <p class="text-on-surface-variant text-body-md">Prioritas utama pada keselamatan siswa dengan
+                            pengawasan ketat selama latihan.</p>
+                    </div>
+                </div>
+                <!-- Card 5 -->
+                <div
+                    class="flex items-center gap-4 p-5 transition-shadow border shadow-sm bg-surface sm:p-6 rounded-xl border-outline-variant/30 hover:shadow-md sm:flex-col sm:items-center sm:text-center group">
+                    <div
+                        class="flex items-center justify-center transition-colors rounded-full w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 shrink-0 group-hover:bg-primary/20">
+                        <span class="text-3xl material-symbols-outlined text-primary">calendar_month</span>
+                    </div>
+                    <div class="min-w-0 sm:text-center">
+                        <h3 class="mb-1 font-semibold font-headline text-headline-sm text-primary sm:mb-2">Jadwal
+                            Fleksibel</h3>
+                        <p class="text-on-surface-variant text-body-md">Pilihan waktu latihan yang dapat disesuaikan
+                            dengan kesibukan Anda.</p>
+                    </div>
+                </div>
+                <!-- Card 6 -->
+                <div
+                    class="flex items-center gap-4 p-5 transition-shadow border shadow-sm bg-surface sm:p-6 rounded-xl border-outline-variant/30 hover:shadow-md sm:flex-col sm:items-center sm:text-center group">
+                    <div
+                        class="flex items-center justify-center transition-colors rounded-full w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 shrink-0 group-hover:bg-primary/20">
+                        <span class="text-3xl material-symbols-outlined text-primary">analytics</span>
+                    </div>
+                    <div class="min-w-0 sm:text-center">
+                        <h3 class="mb-1 font-semibold font-headline text-headline-sm text-primary sm:mb-2">E-Raport
+                        </h3>
+                        <p class="text-on-surface-variant text-body-md">Pantau perkembangan kemampuan renang secara
+                            transparan melalui laporan digital berkala.</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- 4. Keunggulan ASC -->
-        <section class="py-16 md:py-24 bg-surface-container-lowest">
-            <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
-                <div class="text-center mb-8 md:mb-12">
-                    <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-primary font-bold">Mengapa Memilih ASC?</h2>
-                    <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">Kami memberikan yang terbaik untuk perkembangan dan kenyamanan proses belajar renang Anda.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                    <!-- Card 1 -->
-                    <div class="bg-surface p-5 sm:p-6 rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 sm:flex-col sm:items-center sm:text-center group">
-                        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                            <span class="material-symbols-outlined text-primary text-3xl">sports</span>
-                        </div>
-                        <div class="min-w-0 sm:text-center">
-                            <h3 class="font-headline text-headline-sm text-primary font-semibold mb-1 sm:mb-2">Coach Berpengalaman</h3>
-                            <p class="text-on-surface-variant text-body-md">Didampingi oleh pelatih profesional dan bersertifikat yang ahli di bidangnya.</p>
-                        </div>
-                    </div>
-                    <!-- Card 2 -->
-                    <div class="bg-surface p-5 sm:p-6 rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 sm:flex-col sm:items-center sm:text-center group">
-                        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                            <span class="material-symbols-outlined text-primary text-3xl">mood</span>
-                        </div>
-                        <div class="min-w-0 sm:text-center">
-                            <h3 class="font-headline text-headline-sm text-primary font-semibold mb-1 sm:mb-2">Metode Belajar Menyenangkan</h3>
-                            <p class="text-on-surface-variant text-body-md">Pendekatan yang ramah dan interaktif membuat proses belajar renang jadi lebih seru.</p>
-                        </div>
-                    </div>
-                    <!-- Card 3 -->
-                    <div class="bg-surface p-5 sm:p-6 rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 sm:flex-col sm:items-center sm:text-center group">
-                        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                            <span class="material-symbols-outlined text-primary text-3xl">pool</span>
-                        </div>
-                        <div class="min-w-0 sm:text-center">
-                            <h3 class="font-headline text-headline-sm text-primary font-semibold mb-1 sm:mb-2">Fasilitas Lengkap</h3>
-                            <p class="text-on-surface-variant text-body-md">Kolam renang berstandar dengan fasilitas pendukung yang memadai untuk berlatih.</p>
-                        </div>
-                    </div>
-                    <!-- Card 4 -->
-                    <div class="bg-surface p-5 sm:p-6 rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 sm:flex-col sm:items-center sm:text-center group">
-                        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                            <span class="material-symbols-outlined text-primary text-3xl">health_and_safety</span>
-                        </div>
-                        <div class="min-w-0 sm:text-center">
-                            <h3 class="font-headline text-headline-sm text-primary font-semibold mb-1 sm:mb-2">Aman dan Nyaman</h3>
-                            <p class="text-on-surface-variant text-body-md">Prioritas utama pada keselamatan siswa dengan pengawasan ketat selama latihan.</p>
-                        </div>
-                    </div>
-                    <!-- Card 5 -->
-                    <div class="bg-surface p-5 sm:p-6 rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 sm:flex-col sm:items-center sm:text-center group">
-                        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                            <span class="material-symbols-outlined text-primary text-3xl">calendar_month</span>
-                        </div>
-                        <div class="min-w-0 sm:text-center">
-                            <h3 class="font-headline text-headline-sm text-primary font-semibold mb-1 sm:mb-2">Jadwal Fleksibel</h3>
-                            <p class="text-on-surface-variant text-body-md">Pilihan waktu latihan yang dapat disesuaikan dengan kesibukan Anda.</p>
-                        </div>
-                    </div>
-                    <!-- Card 6 -->
-                    <div class="bg-surface p-5 sm:p-6 rounded-xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 sm:flex-col sm:items-center sm:text-center group">
-                        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                            <span class="material-symbols-outlined text-primary text-3xl">analytics</span>
-                        </div>
-                        <div class="min-w-0 sm:text-center">
-                            <h3 class="font-headline text-headline-sm text-primary font-semibold mb-1 sm:mb-2">E-Raport</h3>
-                            <p class="text-on-surface-variant text-body-md">Pantau perkembangan kemampuan renang secara transparan melalui laporan digital berkala.</p>
-                        </div>
-                    </div>
-                </div>
+    <!-- 5. Program Kelas -->
+    <section class="py-16 md:py-24 bg-surface" id="program">
+        <div class="mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop">
+            <div class="mb-8 text-center md:mb-12">
+                <h2 class="font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">
+                    {{ $s['program_heading'] ?? 'Program Kelas Kami' }}</h2>
+                <p class="max-w-2xl mx-auto mt-4 text-on-surface-variant font-body text-body-lg">
+                    {{ $s['program_subtitle'] ?? 'Pilih program yang paling sesuai dengan kebutuhan dan target Anda.' }}
+                </p>
             </div>
-        </section>
-
-        <!-- 5. Program Kelas -->
-        <section class="py-16 md:py-24 bg-surface" id="program">
-            <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
-                <div class="text-center mb-8 md:mb-12">
-                    <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-primary font-bold">{{ $s['program_heading'] ?? 'Program Kelas Kami' }}</h2>
-                    <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">{{ $s['program_subtitle'] ?? 'Pilih program yang paling sesuai dengan kebutuhan dan target Anda.' }}</p>
-                </div>
-                @if ($programs->isNotEmpty())
-                    <div class="relative"
-                         x-data="{
-                             index: 0,
-                             startX: null,
-                             timer: null,
-                             step() {
-                                 const t = this.$refs.track;
-                                 const card = t.querySelector(':scope > *');
-                                 const gap = parseFloat(getComputedStyle(t).gap) || 0;
-                                 return card ? card.offsetWidth + gap : 0;
-                             },
-                             maxIndex() {
-                                 const t = this.$refs.track;
-                                 const s = this.step();
-                                 return s > 0 ? Math.round((t.scrollWidth - t.clientWidth) / s) : 0;
-                             },
-                             slideTo(i) {
-                                 const s = this.step();
-                                 const max = this.maxIndex();
-                                 this.index = i > max ? 0 : (i < 0 ? max : i);
-                                 this.$refs.track.style.transform = `translateX(-${this.index * s}px)`;
-                             },
-                             play() {
-                                 if (this.timer) return;
-                                 this.timer = setInterval(() => {
-                                     if (!this.startX) this.slideTo(this.index + 1);
-                                 }, 3000);
-                             },
-                             pause() {
-                                 clearInterval(this.timer);
-                                 this.timer = null;
-                             },
-                             restart() {
-                                 clearInterval(this.timer);
-                                 this.timer = null;
-                                 this.play();
-                             },
-                             prev() {
-                                 this.slideTo(this.index - 1);
-                                 this.restart();
-                             },
-                             next() {
-                                 this.slideTo(this.index + 1);
-                                 this.restart();
-                             },
-                             touchStart(e) {
-                                 this.startX = e.changedTouches[0].clientX;
-                             },
-                             touchEnd(e) {
-                                 if (this.startX === null) return;
-                                 const dx = e.changedTouches[0].clientX - this.startX;
-                                 this.startX = null;
-                                 if (Math.abs(dx) >= 40) this.slideTo(this.index + (dx < 0 ? 1 : -1));
-                                 this.restart();
-                             },
-                             init() {
-                                 this.play();
-                                 window.addEventListener('resize', () => this.slideTo(this.index));
-                             }
-                         }"
-                         @mouseenter="pause()"
-                         @mouseleave="play()">
-                        <div class="overflow-hidden"
-                             @touchstart.passive="touchStart($event)"
-                             @touchend.passive="touchEnd($event)">
-                            <div x-ref="track"
-                                 class="flex gap-6 transition-transform duration-700 ease-in-out will-change-transform">
+            @if ($programs->isNotEmpty())
+                <div class="relative" x-data="{
+                    index: 0,
+                    startX: null,
+                    timer: null,
+                    step() {
+                        const t = this.$refs.track;
+                        const card = t.querySelector(':scope > *');
+                        const gap = parseFloat(getComputedStyle(t).gap) || 0;
+                        return card ? card.offsetWidth + gap : 0;
+                    },
+                    maxIndex() {
+                        const t = this.$refs.track;
+                        const s = this.step();
+                        return s > 0 ? Math.round((t.scrollWidth - t.clientWidth) / s) : 0;
+                    },
+                    slideTo(i) {
+                        const s = this.step();
+                        const max = this.maxIndex();
+                        this.index = i > max ? 0 : (i < 0 ? max : i);
+                        this.$refs.track.style.transform = `translateX(-${this.index * s}px)`;
+                    },
+                    play() {
+                        if (this.timer) return;
+                        this.timer = setInterval(() => {
+                            if (!this.startX) this.slideTo(this.index + 1);
+                        }, 3000);
+                    },
+                    pause() {
+                        clearInterval(this.timer);
+                        this.timer = null;
+                    },
+                    restart() {
+                        clearInterval(this.timer);
+                        this.timer = null;
+                        this.play();
+                    },
+                    prev() {
+                        this.slideTo(this.index - 1);
+                        this.restart();
+                    },
+                    next() {
+                        this.slideTo(this.index + 1);
+                        this.restart();
+                    },
+                    touchStart(e) {
+                        this.startX = e.changedTouches[0].clientX;
+                    },
+                    touchEnd(e) {
+                        if (this.startX === null) return;
+                        const dx = e.changedTouches[0].clientX - this.startX;
+                        this.startX = null;
+                        if (Math.abs(dx) >= 40) this.slideTo(this.index + (dx < 0 ? 1 : -1));
+                        this.restart();
+                    },
+                    init() {
+                        this.play();
+                        window.addEventListener('resize', () => this.slideTo(this.index));
+                    }
+                }" @mouseenter="pause()" @mouseleave="play()">
+                    <div class="overflow-hidden" @touchstart.passive="touchStart($event)"
+                        @touchend.passive="touchEnd($event)">
+                        <div x-ref="track"
+                            class="flex gap-6 transition-transform duration-700 ease-in-out will-change-transform">
                             @foreach ($programs as $program)
                                 <div class="shrink-0 w-[85%] sm:w-[48%] lg:w-[31.5%] xl:w-[23%]">
-                                    <div class="h-full bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/30 shadow-md hover:shadow-xl transition-shadow flex flex-col">
+                                    <div
+                                        class="flex flex-col h-full p-6 transition-shadow border shadow-md bg-surface-container-lowest rounded-2xl border-outline-variant/30 hover:shadow-xl">
                                         <div class="flex items-start justify-between gap-2 mb-4">
-                                            <h3 class="font-headline text-headline-sm text-primary font-bold">{{ $program->name }}</h3>
+                                            <h3 class="font-bold font-headline text-headline-sm text-primary">
+                                                {{ $program->name }}</h3>
                                             @if ($program->badge)
-                                                <span class="shrink-0 bg-orange text-white text-[10px] font-bold px-2.5 py-1 rounded-full mt-0.5">{{ $program->badge }}</span>
+                                                <span
+                                                    class="shrink-0 bg-orange text-white text-[10px] font-bold px-2.5 py-1 rounded-full mt-0.5">{{ $program->badge }}</span>
                                             @endif
                                         </div>
                                         @if ($program->subtitle)
-                                            <p class="text-on-surface-variant text-label-sm mb-4">{{ $program->subtitle }}</p>
+                                            <p class="mb-4 text-on-surface-variant text-label-sm">
+                                                {{ $program->subtitle }}</p>
                                         @endif
-                                        <div class="mb-6 flex items-baseline gap-2 flex-wrap">
+                                        <div class="flex flex-wrap items-baseline gap-2 mb-6">
                                             @if ($program->price)
-                                                <span class="font-headline text-headline-lg text-orange font-bold">Rp{{ number_format($program->price, 0, ',', '.') }}</span>
-                                                <span class="text-on-surface-variant text-body-md">{{ $program->billing_unit }}</span>
+                                                <span
+                                                    class="font-bold font-headline text-headline-lg text-orange">Rp{{ number_format($program->price, 0, ',', '.') }}</span>
+                                                <span
+                                                    class="text-on-surface-variant text-body-md">{{ $program->billing_unit }}</span>
                                             @else
-                                                <span class="font-headline text-headline-lg text-orange font-bold">Hubungi Kami</span>
+                                                <span
+                                                    class="font-bold font-headline text-headline-lg text-orange">Hubungi
+                                                    Kami</span>
                                             @endif
                                         </div>
-                                        <ul class="space-y-3 mb-8 flex-grow">
+                                        <ul class="flex-grow mb-8 space-y-3">
                                             @foreach ($program->featureList() as $feature)
-                                                <li class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                                    <span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
+                                                <li
+                                                    class="flex items-start gap-2 text-on-surface-variant text-body-md">
+                                                    <span
+                                                        class="mt-1 text-sm material-symbols-outlined text-primary">check_circle</span>
                                                     <span>{{ $feature }}</span>
                                                 </li>
                                             @endforeach
@@ -323,344 +390,634 @@
                                     </div>
                                 </div>
                             @endforeach
-                            </div>
                         </div>
-                        <button type="button" @click="prev()" aria-label="Program sebelumnya"
-                            class="hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-primary text-on-primary items-center justify-center shadow-lg hover:bg-primary-container transition-colors">
-                            <span class="material-symbols-outlined">chevron_left</span>
-                        </button>
-                        <button type="button" @click="next()" aria-label="Program berikutnya"
-                            class="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-primary text-on-primary items-center justify-center shadow-lg hover:bg-primary-container transition-colors">
-                            <span class="material-symbols-outlined">chevron_right</span>
-                        </button>
                     </div>
-                @else
-                    <p class="text-center text-on-surface-variant">Belum ada program.</p>
-                @endif
-            </div>
-        </section>
-
-        <!-- 6. Jadwal Latihan -->
-        <section class="py-16 md:py-24 bg-surface-container-lowest" id="jadwal">
-            <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
-                <div class="text-center mb-8 md:mb-12">
-                    <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-primary font-bold">{{ $s['jadwal_heading'] ?? 'Jadwal Latihan Reguler' }}</h2>
-                    <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">{{ $s['jadwal_subtitle'] ?? 'Untuk jadwal Private dan Mini Private dapat didiskusikan langsung dengan Coach.' }}</p>
+                    <button type="button" @click="prev()" aria-label="Program sebelumnya"
+                        class="absolute z-10 items-center justify-center hidden w-10 h-10 transition-colors -translate-y-1/2 rounded-full shadow-lg md:flex -left-3 top-1/2 bg-primary text-on-primary hover:bg-primary-container">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <button type="button" @click="next()" aria-label="Program berikutnya"
+                        class="absolute z-10 items-center justify-center hidden w-10 h-10 transition-colors -translate-y-1/2 rounded-full shadow-lg md:flex -right-3 top-1/2 bg-primary text-on-primary hover:bg-primary-container">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
                 </div>
-                <!-- Mobile: kartu jadwal -->
-                <div class="grid grid-cols-1 gap-3 md:hidden">
-                    @forelse ($jadwalRows as $row)
-                        <div class="bg-surface rounded-xl border border-outline-variant/30 shadow-sm p-4 flex gap-4 items-start">
-                            <div class="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-primary text-2xl">calendar_month</span>
-                            </div>
-                            <div class="min-w-0">
-                                <h3 class="font-headline text-headline-sm text-primary font-semibold">{{ $row['day'] }}</h3>
-                                <p class="text-on-surface-variant text-body-sm mt-0.5">{{ $row['program'] }}</p>
-                                <p class="flex items-center gap-1 text-body-sm mt-1.5">
-                                    <span class="material-symbols-outlined text-orange text-base">schedule</span>
-                                    <span>{{ $row['time'] }}</span>
-                                </p>
-                                <p class="flex items-start gap-1 text-body-sm mt-1 text-on-surface-variant">
-                                    <span class="material-symbols-outlined text-orange text-base">location_on</span>
-                                    <span>{{ $row['location'] }}</span>
-                                </p>
-                            </div>
+            @else
+                <p class="text-center text-on-surface-variant">Belum ada program.</p>
+            @endif
+        </div>
+    </section>
+
+    <!-- 6. Jadwal Latihan -->
+    <section class="py-16 md:py-24 bg-surface-container-lowest" id="jadwal">
+        <div class="mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop">
+            <div class="mb-8 text-center md:mb-12">
+                <h2 class="font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">
+                    {{ $s['jadwal_heading'] ?? 'Jadwal Latihan Reguler' }}</h2>
+                <p class="max-w-2xl mx-auto mt-4 text-on-surface-variant font-body text-body-lg">
+                    {{ $s['jadwal_subtitle'] ?? 'Untuk jadwal Private dan Mini Private dapat didiskusikan langsung dengan Coach.' }}
+                </p>
+            </div>
+            <!-- Mobile: kartu jadwal -->
+            <div class="grid grid-cols-1 gap-3 md:hidden">
+                @forelse ($jadwalRows as $row)
+                    <div
+                        class="flex items-start gap-4 p-4 border shadow-sm bg-surface rounded-xl border-outline-variant/30">
+                        <div class="flex items-center justify-center rounded-lg w-11 h-11 bg-primary/10 shrink-0">
+                            <span class="text-2xl material-symbols-outlined text-primary">calendar_month</span>
                         </div>
-                    @empty
-                        <p class="text-center text-on-surface-variant">Jadwal belum diatur.</p>
-                    @endforelse
-                </div>
-
-                <!-- Desktop: tabel -->
-                <div class="hidden md:block overflow-x-auto rounded-xl border border-outline-variant/30 shadow-sm">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-primary text-on-primary font-body text-label-md">
-                                <th class="p-4 border-b border-outline-variant/30">Hari</th>
-                                <th class="p-4 border-b border-outline-variant/30">Jam</th>
-                                <th class="p-4 border-b border-outline-variant/30">Program</th>
-                                <th class="p-4 border-b border-outline-variant/30">Lokasi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-on-surface-variant">
-                            @forelse ($jadwalRows as $row)
-                                <tr class="hover:bg-surface-container-low transition-colors {{ $loop->last ? '' : 'border-b border-outline-variant/20' }}">
-                                    <td class="p-4 font-semibold text-primary">{{ $row['day'] }}</td>
-                                    <td class="p-4">{{ $row['time'] }}</td>
-                                    <td class="p-4">{{ $row['program'] }}</td>
-                                    <td class="p-4">{{ $row['location'] }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="p-4 text-center">Jadwal belum diatur.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                        <div class="min-w-0">
+                            <h3 class="font-semibold font-headline text-headline-sm text-primary">{{ $row['day'] }}
+                            </h3>
+                            <p class="text-on-surface-variant text-body-sm mt-0.5">{{ $row['program'] }}</p>
+                            <p class="flex items-center gap-1 text-body-sm mt-1.5">
+                                <span class="text-base material-symbols-outlined text-orange">schedule</span>
+                                <span>{{ $row['time'] }}</span>
+                            </p>
+                            <p class="flex items-start gap-1 mt-1 text-body-sm text-on-surface-variant">
+                                <span class="text-base material-symbols-outlined text-orange">location_on</span>
+                                <span>{{ $row['location'] }}</span>
+                            </p>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-center text-on-surface-variant">Jadwal belum diatur.</p>
+                @endforelse
             </div>
-        </section>
 
-        <!-- 7. Coach Kami -->
-        <section class="py-16 md:py-24 bg-surface">
-            <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
-                <div class="text-center mb-8 md:mb-12">
-                    <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-primary font-bold">Temui Coach Kami</h2>
-                    <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">Dilatih langsung oleh para profesional bersertifikat yang berdedikasi tinggi.</p>
-                </div>
-                @if ($coaches->isNotEmpty())
-                    <div class="relative"
-                         x-data="{
-                             index: 0,
-                             startX: null,
-                             timer: null,
-                             step() {
-                                 const t = this.$refs.track;
-                                 const card = t.querySelector(':scope > *');
-                                 const gap = parseFloat(getComputedStyle(t).gap) || 0;
-                                 return card ? card.offsetWidth + gap : 0;
-                             },
-                             maxIndex() {
-                                 const t = this.$refs.track;
-                                 const s = this.step();
-                                 return s > 0 ? Math.round((t.scrollWidth - t.clientWidth) / s) : 0;
-                             },
-                             slideTo(i) {
-                                 const s = this.step();
-                                 const max = this.maxIndex();
-                                 this.index = i > max ? 0 : (i < 0 ? max : i);
-                                 this.$refs.track.style.transform = `translateX(-${this.index * s}px)`;
-                             },
-                             play() {
-                                 if (this.timer) return;
-                                 this.timer = setInterval(() => {
-                                     if (!this.startX) this.slideTo(this.index + 1);
-                                 }, 3000);
-                             },
-                             pause() {
-                                 clearInterval(this.timer);
-                                 this.timer = null;
-                             },
-                             restart() {
-                                 clearInterval(this.timer);
-                                 this.timer = null;
-                                 this.play();
-                             },
-                             prev() {
-                                 this.slideTo(this.index - 1);
-                                 this.restart();
-                             },
-                             next() {
-                                 this.slideTo(this.index + 1);
-                                 this.restart();
-                             },
-                             touchStart(e) {
-                                 this.startX = e.changedTouches[0].clientX;
-                             },
-                             touchEnd(e) {
-                                 if (this.startX === null) return;
-                                 const dx = e.changedTouches[0].clientX - this.startX;
-                                 this.startX = null;
-                                 if (Math.abs(dx) >= 40) this.slideTo(this.index + (dx < 0 ? 1 : -1));
-                                 this.restart();
-                             },
-                             init() {
-                                 this.play();
-                                 window.addEventListener('resize', () => this.slideTo(this.index));
-                             }
-                         }"
-                         @mouseenter="pause()"
-                         @mouseleave="play()">
-                        <div class="overflow-hidden"
-                             @touchstart.passive="touchStart($event)"
-                             @touchend.passive="touchEnd($event)">
-                            <div x-ref="track"
-                                 class="flex gap-6 transition-transform duration-700 ease-in-out will-change-transform">
+            <!-- Desktop: tabel -->
+            <div class="hidden overflow-x-auto border shadow-sm md:block rounded-xl border-outline-variant/30">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-primary text-on-primary font-body text-label-md">
+                            <th class="p-4 border-b border-outline-variant/30">Hari</th>
+                            <th class="p-4 border-b border-outline-variant/30">Jam</th>
+                            <th class="p-4 border-b border-outline-variant/30">Program</th>
+                            <th class="p-4 border-b border-outline-variant/30">Lokasi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-on-surface-variant">
+                        @forelse ($jadwalRows as $row)
+                            <tr
+                                class="hover:bg-surface-container-low transition-colors {{ $loop->last ? '' : 'border-b border-outline-variant/20' }}">
+                                <td class="p-4 font-semibold text-primary">{{ $row['day'] }}</td>
+                                <td class="p-4">{{ $row['time'] }}</td>
+                                <td class="p-4">{{ $row['program'] }}</td>
+                                <td class="p-4">{{ $row['location'] }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="p-4 text-center">Jadwal belum diatur.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Coach Kami -->
+    <section class="py-16 md:py-24 bg-surface" id="coach">
+        <div class="mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop">
+            <div class="mb-8 text-center md:mb-12">
+                <span class="font-bold tracking-wider uppercase text-orange font-headline text-label-md">Tim
+                    Profesional</span>
+                <h2 class="mt-1 font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">Temui
+                    Coach Kami</h2>
+                <p class="max-w-2xl mx-auto mt-3 text-on-surface-variant font-body text-body-lg">Dilatih langsung oleh
+                    para profesional bersertifikat yang berdedikasi tinggi.</p>
+            </div>
+
+            @if ($coaches->isNotEmpty())
+                <div class="relative group/slider" x-data="{
+                    index: 0,
+                    startX: null,
+                    timer: null,
+                    total: {{ $coaches->count() }},
+                    step() {
+                        const t = this.$refs.track;
+                        const card = t.querySelector(':scope > *');
+                        const gap = parseFloat(getComputedStyle(t).gap) || 0;
+                        return card ? card.offsetWidth + gap : 0;
+                    },
+                    maxIndex() {
+                        const t = this.$refs.track;
+                        const s = this.step();
+                        return s > 0 ? Math.max(0, Math.round((t.scrollWidth - t.clientWidth) / s)) : 0;
+                    },
+                    slideTo(i) {
+                        const s = this.step();
+                        const max = this.maxIndex();
+                        this.index = i > max ? 0 : (i < 0 ? max : i);
+                        this.$refs.track.style.transform = `translateX(-${this.index * s}px)`;
+                    },
+                    play() {
+                        if (this.timer) return;
+                        this.timer = setInterval(() => {
+                            if (!this.startX) this.slideTo(this.index + 1);
+                        }, 4000);
+                    },
+                    pause() {
+                        clearInterval(this.timer);
+                        this.timer = null;
+                    },
+                    restart() {
+                        this.pause();
+                        this.play();
+                    },
+                    prev() {
+                        this.slideTo(this.index - 1);
+                        this.restart();
+                    },
+                    next() {
+                        this.slideTo(this.index + 1);
+                        this.restart();
+                    },
+                    touchStart(e) {
+                        this.startX = e.changedTouches[0].clientX;
+                    },
+                    touchEnd(e) {
+                        if (this.startX === null) return;
+                        const dx = e.changedTouches[0].clientX - this.startX;
+                        this.startX = null;
+                        if (Math.abs(dx) >= 40) this.slideTo(this.index + (dx < 0 ? 1 : -1));
+                        this.restart();
+                    },
+                    init() {
+                        this.play();
+                        window.addEventListener('resize', () => this.slideTo(this.index));
+                    }
+                }" @mouseenter="pause()"
+                    @mouseleave="play()">
+
+                    <!-- Track Container -->
+                    <div class="px-1 py-4 -my-4 overflow-hidden rounded-2xl" @touchstart.passive="touchStart($event)"
+                        @touchend.passive="touchEnd($event)">
+                        <div x-ref="track"
+                            class="flex gap-6 transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) will-change-transform">
                             @foreach ($coaches as $coach)
-                                <div class="shrink-0 w-[45%] sm:w-[48%] lg:w-[31.5%]">
-                                    <div class="h-full bg-surface-container-lowest rounded-2xl overflow-hidden shadow-md group">
-                                        <div class="relative overflow-hidden aspect-[3/4]">
+                                <div class="shrink-0 w-[85%] sm:w-[48%] lg:w-[31.5%]">
+                                    <div
+                                        class="flex flex-col h-full overflow-hidden transition-all duration-300 transform border shadow-md bg-surface-container-lowest rounded-2xl hover:shadow-2xl hover:-translate-y-1 group border-outline-variant/30">
+                                        <div class="relative overflow-hidden aspect-[4/5] bg-surface-container">
                                             @if ($coach->photo_url)
                                                 <img alt="{{ $coach->name }}"
-                                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                     src="{{ $coach->photo_url }}">
+                                                    class="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-108"
+                                                    src="{{ $coach->photo_url }}">
                                             @else
-                                                <div class="w-full h-full bg-surface-container flex items-center justify-center">
-                                                    <span class="material-symbols-outlined text-on-surface-variant text-[64px]">person</span>
+                                                <div
+                                                    class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant/40">
+                                                    <span class="material-symbols-outlined text-[72px]">person</span>
                                                 </div>
                                             @endif
+                                            <div
+                                                class="absolute inset-0 transition-opacity bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90">
+                                            </div>
+
+                                            <!-- Badge overlay -->
+                                            <div class="absolute text-white bottom-4 left-4 right-4">
+                                                <span
+                                                    class="inline-block px-3 py-1 mb-1 font-semibold text-white rounded-full bg-orange/90 backdrop-blur-md font-body text-label-sm">
+                                                    {{ $coach->position }}
+                                                </span>
+                                                <h3
+                                                    class="font-bold leading-tight text-white font-headline text-headline-sm drop-shadow-sm">
+                                                    {{ $coach->name }}</h3>
+                                            </div>
                                         </div>
-                                        <div class="p-4 sm:p-6">
-                                            <h3 class="font-headline text-headline-sm text-primary font-bold">{{ $coach->name }}</h3>
-                                            <p class="text-orange font-body text-label-md mb-2">{{ $coach->position }}</p>
-                                            <p class="text-on-surface-variant text-body-sm">{{ $coach->description }}</p>
+                                        <div
+                                            class="flex flex-col justify-between flex-grow p-5 bg-surface-container-lowest">
+                                            <p
+                                                class="leading-relaxed text-on-surface-variant text-body-sm line-clamp-3">
+                                                {{ $coach->description }}</p>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
-                            </div>
                         </div>
-                        <button type="button" @click="prev()" aria-label="Coach sebelumnya"
-                            class="hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-primary text-on-primary items-center justify-center shadow-lg hover:bg-primary-container transition-colors">
-                            <span class="material-symbols-outlined">chevron_left</span>
-                        </button>
-                        <button type="button" @click="next()" aria-label="Coach berikutnya"
-                            class="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-primary text-on-primary items-center justify-center shadow-lg hover:bg-primary-container transition-colors">
-                            <span class="material-symbols-outlined">chevron_right</span>
-                        </button>
                     </div>
-                @else
-                    <p class="col-span-full text-center text-on-surface-variant">Belum ada coach.</p>
-                @endif
-            </div>
-        </section>
 
-        <!-- 8. Galeri -->
-        <section class="py-16 md:py-24 bg-surface-container-lowest" id="galeri">
-            <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
-                <div class="text-center mb-8 md:mb-12">
-                    <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-primary font-bold">Galeri Kegiatan</h2>
-                    <p class="text-on-surface-variant font-body text-body-lg mt-4 max-w-2xl mx-auto">Momen-momen seru dan pencapaian membanggakan siswa-siswi ASC.</p>
+                    <!-- Navigation Controls -->
+                    <button type="button" @click="prev()" aria-label="Coach sebelumnya"
+                        class="absolute left-0 z-20 flex items-center justify-center w-12 h-12 transition-all duration-300 -translate-x-1/2 -translate-y-1/2 border rounded-full shadow-xl opacity-0 top-1/2 bg-surface/90 text-primary backdrop-blur-md border-outline-variant/40 group-hover/slider:opacity-100 group-hover/slider:translate-x-2 hover:bg-primary hover:text-on-primary">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <button type="button" @click="next()" aria-label="Coach berikutnya"
+                        class="absolute right-0 z-20 flex items-center justify-center w-12 h-12 transition-all duration-300 translate-x-1/2 -translate-y-1/2 border rounded-full shadow-xl opacity-0 top-1/2 bg-surface/90 text-primary backdrop-blur-md border-outline-variant/40 group-hover/slider:opacity-100 group-hover/slider:-translate-x-2 hover:bg-primary hover:text-on-primary">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+
+                    <!-- Dynamic Indicators -->
+                    <div class="flex items-center justify-center gap-2 mt-8">
+                        <template x-for="i in (maxIndex() + 1)" :key="i">
+                            <button @click="slideTo(i - 1); restart();"
+                                class="h-2.5 rounded-full transition-all duration-300"
+                                :class="index === (i - 1) ? 'w-8 bg-orange' :
+                                    'w-2.5 bg-outline-variant/40 hover:bg-outline-variant'"
+                                :aria-label="'Go to slide ' + i">
+                            </button>
+                        </template>
+                    </div>
                 </div>
-                @if ($gallery->isNotEmpty())
-                    <!-- Mobile: carousel geser -->
-                    <div class="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            @else
+                <p class="py-8 text-center text-on-surface-variant">Belum ada coach.</p>
+            @endif
+        </div>
+    </section>
+
+    <!-- 8. Galeri -->
+    <section class="py-20 overflow-hidden md:py-28 bg-surface-container-lowest" id="galeri">
+
+        <div class="mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop">
+
+            <!-- Header -->
+            <div class="flex flex-col gap-6 mb-10 md:flex-row md:items-end md:justify-between">
+
+                <div>
+
+                    <span
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-4 text-sm font-semibold rounded-full bg-orange/10 text-orange">
+
+                        <span class="text-lg material-symbols-outlined">
+                            photo_library
+                        </span>
+
+                        Galeri ASC
+
+                    </span>
+
+                    <h2 class="font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">
+
+                        Galeri Kegiatan
+
+                    </h2>
+
+                    <p class="max-w-2xl mt-4 text-on-surface-variant font-body text-body-lg">
+
+                        Lihat berbagai momen latihan,
+                        kebersamaan, dan pencapaian siswa
+                        Antasena Swimming Club.
+
+                    </p>
+
+                </div>
+
+                <a href="{{ url('/galeri') }}"
+                    class="inline-flex items-center gap-2 font-semibold transition-colors text-primary hover:text-orange">
+
+                    Lihat Semua
+
+                    <span class="material-symbols-outlined">
+                        arrow_forward
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            @if ($gallery->isNotEmpty())
+
+                <!-- Gallery Carousel -->
+
+                <div x-data="{
+                    current: 0,
+                    total: {{ $gallery->count() }},
+                    timer: null,
+                    startX: 0,
+                    endX: 0,
+
+                    next() {
+                        this.current =
+                            this.current >= this.total - 1 ?
+                            0 :
+                            this.current + 1;
+                    },
+
+                    prev() {
+                        this.current =
+                            this.current <= 0 ?
+                            this.total - 1 :
+                            this.current - 1;
+                    },
+
+                    goTo(index) {
+                        this.current = index;
+                    },
+
+                    startAutoPlay() {
+                        this.stopAutoPlay();
+
+                        this.timer = setInterval(() => {
+                            this.next();
+                        }, 5000);
+                    },
+
+                    stopAutoPlay() {
+                        if (this.timer) {
+                            clearInterval(this.timer);
+                            this.timer = null;
+                        }
+                    },
+
+                    touchStart(e) {
+                        this.startX = e.changedTouches[0].screenX;
+                    },
+
+                    touchEnd(e) {
+                        this.endX = e.changedTouches[0].screenX;
+
+                        if (this.startX - this.endX > 50) {
+                            this.next();
+                        }
+
+                        if (this.endX - this.startX > 50) {
+                            this.prev();
+                        }
+
+                        this.startAutoPlay();
+                    },
+
+                    init() {
+                        this.startAutoPlay();
+                    }
+                }" x-init="init()" @mouseenter="stopAutoPlay()"
+                    @mouseleave="startAutoPlay()" @touchstart="touchStart($event)" @touchend="touchEnd($event)"
+                    class="relative">
+
+                    <!-- Slides -->
+
+                    <div class="overflow-hidden rounded-3xl">
+
+                        <div class="flex transition-transform
+                               duration-700
+                               ease-[cubic-bezier(.22,1,.36,1)]"
+                            :style="`transform: translateX(-${current * 100}%)`">
+
+                            @foreach ($gallery as $image)
+                                <div class="w-full shrink-0">
+
+                                    <a href="{{ url('/galeri') }}"
+                                        class="relative block
+                                           aspect-[16/8]
+                                           md:aspect-[16/7]
+                                           overflow-hidden
+                                           group">
+
+                                        <img src="{{ $image->image_url }}" alt="{{ $image->title ?? 'Galeri ASC' }}"
+                                            loading="lazy"
+                                            class="absolute inset-0 object-cover w-full h-full transition-transform duration-1000 group-hover:scale-105">
+
+                                        <!-- Overlay -->
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
+                                        </div>
+
+                                        <!-- Zoom icon -->
+                                        <div class="absolute inset-0 flex items-center justify-center">
+
+                                            <div
+                                                class="flex items-center justify-center w-16 h-16 transition-all duration-500 scale-75 border rounded-full opacity-0 bg-white/20 backdrop-blur-md border-white/30 group-hover:opacity-100 group-hover:scale-100">
+
+                                                <span class="text-3xl text-white material-symbols-outlined">
+                                                    zoom_in
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                        <!-- Category -->
+                                        @if ($image->category)
+                                            <span
+                                                class="absolute px-4 py-2 text-xs font-bold text-white rounded-full shadow-lg top-5 left-5 bg-orange">
+                                                {{ $image->category }}
+                                            </span>
+                                        @endif
+
+                                        <!-- Content -->
+                                        <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+
+                                            @if ($image->title)
+                                                <h3 class="text-xl font-bold text-white font-headline md:text-3xl">
+                                                    {{ $image->title }}
+                                                </h3>
+                                            @endif
+
+                                            @if ($image->description)
+                                                <p
+                                                    class="max-w-2xl mt-2 text-sm text-white/80 md:text-base line-clamp-2">
+                                                    {{ $image->description }}
+                                                </p>
+                                            @endif
+
+                                        </div>
+
+                                    </a>
+
+                                </div>
+                            @endforeach
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Previous -->
+
+                    <button type="button" @click="prev()" aria-label="Galeri sebelumnya"
+                        class="absolute z-10 flex items-center justify-center transition-all duration-300 -translate-y-1/2 rounded-full shadow-xl left-3 md:left-5 top-1/2 w-11 h-11 md:w-14 md:h-14 bg-white/90 backdrop-blur-md text-primary hover:bg-primary hover:text-white hover:scale-110">
+
+                        <span class="material-symbols-outlined">
+                            chevron_left
+                        </span>
+
+                    </button>
+
+
+                    <!-- Next -->
+
+                    <button type="button" @click="next()" aria-label="Galeri berikutnya"
+                        class="absolute z-10 flex items-center justify-center transition-all duration-300 -translate-y-1/2 rounded-full shadow-xl right-3 md:right-5 top-1/2 w-11 h-11 md:w-14 md:h-14 bg-white/90 backdrop-blur-md text-primary hover:bg-primary hover:text-white hover:scale-110">
+
+                        <span class="material-symbols-outlined">
+                            chevron_right
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <!-- Thumbnail Navigation -->
+
+                <div class="mt-5">
+
+                    <div
+                        class="flex gap-3 overflow-x-auto
+                           pb-2
+                           [scrollbar-width:none]
+                           [&::-webkit-scrollbar]:hidden">
+
                         @foreach ($gallery as $image)
-                            <a href="{{ url('/galeri') }}"
-                               class="snap-start shrink-0 w-[86%] block bg-surface-container-lowest rounded-2xl overflow-hidden shadow-md group">
-                                <div class="relative aspect-[4/3] overflow-hidden">
-                                    <img alt="{{ $image->title ?? 'Galeri ASC' }}" loading="lazy"
-                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                         src="{{ $image->image_url }}">
-                                    @if ($image->category)
-                                        <span class="absolute top-3 left-3 bg-orange text-white text-xs font-bold px-3 py-1 rounded-full shadow">{{ $image->category }}</span>
-                                    @endif
+                            <button type="button" @click="goTo({{ $loop->index }})"
+                                class="relative w-24 h-16 overflow-hidden transition-all duration-300 border-2 shrink-0 md:w-32 md:h-20 rounded-xl"
+                                :class="current === {{ $loop->index }} ?
+                                    'border-orange scale-105 shadow-lg' :
+                                    'border-transparent opacity-60 hover:opacity-100'">
+
+                                <img src="{{ $image->image_url }}" alt="{{ $image->title ?? 'Thumbnail galeri' }}"
+                                    class="object-cover w-full h-full">
+
+                                <div class="absolute inset-0 bg-black/20"
+                                    :class="current === {{ $loop->index }} ?
+                                        'bg-transparent' :
+                                        'bg-black/30'">
                                 </div>
-                                <div class="p-4">
-                                    @if ($image->title)
-                                        <h3 class="font-headline text-headline-sm text-primary font-semibold">{{ $image->title }}</h3>
-                                    @endif
-                                    @if ($image->description)
-                                        <p class="text-on-surface-variant text-body-sm mt-1 line-clamp-2">{{ $image->description }}</p>
-                                    @endif
-                                </div>
-                            </a>
+
+                            </button>
                         @endforeach
-                    </div>
-                    <p class="text-center text-on-surface-variant text-body-sm mt-3 md:hidden">Geser untuk melihat foto lainnya</p>
 
-                    <!-- Desktop: mosaik -->
-                    <div class="hidden md:grid grid-cols-2 md:grid-cols-4 auto-rows-[120px] sm:auto-rows-[150px] md:auto-rows-[220px] gap-3 md:gap-4">
-                        @foreach ($gallery as $image)
-                            <a href="{{ url('/galeri') }}"
-                               class="group relative overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-shadow {{ $loop->index === 0 ? 'col-span-2 row-span-2' : ($loop->index % 4 === 1 ? 'col-span-2' : '') }}">
-                                <img alt="{{ $image->title ?? 'Galeri ASC' }}" loading="lazy"
-                                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                     src="{{ $image->image_url }}">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                                <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300 flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-white text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">zoom_in</span>
-                                </div>
-                                @if ($image->category)
-                                    <span class="absolute top-2 left-2 md:top-3 md:left-3 bg-orange text-white text-[10px] md:text-xs font-bold px-2 md:px-3 py-1 rounded-full shadow">{{ $image->category }}</span>
-                                @endif
-                                <div class="absolute inset-x-0 bottom-0 p-2 md:p-4">
-                                    @if ($image->title)
-                                        <h3 class="text-white font-headline text-xs sm:text-sm md:text-base font-semibold leading-tight">{{ $image->title }}</h3>
-                                    @endif
-                                    @if ($image->description)
-                                        <p class="text-white/80 text-[10px] sm:text-xs md:text-sm mt-0.5 md:mt-1 line-clamp-2">{{ $image->description }}</p>
-                                    @endif
-                                </div>
-                            </a>
-                        @endforeach
                     </div>
-                    <div class="text-center mt-8">
-                        <a href="{{ url('/galeri') }}"
-                           class="inline-flex items-center gap-2 bg-primary text-on-primary font-body text-label-md px-6 py-3 rounded-lg hover:bg-primary-container transition-colors shadow-lg shadow-primary/20">
-                            Lihat Semua Galeri
-                            <span class="material-symbols-outlined">arrow_forward</span>
-                        </a>
-                    </div>
-                @else
-                    <p class="text-center text-on-surface-variant">Belum ada foto galeri.</p>
-                @endif
-            </div>
-        </section>
 
-        <!-- 9. FAQ -->
-        <section class="py-16 md:py-24 bg-surface-container-lowest" id="faq">
-            <div class="max-w-3xl mx-auto px-margin_mobile md:px-margin_desktop">
-                <div class="text-center mb-8 md:mb-12">
-                    <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-primary font-bold">Pertanyaan Umum (FAQ)</h2>
-                    <p class="text-on-surface-variant font-body text-body-lg mt-4">Jawaban atas beberapa pertanyaan yang sering diajukan.</p>
                 </div>
-                <div class="space-y-4">
-                    <!-- Item 1 -->
-                    <div class="border border-outline-variant/50 rounded-xl overflow-hidden" x-data="{ expanded: false }">
-                        <button @click="expanded = !expanded" class="flex justify-between items-center w-full p-4 bg-surface text-left font-headline text-headline-sm text-primary hover:bg-surface-container-low transition-colors">
-                            <span>Bagaimana cara mendaftar di ASC?</span>
-                            <span class="material-symbols-outlined transition-transform duration-300" x-bind:class="expanded ? 'rotate-180' : ''">expand_more</span>
-                        </button>
-                        <div class="p-4 bg-surface border-t border-outline-variant/30 text-on-surface-variant" x-cloak x-show="expanded">
-                            Pendaftaran dapat dilakukan secara online dengan mengklik tombol "Daftar" di website ini, atau Anda bisa datang langsung ke meja pendaftaran kami di Kolam Renang Universitas Lampung pada jam operasional.
-                        </div>
-                    </div>
-                    <!-- Item 2 -->
-                    <div class="border border-outline-variant/50 rounded-xl overflow-hidden" x-data="{ expanded: false }">
-                        <button @click="expanded = !expanded" class="flex justify-between items-center w-full p-4 bg-surface text-left font-headline text-headline-sm text-primary hover:bg-surface-container-low transition-colors">
-                            <span>Mulai usia berapa anak bisa ikut kelas renang?</span>
-                            <span class="material-symbols-outlined transition-transform duration-300" x-bind:class="expanded ? 'rotate-180' : ''">expand_more</span>
-                        </button>
-                        <div class="p-4 bg-surface border-t border-outline-variant/30 text-on-surface-variant" x-cloak x-show="expanded">
-                            Kami menerima siswa mulai dari usia 4 tahun untuk program reguler/mini reguler anak-anak. Untuk usia di bawah 4 tahun, disarankan mengikuti program private dengan pendampingan khusus.
-                        </div>
-                    </div>
-                    <!-- Item 3 -->
-                    <div class="border border-outline-variant/50 rounded-xl overflow-hidden" x-data="{ expanded: false }">
-                        <button @click="expanded = !expanded" class="flex justify-between items-center w-full p-4 bg-surface text-left font-headline text-headline-sm text-primary hover:bg-surface-container-low transition-colors">
-                            <span>Bagaimana sistem pembayaran biayanya?</span>
-                            <span class="material-symbols-outlined transition-transform duration-300" x-bind:class="expanded ? 'rotate-180' : ''">expand_more</span>
-                        </button>
-                        <div class="p-4 bg-surface border-t border-outline-variant/30 text-on-surface-variant" x-cloak x-show="expanded">
-                            Pembayaran dapat dilakukan melalui transfer bank, e-wallet (GoPay, OVO, Dana), atau secara tunai di lokasi pendaftaran. Pembayaran dilakukan di awal sebelum sesi pertama dimulai.
-                        </div>
-                    </div>
-                    <!-- Item 4 -->
-                    <div class="border border-outline-variant/50 rounded-xl overflow-hidden" x-data="{ expanded: false }">
-                        <button @click="expanded = !expanded" class="flex justify-between items-center w-full p-4 bg-surface text-left font-headline text-headline-sm text-primary hover:bg-surface-container-low transition-colors">
-                            <span>Apakah biaya sudah termasuk tiket masuk kolam?</span>
-                            <span class="material-symbols-outlined transition-transform duration-300" x-bind:class="expanded ? 'rotate-180' : ''">expand_more</span>
-                        </button>
-                        <div class="p-4 bg-surface border-t border-outline-variant/30 text-on-surface-variant" x-cloak x-show="expanded">
-                            Ya, seluruh biaya program kelas (Private, Reguler, dll) yang tercantum sudah termasuk biaya tiket masuk kolam renang untuk siswa selama sesi latihan berlangsung. Pendamping/orang tua yang masuk area kolam namun tidak berenang mungkin dikenakan tarif masuk reguler kolam renang (bukan dari pihak ASC).
-                        </div>
+
+
+                <!-- Dots -->
+
+                <div class="flex justify-center gap-2 mt-5">
+
+                    @foreach ($gallery as $image)
+                        <button type="button" @click="goTo({{ $loop->index }})"
+                            class="h-2.5 rounded-full
+                               transition-all duration-300"
+                            :class="current === {{ $loop->index }} ?
+                                'w-8 bg-orange' :
+                                'w-2.5 bg-primary/20 hover:bg-primary/40'"
+                            aria-label="Galeri {{ $loop->iteration }}"></button>
+                    @endforeach
+
+                </div>
+            @else
+                <div class="py-16 text-center">
+
+                    <span class="text-6xl material-symbols-outlined text-on-surface-variant">
+                        photo_library
+                    </span>
+
+                    <p class="mt-4 text-on-surface-variant">
+                        Belum ada foto galeri.
+                    </p>
+
+                </div>
+
+            @endif
+
+        </div>
+
+    </section>
+
+    <!-- 9. FAQ -->
+    <section class="py-16 md:py-24 bg-surface-container-lowest" id="faq">
+        <div class="max-w-3xl mx-auto px-margin_mobile md:px-margin_desktop">
+            <div class="mb-8 text-center md:mb-12">
+                <h2 class="font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">Pertanyaan
+                    Umum (FAQ)</h2>
+                <p class="mt-4 text-on-surface-variant font-body text-body-lg">Jawaban atas beberapa pertanyaan yang
+                    sering diajukan.</p>
+            </div>
+            <div class="space-y-4">
+                <!-- Item 1 -->
+                <div class="overflow-hidden border border-outline-variant/50 rounded-xl" x-data="{ expanded: false }">
+                    <button @click="expanded = !expanded"
+                        class="flex items-center justify-between w-full p-4 text-left transition-colors bg-surface font-headline text-headline-sm text-primary hover:bg-surface-container-low">
+                        <span>Bagaimana cara mendaftar di ASC?</span>
+                        <span class="transition-transform duration-300 material-symbols-outlined"
+                            x-bind:class="expanded ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+                    <div class="p-4 border-t bg-surface border-outline-variant/30 text-on-surface-variant" x-cloak
+                        x-show="expanded">
+                        Pendaftaran dapat dilakukan secara online dengan mengklik tombol "Daftar" di website ini, atau
+                        Anda bisa datang langsung ke meja pendaftaran kami di Kolam Renang Universitas Lampung pada jam
+                        operasional.
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- 11. Call to Action -->
-        <section class="py-16 md:py-24 bg-surface">
-            <div class="max-w-container_max_width mx-auto px-margin_mobile md:px-margin_desktop">
-                <div class="bg-primary rounded-3xl p-10 md:p-16 text-center text-on-primary shadow-2xl relative overflow-hidden">
-                    <!-- Decorative elements -->
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-primary-container rounded-full mix-blend-multiply filter blur-3xl opacity-70 transform translate-x-1/2 -translate-y-1/2"></div>
-                    <div class="absolute bottom-0 left-0 w-64 h-64 bg-orange/30 rounded-full mix-blend-overlay filter blur-3xl opacity-50 transform -translate-x-1/2 translate-y-1/2"></div>
-                    <div class="relative z-10">
-                        <h2 class="font-headline text-headline-lg-mobile md:text-headline-xl font-bold mb-4">Siap Memulai Perjalanan Renang Anda?</h2>
-                        <p class="font-body text-body-lg max-w-2xl mx-auto mb-8 text-on-primary/90">Bergabunglah dengan ratusan siswa lainnya yang telah merasakan manfaat belajar renang bersama Antasena Swimming Club. Daftar sekarang dan jadilah perenang tangguh!</p>
-                        <a href="{{ route('register') }}"
-                            class="inline-block bg-orange text-white px-8 py-4 rounded-xl font-body text-label-md hover:bg-orange-light transition-colors shadow-lg shadow-orange/40 hover:scale-105 transform duration-200">
-                            Daftar Sekarang Juga
-                        </a>
+                <!-- Item 2 -->
+                <div class="overflow-hidden border border-outline-variant/50 rounded-xl" x-data="{ expanded: false }">
+                    <button @click="expanded = !expanded"
+                        class="flex items-center justify-between w-full p-4 text-left transition-colors bg-surface font-headline text-headline-sm text-primary hover:bg-surface-container-low">
+                        <span>Mulai usia berapa anak bisa ikut kelas renang?</span>
+                        <span class="transition-transform duration-300 material-symbols-outlined"
+                            x-bind:class="expanded ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+                    <div class="p-4 border-t bg-surface border-outline-variant/30 text-on-surface-variant" x-cloak
+                        x-show="expanded">
+                        Kami menerima siswa mulai dari usia 4 tahun untuk program reguler/mini reguler anak-anak. Untuk
+                        usia di bawah 4 tahun, disarankan mengikuti program private dengan pendampingan khusus.
+                    </div>
+                </div>
+                <!-- Item 3 -->
+                <div class="overflow-hidden border border-outline-variant/50 rounded-xl" x-data="{ expanded: false }">
+                    <button @click="expanded = !expanded"
+                        class="flex items-center justify-between w-full p-4 text-left transition-colors bg-surface font-headline text-headline-sm text-primary hover:bg-surface-container-low">
+                        <span>Bagaimana sistem pembayaran biayanya?</span>
+                        <span class="transition-transform duration-300 material-symbols-outlined"
+                            x-bind:class="expanded ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+                    <div class="p-4 border-t bg-surface border-outline-variant/30 text-on-surface-variant" x-cloak
+                        x-show="expanded">
+                        Pembayaran dapat dilakukan melalui transfer bank, e-wallet (GoPay, OVO, Dana), atau secara tunai
+                        di lokasi pendaftaran. Pembayaran dilakukan di awal sebelum sesi pertama dimulai.
+                    </div>
+                </div>
+                <!-- Item 4 -->
+                <div class="overflow-hidden border border-outline-variant/50 rounded-xl" x-data="{ expanded: false }">
+                    <button @click="expanded = !expanded"
+                        class="flex items-center justify-between w-full p-4 text-left transition-colors bg-surface font-headline text-headline-sm text-primary hover:bg-surface-container-low">
+                        <span>Apakah biaya sudah termasuk tiket masuk kolam?</span>
+                        <span class="transition-transform duration-300 material-symbols-outlined"
+                            x-bind:class="expanded ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+                    <div class="p-4 border-t bg-surface border-outline-variant/30 text-on-surface-variant" x-cloak
+                        x-show="expanded">
+                        Ya, seluruh biaya program kelas (Private, Reguler, dll) yang tercantum sudah termasuk biaya
+                        tiket masuk kolam renang untuk siswa selama sesi latihan berlangsung. Pendamping/orang tua yang
+                        masuk area kolam namun tidak berenang mungkin dikenakan tarif masuk reguler kolam renang (bukan
+                        dari pihak ASC).
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- 12. Footer -->
-        @include('partials.footer')
-    </body>
+    <!-- 11. Call to Action -->
+    <section class="py-16 md:py-24 bg-surface">
+        <div class="mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop">
+            <div
+                class="relative p-10 overflow-hidden text-center shadow-2xl bg-primary rounded-3xl md:p-16 text-on-primary">
+                <!-- Decorative elements -->
+                <div
+                    class="absolute top-0 right-0 w-64 h-64 transform translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-container mix-blend-multiply filter blur-3xl opacity-70">
+                </div>
+                <div
+                    class="absolute bottom-0 left-0 w-64 h-64 transform -translate-x-1/2 translate-y-1/2 rounded-full opacity-50 bg-orange/30 mix-blend-overlay filter blur-3xl">
+                </div>
+                <div class="relative z-10">
+                    <h2 class="mb-4 font-bold font-headline text-headline-lg-mobile md:text-headline-xl">Siap Memulai
+                        Perjalanan Renang Anda?</h2>
+                    <p class="max-w-2xl mx-auto mb-8 font-body text-body-lg text-on-primary/90">Bergabunglah dengan
+                        ratusan siswa lainnya yang telah merasakan manfaat belajar renang bersama Antasena Swimming
+                        Club. Daftar sekarang dan jadilah perenang tangguh!</p>
+                    <a href="{{ route('register') }}"
+                        class="inline-block px-8 py-4 text-white transition-colors duration-200 transform shadow-lg bg-orange rounded-xl font-body text-label-md hover:bg-orange-light shadow-orange/40 hover:scale-105">
+                        Daftar Sekarang Juga
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 12. Footer -->
+    @include('partials.footer')
+</body>
+
 </html>
