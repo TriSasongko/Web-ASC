@@ -23,11 +23,5 @@
                 @include('profile.partials.update-password-form')
             </div>
         </div>
-
-        <div class="p-4 sm:p-8 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)]">
-            <div class="max-w-xl">
-                @include('profile.partials.delete-user-form')
-            </div>
-        </div>
     </div>
 </x-sidebar-layout>
