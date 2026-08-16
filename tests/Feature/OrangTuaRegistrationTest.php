@@ -93,8 +93,7 @@ class OrangTuaRegistrationTest extends TestCase
             ->get(route('orangtua.registrations.index'))
             ->assertOk()
             ->assertSee('Konfirmasi Pendaftaran & Pembayaran', false)
-            ->assertSee('Konfirmasi ke Admin')
-            ->assertSee('Selesaikan Pembayaran')
+            ->assertSee('Menunggu Verifikasi')
             ->assertSee('Konfirmasi via WhatsApp')
             ->assertSee('Anak Baru');
     }

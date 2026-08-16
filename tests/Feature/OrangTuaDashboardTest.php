@@ -165,10 +165,9 @@ class OrangTuaDashboardTest extends TestCase
             ->get(route('orangtua.dashboard'))
             ->assertOk()
             ->assertSee('Konfirmasi Pendaftaran & Pembayaran', false)
-            ->assertSee('Konfirmasi ke Admin')
-            ->assertSee('Selesaikan Pembayaran')
+            ->assertSee('Menunggu Verifikasi')
             ->assertSee('Konfirmasi via WhatsApp')
-            ->assertSee('Biaya Paket')
+            ->assertSee('Biaya')
             ->assertSee('Rp 350.000');
     }
 
@@ -224,7 +223,7 @@ class OrangTuaDashboardTest extends TestCase
             ->get(route('orangtua.dashboard'))
             ->assertOk()
             ->assertSee('Konfirmasi Pendaftaran & Pembayaran', false)
-            ->assertSee('Konfirmasi ke Admin')
+            ->assertSee('Menunggu Verifikasi')
             ->assertSee('Anak Baru');
     }
 

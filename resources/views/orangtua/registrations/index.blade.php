@@ -157,5 +157,5 @@
         </div>
     </div>
 
-    @include('orangtua._confirmation_popup', ['reg' => $pendingRegistration])
+    @include('orangtua._confirmation_popup', ['regs' => $pendingRegistrations])
 </x-sidebar-layout>
