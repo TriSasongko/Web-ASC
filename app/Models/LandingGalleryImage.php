@@ -29,4 +29,9 @@ class LandingGalleryImage extends Model
             default => 'aspect-square',
         };
     }
+
+    public function getUrlAttribute(): ?string
+    {
+        return LandingSetting::resolveUrl($this->image_url);
+    }
 }

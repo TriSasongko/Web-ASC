@@ -8,7 +8,7 @@
         <p class="font-body-sm text-body-sm text-outline mt-1">Judul, deskripsi, dan gambar bagian paling atas halaman depan.</p>
     </div>
 
-    <form action="{{ route('admin.settings.hero') }}" method="POST" class="space-y-6">
+    <form action="{{ route('admin.settings.hero') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
         @method('PUT')
 
@@ -37,24 +37,36 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <x-input-label for="hero_image" value="URL Gambar Latar (Background)" />
-                <x-text-input id="hero_image" name="hero_image" class="mt-1 block w-full"
-                    value="{{ old('hero_image', $s['hero_image'] ?? '') }}" placeholder="https://..." />
-                <x-input-error :messages="$errors->get('hero_image')" class="mt-2" />
+                <x-input-label for="hero_image" value="Gambar Latar (Background)" />
                 @if (! empty($s['hero_image'] ?? ''))
                     <img src="{{ $s['hero_image'] }}" alt="Pratinjau latar hero"
-                        class="mt-3 w-40 h-24 object-cover rounded-lg border border-outline-variant/40">
+                        class="mt-2 w-40 h-24 object-cover rounded-lg border border-outline-variant/40">
+                @endif
+                <input type="file" id="hero_image" name="hero_image" accept="image/*"
+                    class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                <x-input-error :messages="$errors->get('hero_image')" class="mt-2" />
+                @if (! empty($s['hero_image'] ?? ''))
+                    <label class="inline-flex items-center gap-2 mt-2 font-label-md text-label-md text-on-surface-variant">
+                        <input type="checkbox" name="remove_hero_image" value="1" class="rounded border-outline-variant text-error focus:ring-error/40">
+                        Hapus gambar ini
+                    </label>
                 @endif
             </div>
 
             <div>
-                <x-input-label for="hero_side_image" value="URL Foto Samping" />
-                <x-text-input id="hero_side_image" name="hero_side_image" class="mt-1 block w-full"
-                    value="{{ old('hero_side_image', $s['hero_side_image'] ?? '') }}" placeholder="https://..." />
-                <x-input-error :messages="$errors->get('hero_side_image')" class="mt-2" />
+                <x-input-label for="hero_side_image" value="Foto Samping" />
                 @if (! empty($s['hero_side_image'] ?? ''))
                     <img src="{{ $s['hero_side_image'] }}" alt="Pratinjau foto samping"
-                        class="mt-3 w-40 h-24 object-cover rounded-lg border border-outline-variant/40">
+                        class="mt-2 w-40 h-24 object-cover rounded-lg border border-outline-variant/40">
+                @endif
+                <input type="file" id="hero_side_image" name="hero_side_image" accept="image/*"
+                    class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                <x-input-error :messages="$errors->get('hero_side_image')" class="mt-2" />
+                @if (! empty($s['hero_side_image'] ?? ''))
+                    <label class="inline-flex items-center gap-2 mt-2 font-label-md text-label-md text-on-surface-variant">
+                        <input type="checkbox" name="remove_hero_side_image" value="1" class="rounded border-outline-variant text-error focus:ring-error/40">
+                        Hapus gambar ini
+                    </label>
                 @endif
             </div>
         </div>

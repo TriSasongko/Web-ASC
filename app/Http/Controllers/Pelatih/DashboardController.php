@@ -38,7 +38,7 @@ class DashboardController extends Controller
             ->latest('id')
             ->get();
 
-        $todayDay = ClassSchedule::DAYS[now()->dayOfWeek - 1];
+        $todayDay = ClassSchedule::DAYS[(now()->dayOfWeek + 6) % 7];
         $todaySchedules = ClassSchedule::with(['schoolClass.program', 'students'])
             ->where('day', $todayDay)
             ->whereHas('coaches', fn ($q) => $q->where('users.id', $userId))

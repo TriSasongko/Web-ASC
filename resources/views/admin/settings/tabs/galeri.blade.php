@@ -49,14 +49,20 @@
         </div>
 
         <div class="p-6">
-            <form x-show="showGalleryForm" x-cloak action="{{ route('admin.settings.gallery.store') }}" method="POST"
+            <form x-show="showGalleryForm" x-cloak x-data="{ aspect: 'square' }"
+                action="{{ route('admin.settings.gallery.store') }}" method="POST"
+                enctype="multipart/form-data"
                 class="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-5 space-y-4">
                 @csrf
                 <h4 class="font-headline text-headline-sm text-primary font-semibold">Tambah Foto Baru</h4>
                 <div>
-                    <x-input-label for="gallery_image_url" value="URL Foto" />
+                    <x-input-label for="gallery_photo" value="Foto" />
+                    <input type="file" id="gallery_photo" name="photo" accept="image/*" x-show="aspect !== 'video'"
+                        class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                    <x-input-error :messages="$errors->get('photo')" class="mt-2" />
+                    <x-input-label for="gallery_image_url" value="URL Video" />
                     <x-text-input id="gallery_image_url" name="image_url" class="mt-1 block w-full"
-                        value="{{ old('image_url') }}" placeholder="https://..." required />
+                        value="{{ old('image_url') }}" placeholder="https://..." x-show="aspect === 'video'" />
                     <x-input-error :messages="$errors->get('image_url')" class="mt-2" />
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -87,7 +93,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <x-input-label for="gallery_aspect" value="Rasio Foto" />
-                        <select id="gallery_aspect" name="aspect" required
+                        <select id="gallery_aspect" name="aspect" required x-model="aspect"
                             class="mt-1 block w-full rounded-lg border border-outline-variant bg-background px-4 py-3 text-body-md text-on-background focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
                             @foreach ($aspects as $value => $label)
                                 <option value="{{ $value }}" @selected(old('aspect', 'square') === $value)>{{ $label }}</option>
@@ -107,9 +113,9 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @forelse ($gallery as $image)
-                    <div class="border border-outline-variant/30 rounded-xl overflow-hidden" x-data="{ editing: false }">
+                    <div class="border border-outline-variant/30 rounded-xl overflow-hidden" x-data="{ editing: false, aspect: '{{ $image->aspect }}' }">
                         <div class="flex items-start gap-4 p-4">
-                            <img src="{{ $image->image_url }}" alt="{{ $image->title ?? 'Foto galeri' }}"
+                            <img src="{{ $image->url }}" alt="{{ $image->title ?? 'Foto galeri' }}"
                                 class="w-20 h-20 rounded-lg object-cover shrink-0">
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
@@ -137,13 +143,22 @@
                         </div>
 
                         <form x-show="editing" x-cloak action="{{ route('admin.settings.gallery.update', $image) }}" method="POST"
+                            enctype="multipart/form-data"
                             class="border-t border-outline-variant/30 bg-surface/50 p-5 space-y-4">
                             @csrf @method('PUT')
                             <h5 class="font-headline text-headline-sm text-primary font-semibold">Edit Foto</h5>
                             <div>
-                                <x-input-label for="gallery_image_url_{{ $image->id }}" value="URL Foto" />
+                                <x-input-label for="gallery_photo_{{ $image->id }}" value="Ganti Foto" />
+                                @if ($image->aspect !== 'video' && $image->url)
+                                    <img src="{{ $image->url }}" alt="{{ $image->title ?? 'Foto galeri' }}"
+                                        class="mt-2 w-24 h-20 rounded-lg object-cover border border-outline-variant/40">
+                                @endif
+                                <input type="file" id="gallery_photo_{{ $image->id }}" name="photo" accept="image/*" x-show="aspect !== 'video'"
+                                    class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                <x-input-error :messages="$errors->get('photo')" class="mt-2" />
+                                <x-input-label for="gallery_image_url_{{ $image->id }}" value="URL Video" />
                                 <x-text-input id="gallery_image_url_{{ $image->id }}" name="image_url" class="mt-1 block w-full"
-                                    value="{{ old('image_url', $image->image_url) }}" required />
+                                    value="{{ old('image_url', $image->aspect === 'video' ? $image->image_url : '') }}" placeholder="https://..." x-show="aspect === 'video'" />
                                 <x-input-error :messages="$errors->get('image_url')" class="mt-2" />
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -174,7 +189,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <x-input-label for="gallery_aspect_{{ $image->id }}" value="Rasio Foto" />
-                                    <select id="gallery_aspect_{{ $image->id }}" name="aspect" required
+                                    <select id="gallery_aspect_{{ $image->id }}" name="aspect" required x-model="aspect"
                                         class="mt-1 block w-full rounded-lg border border-outline-variant bg-background px-4 py-3 text-body-md text-on-background focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
                                         @foreach ($aspects as $value => $label)
                                             <option value="{{ $value }}" @selected(old('aspect', $image->aspect) === $value)>{{ $label }}</option>

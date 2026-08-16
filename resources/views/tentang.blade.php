@@ -170,10 +170,10 @@
                                 @foreach ($coaches as $coach)
                                     <div class="shrink-0 w-[85%] sm:w-[48%] lg:w-[31.5%]">
                                         <div class="relative h-full bg-surface-container-lowest rounded-2xl overflow-hidden shadow-md group aspect-[3/4]">
-                                            @if ($coach->photo_url)
+                                            @if ($coach->photo)
                                                 <img alt="{{ $coach->name }}"
                                                      class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                                     src="{{ $coach->photo_url }}">
+                                                     src="{{ $coach->photo }}">
                                             @else
                                                 <div class="absolute inset-0 bg-surface-container flex items-center justify-center">
                                                     <span class="material-symbols-outlined text-on-surface-variant text-[64px]">person</span>

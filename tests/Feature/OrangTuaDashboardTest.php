@@ -57,7 +57,7 @@ class OrangTuaDashboardTest extends TestCase
             'started_at' => now(),
         ]);
 
-        $todayDay = ClassSchedule::DAYS[now()->dayOfWeek - 1];
+        $todayDay = ClassSchedule::DAYS[(now()->dayOfWeek + 6) % 7];
 
         ClassSchedule::create([
             'class_id' => $class->id,

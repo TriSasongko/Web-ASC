@@ -31,7 +31,7 @@ class LandingController extends Controller
     public function home()
     {
         return view('welcome', [
-            'settings' => LandingSetting::allValues(),
+            'settings' => LandingSetting::resolvedValues(),
             'jadwalRows' => $this->jadwalRows(),
             'coaches' => LandingCoach::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get(),
             'programs' => LandingProgram::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get(),
@@ -42,7 +42,7 @@ class LandingController extends Controller
     public function tentang()
     {
         return view('tentang', [
-            'settings' => LandingSetting::allValues(),
+            'settings' => LandingSetting::resolvedValues(),
             'coaches' => LandingCoach::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get(),
         ]);
     }
@@ -50,7 +50,7 @@ class LandingController extends Controller
     public function program()
     {
         return view('program', [
-            'settings' => LandingSetting::allValues(),
+            'settings' => LandingSetting::resolvedValues(),
             'programs' => LandingProgram::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get(),
         ]);
     }
@@ -58,7 +58,7 @@ class LandingController extends Controller
     public function galeri()
     {
         return view('galeri', [
-            'settings' => LandingSetting::allValues(),
+            'settings' => LandingSetting::resolvedValues(),
             'gallery' => LandingGalleryImage::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get(),
         ]);
     }
@@ -66,7 +66,7 @@ class LandingController extends Controller
     public function kontak()
     {
         return view('kontak', [
-            'settings' => LandingSetting::allValues(),
+            'settings' => LandingSetting::resolvedValues(),
         ]);
     }
 }

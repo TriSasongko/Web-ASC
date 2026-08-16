@@ -9,6 +9,8 @@ use App\Models\LandingSetting;
 use App\Models\User;
 use Database\Seeders\LandingPageSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class LandingPageSettingTest extends TestCase
@@ -67,16 +69,45 @@ class LandingPageSettingTest extends TestCase
             'hero_title' => 'Judul Baru',
             'hero_highlight' => 'Highlight Baru',
             'hero_subtitle' => 'Deskripsi baru untuk hero.',
-            'hero_image' => '',
-            'hero_side_image' => '',
+            'hero_image' => UploadedFile::fake()->image('hero.jpg', 1200, 600),
+            'hero_side_image' => UploadedFile::fake()->image('side.jpg', 800, 600),
             'hero_side_image_alt' => '',
             'hero_cta_primary' => 'Daftar',
             'hero_cta_secondary' => 'Program',
         ])->assertRedirect(route('admin.settings.edit', ['tab' => 'hero']));
 
         $this->assertSame('Judul Baru', LandingSetting::get('hero_title'));
+        $this->assertNotNull(LandingSetting::get('hero_image'));
+        $this->assertNotNull(LandingSetting::get('hero_side_image'));
+        $this->assertTrue(Storage::disk('public')->exists(LandingSetting::get('hero_image')));
+        $this->assertTrue(Storage::disk('public')->exists(LandingSetting::get('hero_side_image')));
 
         $this->get('/')->assertOk()->assertSee('Judul Baru')->assertSee('Highlight Baru');
+
+        $this->actingAs($admin)->put(route('admin.settings.hero'), [
+            'hero_title' => 'Judul Baru',
+            'hero_subtitle' => 'Deskripsi baru untuk hero.',
+            'remove_hero_image' => 1,
+        ])->assertRedirect();
+
+        $this->assertNull(LandingSetting::get('hero_image'));
+    }
+
+    public function test_admin_can_update_tentang_image_via_upload(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->put(route('admin.settings.tentang'), [
+            'tentang_heading' => 'Tentang ASC',
+            'tentang_text' => 'Deskripsi tentang.',
+            'tentang_visi' => 'Visi.',
+            'tentang_image' => UploadedFile::fake()->image('tentang.jpg', 800, 600),
+        ])->assertRedirect();
+
+        $this->assertNotNull(LandingSetting::get('tentang_image'));
+        $this->assertTrue(Storage::disk('public')->exists(LandingSetting::get('tentang_image')));
+
+        $this->get('/tentang')->assertOk();
     }
 
     public function test_admin_can_update_kontak_settings(): void
@@ -107,24 +138,29 @@ class LandingPageSettingTest extends TestCase
             'name' => 'Coach Baru',
             'position' => 'Coach',
             'description' => 'Deskripsi coach baru.',
-            'photo_url' => '',
+            'photo' => UploadedFile::fake()->image('coach.jpg', 100, 100),
             'sort_order' => 9,
             'is_active' => 1,
         ])->assertRedirect(route('admin.settings.edit', ['tab' => 'tentang']));
 
         $coach = LandingCoach::where('name', 'Coach Baru')->first();
         $this->assertNotNull($coach);
+        $this->assertNotNull($coach->photo_url);
+        $this->assertTrue(Storage::disk('public')->exists($coach->photo_url));
 
         $this->actingAs($admin)->put(route('admin.settings.coaches.update', $coach), [
             'name' => 'Coach Diubah',
             'position' => 'Senior Coach',
             'description' => 'Deskripsi baru.',
-            'photo_url' => '',
+            'photo' => UploadedFile::fake()->image('coach-baru.jpg', 100, 100),
             'sort_order' => 9,
             'is_active' => 1,
         ])->assertRedirect();
 
-        $this->assertSame('Coach Diubah', $coach->fresh()->name);
+        $fresh = $coach->fresh();
+        $this->assertSame('Coach Diubah', $fresh->name);
+        $this->assertNotSame($fresh->photo_url, $coach->photo_url);
+        $this->assertTrue(Storage::disk('public')->exists($fresh->photo_url));
 
         $this->actingAs($admin)->delete(route('admin.settings.coaches.destroy', $coach))->assertRedirect();
         $this->assertDatabaseMissing('landing_coaches', ['id' => $coach->id]);
@@ -160,7 +196,7 @@ class LandingPageSettingTest extends TestCase
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)->post(route('admin.settings.gallery.store'), [
-            'image_url' => 'https://example.com/foto.jpg',
+            'photo' => UploadedFile::fake()->image('foto.jpg', 400, 300),
             'title' => 'Foto Baru',
             'description' => 'Deskripsi foto.',
             'category' => 'Latihan',
@@ -171,9 +207,26 @@ class LandingPageSettingTest extends TestCase
 
         $image = LandingGalleryImage::where('title', 'Foto Baru')->first();
         $this->assertNotNull($image);
+        $this->assertNotNull($image->image_url);
+        $this->assertTrue(Storage::disk('public')->exists($image->image_url));
 
         $this->actingAs($admin)->delete(route('admin.settings.gallery.destroy', $image))->assertRedirect();
         $this->assertDatabaseMissing('landing_gallery', ['id' => $image->id]);
+    }
+
+    public function test_admin_can_add_video_gallery_item_via_url(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->post(route('admin.settings.gallery.store'), [
+            'image_url' => 'https://www.youtube.com/embed/abc123',
+            'title' => 'Video Baru',
+            'aspect' => 'video',
+            'sort_order' => 9,
+            'is_active' => 1,
+        ])->assertRedirect(route('admin.settings.edit', ['tab' => 'galeri']));
+
+        $this->assertDatabaseHas('landing_gallery', ['title' => 'Video Baru']);
     }
 
     public function test_admin_can_update_jadwal_settings_and_it_reflects_on_homepage(): void

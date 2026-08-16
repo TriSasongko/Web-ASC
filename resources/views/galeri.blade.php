@@ -44,7 +44,7 @@
 
         @php
             $galleryItems = $gallery->map(fn ($g) => [
-                'url' => $g->image_url,
+                'url' => $g->url,
                 'title' => $g->title,
                 'description' => $g->description,
                 'category' => $g->category,
@@ -162,7 +162,7 @@
                             <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                  alt="{{ $image->title }}"
                                  loading="lazy"
-                                 src="{{ $image->image_url }}">
+                                 src="{{ $image->url }}">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                             @if ($image->aspect === 'video')
                                 <div class="absolute inset-0 flex items-center justify-center">

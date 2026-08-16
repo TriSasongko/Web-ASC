@@ -9,7 +9,7 @@
             <p class="font-body-sm text-body-sm text-outline mt-1">Deskripsi singkat, visi, misi, dan gambar seksi Tentang pada halaman depan.</p>
         </div>
 
-        <form action="{{ route('admin.settings.tentang') }}" method="POST" class="space-y-6">
+        <form action="{{ route('admin.settings.tentang') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
 
@@ -61,13 +61,19 @@
                 </div>
 
                 <div>
-                    <x-input-label for="tentang_image" value="URL Gambar" />
-                    <x-text-input id="tentang_image" name="tentang_image" class="mt-1 block w-full"
-                        value="{{ old('tentang_image', $s['tentang_image'] ?? '') }}" placeholder="https://..." />
-                    <x-input-error :messages="$errors->get('tentang_image')" class="mt-2" />
+                    <x-input-label for="tentang_image" value="Gambar Seksi" />
                     @if (! empty($s['tentang_image'] ?? ''))
                         <img src="{{ $s['tentang_image'] }}" alt="Pratinjau gambar tentang"
-                            class="mt-3 w-40 h-24 object-cover rounded-lg border border-outline-variant/40">
+                            class="mt-2 w-40 h-24 object-cover rounded-lg border border-outline-variant/40">
+                    @endif
+                    <input type="file" id="tentang_image" name="tentang_image" accept="image/*"
+                        class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                    <x-input-error :messages="$errors->get('tentang_image')" class="mt-2" />
+                    @if (! empty($s['tentang_image'] ?? ''))
+                        <label class="inline-flex items-center gap-2 mt-2 font-label-md text-label-md text-on-surface-variant">
+                            <input type="checkbox" name="remove_tentang_image" value="1" class="rounded border-outline-variant text-error focus:ring-error/40">
+                            Hapus gambar ini
+                        </label>
                     @endif
                 </div>
             </div>
@@ -94,6 +100,7 @@
 
         <div class="p-6">
             <form x-show="showCoachForm" x-cloak action="{{ route('admin.settings.coaches.store') }}" method="POST"
+                enctype="multipart/form-data"
                 class="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-5 space-y-4">
                 @csrf
                 <h4 class="font-headline text-headline-sm text-primary font-semibold">Tambah Coach Baru</h4>
@@ -119,10 +126,10 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <x-input-label for="coach_photo_url" value="URL Foto" />
-                        <x-text-input id="coach_photo_url" name="photo_url" class="mt-1 block w-full"
-                            value="{{ old('photo_url') }}" placeholder="https://..." />
-                        <x-input-error :messages="$errors->get('photo_url')" class="mt-2" />
+                        <x-input-label for="coach_photo" value="Foto Coach" />
+                        <input type="file" id="coach_photo" name="photo" accept="image/*"
+                            class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                        <x-input-error :messages="$errors->get('photo')" class="mt-2" />
                     </div>
                     <div>
                         <x-input-label for="coach_sort_order" value="Urutan" />
@@ -138,8 +145,8 @@
                 @forelse ($coaches as $coach)
                     <div class="border border-outline-variant/30 rounded-xl overflow-hidden" x-data="{ editing: false }">
                         <div class="flex items-start gap-4 p-4">
-                            @if ($coach->photo_url)
-                                <img src="{{ $coach->photo_url }}" alt="{{ $coach->name }}" class="w-16 h-16 rounded-lg object-cover shrink-0">
+                            @if ($coach->photo)
+                                <img src="{{ $coach->photo }}" alt="{{ $coach->name }}" class="w-16 h-16 rounded-lg object-cover shrink-0">
                             @else
                                 <div class="w-16 h-16 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-on-surface-variant text-[28px]">person</span>
@@ -169,6 +176,7 @@
                         </div>
 
                         <form x-show="editing" x-cloak action="{{ route('admin.settings.coaches.update', $coach) }}" method="POST"
+                            enctype="multipart/form-data"
                             class="border-t border-outline-variant/30 bg-surface/50 p-5 space-y-4">
                             @csrf @method('PUT')
                             <h5 class="font-headline text-headline-sm text-primary font-semibold">Edit {{ $coach->name }}</h5>
@@ -194,10 +202,14 @@
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <x-input-label for="coach_photo_url_{{ $coach->id }}" value="URL Foto" />
-                                    <x-text-input id="coach_photo_url_{{ $coach->id }}" name="photo_url" class="mt-1 block w-full"
-                                        value="{{ old('photo_url', $coach->photo_url) }}" placeholder="https://..." />
-                                    <x-input-error :messages="$errors->get('photo_url')" class="mt-2" />
+                                    <x-input-label for="coach_photo_{{ $coach->id }}" value="Ganti Foto" />
+                                    @if ($coach->photo)
+                                        <img src="{{ $coach->photo }}" alt="{{ $coach->name }}"
+                                            class="mt-2 w-16 h-16 rounded-lg object-cover border border-outline-variant/40">
+                                    @endif
+                                    <input type="file" id="coach_photo_{{ $coach->id }}" name="photo" accept="image/*"
+                                        class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                    <x-input-error :messages="$errors->get('photo')" class="mt-2" />
                                 </div>
                                 <div>
                                     <x-input-label for="coach_sort_order_{{ $coach->id }}" value="Urutan" />

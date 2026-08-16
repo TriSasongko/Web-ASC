@@ -559,10 +559,10 @@
                                      :class="active === {{ $index }} ? 'shadow-2xl ring-2 ring-primary/20' : 'shadow-md'">
 
                                     <div class="relative overflow-hidden aspect-[4/5] bg-surface-container">
-                                        @if ($coach->photo_url)
+                                        @if ($coach->photo)
                                             <img alt="{{ $coach->name }}"
                                                 class="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-108"
-                                                src="{{ $coach->photo_url }}">
+                                                src="{{ $coach->photo }}">
                                         @else
                                             <div class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant/40">
                                                 <span class="material-symbols-outlined text-[72px]">person</span>
@@ -757,7 +757,7 @@
                                            overflow-hidden
                                            group">
 
-                                        <img src="{{ $image->image_url }}" alt="{{ $image->title ?? 'Galeri ASC' }}"
+                                        <img src="{{ $image->url }}" alt="{{ $image->title ?? 'Galeri ASC' }}"
                                             loading="lazy"
                                             class="absolute inset-0 object-cover w-full h-full transition-transform duration-1000 group-hover:scale-105">
 
@@ -859,7 +859,7 @@
                                     'border-orange scale-105 shadow-lg' :
                                     'border-transparent opacity-60 hover:opacity-100'">
 
-                                <img src="{{ $image->image_url }}" alt="{{ $image->title ?? 'Thumbnail galeri' }}"
+                                <img src="{{ $image->url }}" alt="{{ $image->title ?? 'Thumbnail galeri' }}"
                                     class="object-cover w-full h-full">
 
                                 <div class="absolute inset-0 bg-black/20"

@@ -38,7 +38,7 @@ class PelatihDashboardTest extends TestCase
             'is_active' => true,
         ]);
 
-        $todayDay = ClassSchedule::DAYS[now()->dayOfWeek - 1];
+        $todayDay = ClassSchedule::DAYS[(now()->dayOfWeek + 6) % 7];
 
         $schedule = ClassSchedule::create([
             'class_id' => $class->id,
