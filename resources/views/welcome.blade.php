@@ -272,134 +272,148 @@
     </section>
 
     <!-- 5. Program Kelas -->
-    <section class="py-16 md:py-24 bg-surface" id="program">
+    <section class="py-16 overflow-hidden md:py-24 bg-surface" id="program">
         <div class="mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop">
-            <div class="mb-8 text-center md:mb-12">
-                <h2 class="font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">
-                    {{ $s['program_heading'] ?? 'Program Kelas Kami' }}</h2>
-                <p class="max-w-2xl mx-auto mt-4 text-on-surface-variant font-body text-body-lg">
+            <div class="mb-10 text-center md:mb-14">
+                <span class="px-3.5 py-1.5 rounded-full bg-primary/10 text-primary font-headline text-label-md font-bold uppercase tracking-wider">Pilihan Terbaik</span>
+                <h2 class="mt-2 font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">
+                    {{ $s['program_heading'] ?? 'Program Kelas Kami' }}
+                </h2>
+                <p class="max-w-2xl mx-auto mt-3 text-on-surface-variant font-body text-body-lg">
                     {{ $s['program_subtitle'] ?? 'Pilih program yang paling sesuai dengan kebutuhan dan target Anda.' }}
                 </p>
             </div>
+
             @if ($programs->isNotEmpty())
-                <div class="relative" x-data="{
-                    index: 0,
-                    startX: null,
+                <div class="relative group/prog" x-data="{
+                    active: 0,
+                    total: {{ $programs->count() }},
                     timer: null,
-                    step() {
-                        const t = this.$refs.track;
-                        const card = t.querySelector(':scope > *');
-                        const gap = parseFloat(getComputedStyle(t).gap) || 0;
-                        return card ? card.offsetWidth + gap : 0;
+                    scrollTo(index) {
+                        this.active = index;
+                        const el = this.$refs.slider;
+                        const targetCard = el.children[index];
+                        if (targetCard) {
+                            const scrollPos = targetCard.offsetLeft - (el.clientWidth / 2) + (targetCard.clientWidth / 2);
+                            el.scrollTo({ left: scrollPos, behavior: 'smooth' });
+                        }
                     },
-                    maxIndex() {
-                        const t = this.$refs.track;
-                        const s = this.step();
-                        return s > 0 ? Math.round((t.scrollWidth - t.clientWidth) / s) : 0;
+                    next() {
+                        this.scrollTo(this.active >= this.total - 1 ? 0 : this.active + 1);
                     },
-                    slideTo(i) {
-                        const s = this.step();
-                        const max = this.maxIndex();
-                        this.index = i > max ? 0 : (i < 0 ? max : i);
-                        this.$refs.track.style.transform = `translateX(-${this.index * s}px)`;
+                    prev() {
+                        this.scrollTo(this.active <= 0 ? this.total - 1 : this.active - 1);
                     },
                     play() {
                         if (this.timer) return;
-                        this.timer = setInterval(() => {
-                            if (!this.startX) this.slideTo(this.index + 1);
-                        }, 3000);
+                        this.timer = setInterval(() => this.next(), 4500);
                     },
                     pause() {
                         clearInterval(this.timer);
                         this.timer = null;
                     },
-                    restart() {
-                        clearInterval(this.timer);
-                        this.timer = null;
-                        this.play();
-                    },
-                    prev() {
-                        this.slideTo(this.index - 1);
-                        this.restart();
-                    },
-                    next() {
-                        this.slideTo(this.index + 1);
-                        this.restart();
-                    },
-                    touchStart(e) {
-                        this.startX = e.changedTouches[0].clientX;
-                    },
-                    touchEnd(e) {
-                        if (this.startX === null) return;
-                        const dx = e.changedTouches[0].clientX - this.startX;
-                        this.startX = null;
-                        if (Math.abs(dx) >= 40) this.slideTo(this.index + (dx < 0 ? 1 : -1));
-                        this.restart();
+                    updateActiveOnScroll() {
+                        const el = this.$refs.slider;
+                        const center = el.scrollLeft + (el.clientWidth / 2);
+                        let closestIndex = 0;
+                        let minDistance = Infinity;
+
+                        Array.from(el.children).forEach((child, i) => {
+                            const childCenter = child.offsetLeft + (child.clientWidth / 2);
+                            const distance = Math.abs(center - childCenter);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                closestIndex = i;
+                            }
+                        });
+                        this.active = closestIndex;
                     },
                     init() {
                         this.play();
-                        window.addEventListener('resize', () => this.slideTo(this.index));
+                        this.$nextTick(() => this.scrollTo(0));
                     }
                 }" @mouseenter="pause()" @mouseleave="play()">
-                    <div class="overflow-hidden" @touchstart.passive="touchStart($event)"
-                        @touchend.passive="touchEnd($event)">
-                        <div x-ref="track"
-                            class="flex gap-6 transition-transform duration-700 ease-in-out will-change-transform">
-                            @foreach ($programs as $program)
-                                <div class="shrink-0 w-[85%] sm:w-[48%] lg:w-[31.5%] xl:w-[23%]">
-                                    <div
-                                        class="flex flex-col h-full p-6 transition-shadow border shadow-md bg-surface-container-lowest rounded-2xl border-outline-variant/30 hover:shadow-xl">
-                                        <div class="flex items-start justify-between gap-2 mb-4">
-                                            <h3 class="font-bold font-headline text-headline-sm text-primary">
-                                                {{ $program->name }}</h3>
-                                            @if ($program->badge)
-                                                <span
-                                                    class="shrink-0 bg-orange text-white text-[10px] font-bold px-2.5 py-1 rounded-full mt-0.5">{{ $program->badge }}</span>
-                                            @endif
-                                        </div>
-                                        @if ($program->subtitle)
-                                            <p class="mb-4 text-on-surface-variant text-label-sm">
-                                                {{ $program->subtitle }}</p>
+
+                    <!-- Slider Container -->
+                    <div x-ref="slider" @scroll.debounce.50ms="updateActiveOnScroll()"
+                        class="flex gap-4 md:gap-8 overflow-x-auto snap-x snap-mandatory py-12 px-[15vw] md:px-[35vw] no-scrollbar scroll-smooth items-center">
+                        @foreach ($programs as $index => $program)
+                            <div class="shrink-0 w-[280px] sm:w-[340px] md:w-[380px] snap-center transition-all duration-500 transform"
+                                 :class="active === {{ $index }} ? 'scale-105 z-20 opacity-100' : 'scale-90 opacity-50 z-10 blur-[0.5px]'">
+
+                                <div class="relative flex flex-col h-full p-6 overflow-hidden transition-all duration-500 border md:p-8 bg-surface-container-lowest rounded-3xl"
+                                     :class="active === {{ $index }} ? 'shadow-2xl border-orange/40 ring-2 ring-orange/20' : 'shadow-md border-outline-variant/30'">
+
+                                    <!-- Badge Top -->
+                                    <div class="flex items-start justify-between gap-2 mb-4">
+                                        <h3 class="font-bold font-headline text-headline-sm md:text-headline-md text-primary">
+                                            {{ $program->name }}
+                                        </h3>
+                                        @if ($program->badge)
+                                            <span class="shrink-0 bg-gradient-to-r from-orange to-orange-light text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md uppercase tracking-wide">
+                                                {{ $program->badge }}
+                                            </span>
                                         @endif
-                                        <div class="flex flex-wrap items-baseline gap-2 mb-6">
-                                            @if ($program->price)
-                                                <span
-                                                    class="font-bold font-headline text-headline-lg text-orange">Rp{{ number_format($program->price, 0, ',', '.') }}</span>
-                                                <span
-                                                    class="text-on-surface-variant text-body-md">{{ $program->billing_unit }}</span>
-                                            @else
-                                                <span
-                                                    class="font-bold font-headline text-headline-lg text-orange">Hubungi
-                                                    Kami</span>
-                                            @endif
-                                        </div>
-                                        <ul class="flex-grow mb-8 space-y-3">
-                                            @foreach ($program->featureList() as $feature)
-                                                <li
-                                                    class="flex items-start gap-2 text-on-surface-variant text-body-md">
-                                                    <span
-                                                        class="mt-1 text-sm material-symbols-outlined text-primary">check_circle</span>
-                                                    <span>{{ $feature }}</span>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                        <a href="{{ route('register') }}"
-                                            class="w-full text-center bg-primary text-on-primary hover:bg-primary-container py-2.5 rounded-lg font-body text-label-md transition-colors mt-auto">
-                                            {{ $program->button_label ?? 'Pilih Program' }}
-                                        </a>
                                     </div>
+
+                                    @if ($program->subtitle)
+                                        <p class="mb-5 text-on-surface-variant text-body-sm line-clamp-2">
+                                            {{ $program->subtitle }}
+                                        </p>
+                                    @endif
+
+                                    <!-- Pricing Card -->
+                                    <div class="p-4 mb-6 border rounded-2xl bg-surface-container-low border-outline-variant/20">
+                                        @if ($program->price)
+                                            <div class="flex items-baseline gap-1">
+                                                <span class="font-extrabold font-headline text-headline-lg text-orange">Rp{{ number_format($program->price, 0, ',', '.') }}</span>
+                                                <span class="font-medium text-on-surface-variant text-body-sm">{{ $program->billing_unit }}</span>
+                                            </div>
+                                        @else
+                                            <span class="font-bold font-headline text-headline-md text-orange">Hubungi Kami</span>
+                                        @endif
+                                    </div>
+
+                                    <!-- Features List -->
+                                    <ul class="flex-grow mb-8 space-y-3.5">
+                                        @foreach ($program->featureList() as $feature)
+                                            <li class="flex items-start gap-3 text-on-surface-variant text-body-sm md:text-body-md">
+                                                <span class="mt-0.5 text-base material-symbols-outlined text-orange shrink-0">check_circle</span>
+                                                <span class="leading-relaxed">{{ $feature }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+
+                                    <!-- CTA Button -->
+                                    <a href="{{ route('register') }}"
+                                       class="w-full text-center py-3.5 rounded-xl font-body text-label-md font-semibold transition-all duration-300 shadow-md"
+                                       :class="active === {{ $index }} ? 'bg-orange text-white hover:bg-orange-light shadow-orange/30 scale-102' : 'bg-primary text-on-primary hover:bg-primary-container'">
+                                        {{ $program->button_label ?? 'Pilih Program' }}
+                                    </a>
                                 </div>
-                            @endforeach
-                        </div>
+                            </div>
+                        @endforeach
                     </div>
+
+                    <!-- Navigation Controls -->
                     <button type="button" @click="prev()" aria-label="Program sebelumnya"
-                        class="absolute z-10 items-center justify-center hidden w-10 h-10 transition-colors -translate-y-1/2 rounded-full shadow-lg md:flex -left-3 top-1/2 bg-primary text-on-primary hover:bg-primary-container">
+                        class="absolute z-30 flex items-center justify-center w-12 h-12 transition-all duration-300 -translate-y-1/2 border rounded-full shadow-2xl left-4 md:left-12 top-1/2 bg-surface/90 text-primary backdrop-blur-md border-outline-variant/40 hover:bg-primary hover:text-white hover:scale-110">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </button>
                     <button type="button" @click="next()" aria-label="Program berikutnya"
-                        class="absolute z-10 items-center justify-center hidden w-10 h-10 transition-colors -translate-y-1/2 rounded-full shadow-lg md:flex -right-3 top-1/2 bg-primary text-on-primary hover:bg-primary-container">
+                        class="absolute z-30 flex items-center justify-center w-12 h-12 transition-all duration-300 -translate-y-1/2 border rounded-full shadow-2xl right-4 md:right-12 top-1/2 bg-surface/90 text-primary backdrop-blur-md border-outline-variant/40 hover:bg-primary hover:text-white hover:scale-110">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </button>
+
+                    <!-- Indicators -->
+                    <div class="flex items-center justify-center gap-2 mt-4">
+                        <template x-for="(item, index) in total" :key="index">
+                            <button @click="scrollTo(index)"
+                                    class="h-2.5 rounded-full transition-all duration-300"
+                                    :class="active === index ? 'w-8 bg-orange' : 'w-2.5 bg-outline-variant/50 hover:bg-outline-variant'">
+                            </button>
+                        </template>
+                    </div>
                 </div>
             @else
                 <p class="text-center text-on-surface-variant">Belum ada program.</p>
@@ -475,145 +489,125 @@
         </div>
     </section>
 
-    <!-- 7. Coach Kami -->
-    <section class="py-16 md:py-24 bg-surface" id="coach">
+    <!-- 7. Coach Kami (Re-designed with Center Focus) -->
+    <section class="py-16 overflow-hidden md:py-24 bg-surface" id="coach">
         <div class="mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop">
-            <div class="mb-8 text-center md:mb-12">
-                <span class="font-bold tracking-wider uppercase text-orange font-headline text-label-md">Tim
-                    Profesional</span>
-                <h2 class="mt-1 font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">Temui
-                    Coach Kami</h2>
-                <p class="max-w-2xl mx-auto mt-3 text-on-surface-variant font-body text-body-lg">Dilatih langsung oleh
-                    para profesional bersertifikat yang berdedikasi tinggi.</p>
+            <div class="mb-10 text-center md:mb-14">
+                <span class="font-bold tracking-wider uppercase text-orange font-headline text-label-md">Tim Profesional</span>
+                <h2 class="mt-1 font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">Temui Coach Kami</h2>
+                <p class="max-w-2xl mx-auto mt-3 text-on-surface-variant font-body text-body-lg">Dilatih langsung oleh para profesional bersertifikat yang berdedikasi tinggi.</p>
             </div>
 
             @if ($coaches->isNotEmpty())
                 <div class="relative group/slider" x-data="{
-                    index: 0,
-                    startX: null,
-                    timer: null,
+                    active: 0,
                     total: {{ $coaches->count() }},
-                    step() {
-                        const t = this.$refs.track;
-                        const card = t.querySelector(':scope > *');
-                        const gap = parseFloat(getComputedStyle(t).gap) || 0;
-                        return card ? card.offsetWidth + gap : 0;
+                    timer: null,
+                    scrollTo(index) {
+                        this.active = index;
+                        const el = this.$refs.slider;
+                        const targetCard = el.children[index];
+                        if (targetCard) {
+                            const scrollPos = targetCard.offsetLeft - (el.clientWidth / 2) + (targetCard.clientWidth / 2);
+                            el.scrollTo({ left: scrollPos, behavior: 'smooth' });
+                        }
                     },
-                    maxIndex() {
-                        const t = this.$refs.track;
-                        const s = this.step();
-                        return s > 0 ? Math.max(0, Math.round((t.scrollWidth - t.clientWidth) / s)) : 0;
+                    next() {
+                        this.scrollTo(this.active >= this.total - 1 ? 0 : this.active + 1);
                     },
-                    slideTo(i) {
-                        const s = this.step();
-                        const max = this.maxIndex();
-                        this.index = i > max ? 0 : (i < 0 ? max : i);
-                        this.$refs.track.style.transform = `translateX(-${this.index * s}px)`;
+                    prev() {
+                        this.scrollTo(this.active <= 0 ? this.total - 1 : this.active - 1);
                     },
                     play() {
                         if (this.timer) return;
-                        this.timer = setInterval(() => {
-                            if (!this.startX) this.slideTo(this.index + 1);
-                        }, 4000);
+                        this.timer = setInterval(() => this.next(), 4000);
                     },
                     pause() {
                         clearInterval(this.timer);
                         this.timer = null;
                     },
-                    restart() {
-                        this.pause();
-                        this.play();
-                    },
-                    prev() {
-                        this.slideTo(this.index - 1);
-                        this.restart();
-                    },
-                    next() {
-                        this.slideTo(this.index + 1);
-                        this.restart();
-                    },
-                    touchStart(e) {
-                        this.startX = e.changedTouches[0].clientX;
-                    },
-                    touchEnd(e) {
-                        if (this.startX === null) return;
-                        const dx = e.changedTouches[0].clientX - this.startX;
-                        this.startX = null;
-                        if (Math.abs(dx) >= 40) this.slideTo(this.index + (dx < 0 ? 1 : -1));
-                        this.restart();
+                    updateActiveOnScroll() {
+                        const el = this.$refs.slider;
+                        const center = el.scrollLeft + (el.clientWidth / 2);
+                        let closestIndex = 0;
+                        let minDistance = Infinity;
+
+                        Array.from(el.children).forEach((child, i) => {
+                            const childCenter = child.offsetLeft + (child.clientWidth / 2);
+                            const distance = Math.abs(center - childCenter);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                closestIndex = i;
+                            }
+                        });
+                        this.active = closestIndex;
                     },
                     init() {
                         this.play();
-                        window.addEventListener('resize', () => this.slideTo(this.index));
+                        this.$nextTick(() => this.scrollTo(0));
                     }
-                }" @mouseenter="pause()"
-                    @mouseleave="play()">
+                }" @mouseenter="pause()" @mouseleave="play()">
 
-                    <!-- Track Container -->
-                    <div class="px-1 py-4 -my-4 overflow-hidden rounded-2xl" @touchstart.passive="touchStart($event)"
-                        @touchend.passive="touchEnd($event)">
-                        <div x-ref="track"
-                            class="flex gap-6 transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) will-change-transform">
-                            @foreach ($coaches as $coach)
-                                <div class="shrink-0 w-[85%] sm:w-[48%] lg:w-[31.5%]">
-                                    <div
-                                        class="flex flex-col h-full overflow-hidden transition-all duration-300 transform border shadow-md bg-surface-container-lowest rounded-2xl hover:shadow-2xl hover:-translate-y-1 group border-outline-variant/30">
-                                        <div class="relative overflow-hidden aspect-[4/5] bg-surface-container">
-                                            @if ($coach->photo_url)
-                                                <img alt="{{ $coach->name }}"
-                                                    class="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-108"
-                                                    src="{{ $coach->photo_url }}">
-                                            @else
-                                                <div
-                                                    class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant/40">
-                                                    <span class="material-symbols-outlined text-[72px]">person</span>
-                                                </div>
-                                            @endif
-                                            <div
-                                                class="absolute inset-0 transition-opacity bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90">
-                                            </div>
+                    <!-- Slider Track -->
+                    <div x-ref="slider" @scroll.debounce.50ms="updateActiveOnScroll()"
+                        class="flex gap-4 md:gap-8 overflow-x-auto snap-x snap-mandatory py-12 px-[15vw] md:px-[35vw] no-scrollbar scroll-smooth items-center">
+                        @foreach ($coaches as $index => $coach)
+                            <div class="shrink-0 w-[270px] sm:w-[320px] md:w-[360px] snap-center transition-all duration-500 transform"
+                                 :class="active === {{ $index }} ? 'scale-105 z-20 opacity-100' : 'scale-90 opacity-50 z-10 blur-[0.5px]'">
 
-                                            <!-- Badge overlay -->
-                                            <div class="absolute text-white bottom-4 left-4 right-4">
-                                                <span
-                                                    class="inline-block px-3 py-1 mb-1 font-semibold text-white rounded-full bg-orange/90 backdrop-blur-md font-body text-label-sm">
-                                                    {{ $coach->position }}
-                                                </span>
-                                                <h3
-                                                    class="font-bold leading-tight text-white font-headline text-headline-sm drop-shadow-sm">
-                                                    {{ $coach->name }}</h3>
+                                <div class="flex flex-col h-full overflow-hidden transition-all duration-500 border bg-surface-container-lowest rounded-3xl group border-outline-variant/30"
+                                     :class="active === {{ $index }} ? 'shadow-2xl ring-2 ring-primary/20' : 'shadow-md'">
+
+                                    <div class="relative overflow-hidden aspect-[4/5] bg-surface-container">
+                                        @if ($coach->photo_url)
+                                            <img alt="{{ $coach->name }}"
+                                                class="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-108"
+                                                src="{{ $coach->photo_url }}">
+                                        @else
+                                            <div class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant/40">
+                                                <span class="material-symbols-outlined text-[72px]">person</span>
                                             </div>
-                                        </div>
-                                        <div
-                                            class="flex flex-col justify-between flex-grow p-5 bg-surface-container-lowest">
-                                            <p
-                                                class="leading-relaxed text-on-surface-variant text-body-sm line-clamp-3">
-                                                {{ $coach->description }}</p>
+                                        @endif
+
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-90"></div>
+
+                                        <!-- Badge & Info Overlay -->
+                                        <div class="absolute text-white bottom-5 left-5 right-5">
+                                            <span class="inline-block px-3 py-1 mb-2 font-semibold text-white rounded-full shadow-md bg-orange/90 backdrop-blur-md font-body text-label-sm">
+                                                {{ $coach->position }}
+                                            </span>
+                                            <h3 class="font-bold leading-tight text-white font-headline text-headline-sm md:text-headline-md drop-shadow-md">
+                                                {{ $coach->name }}
+                                            </h3>
                                         </div>
                                     </div>
+
+                                    <div class="flex flex-col justify-between flex-grow p-6 bg-surface-container-lowest">
+                                        <p class="leading-relaxed text-on-surface-variant text-body-sm line-clamp-3">
+                                            {{ $coach->description }}
+                                        </p>
+                                    </div>
                                 </div>
-                            @endforeach
-                        </div>
+                            </div>
+                        @endforeach
                     </div>
 
-                    <!-- Navigation Controls -->
+                    <!-- Controls -->
                     <button type="button" @click="prev()" aria-label="Coach sebelumnya"
-                        class="absolute left-0 z-20 flex items-center justify-center w-12 h-12 transition-all duration-300 -translate-x-1/2 -translate-y-1/2 border rounded-full shadow-xl opacity-0 top-1/2 bg-surface/90 text-primary backdrop-blur-md border-outline-variant/40 group-hover/slider:opacity-100 group-hover/slider:translate-x-2 hover:bg-primary hover:text-on-primary">
+                        class="absolute z-30 flex items-center justify-center w-12 h-12 transition-all duration-300 -translate-y-1/2 border rounded-full shadow-2xl left-4 md:left-12 top-1/2 bg-surface/90 text-primary backdrop-blur-md border-outline-variant/40 hover:bg-primary hover:text-white hover:scale-110">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </button>
                     <button type="button" @click="next()" aria-label="Coach berikutnya"
-                        class="absolute right-0 z-20 flex items-center justify-center w-12 h-12 transition-all duration-300 translate-x-1/2 -translate-y-1/2 border rounded-full shadow-xl opacity-0 top-1/2 bg-surface/90 text-primary backdrop-blur-md border-outline-variant/40 group-hover/slider:opacity-100 group-hover/slider:-translate-x-2 hover:bg-primary hover:text-on-primary">
+                        class="absolute z-30 flex items-center justify-center w-12 h-12 transition-all duration-300 -translate-y-1/2 border rounded-full shadow-2xl right-4 md:right-12 top-1/2 bg-surface/90 text-primary backdrop-blur-md border-outline-variant/40 hover:bg-primary hover:text-white hover:scale-110">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </button>
 
-                    <!-- Dynamic Indicators -->
-                    <div class="flex items-center justify-center gap-2 mt-8">
-                        <template x-for="i in (maxIndex() + 1)" :key="i">
-                            <button @click="slideTo(i - 1); restart();"
-                                class="h-2.5 rounded-full transition-all duration-300"
-                                :class="index === (i - 1) ? 'w-8 bg-orange' :
-                                    'w-2.5 bg-outline-variant/40 hover:bg-outline-variant'"
-                                :aria-label="'Go to slide ' + i">
+                    <!-- Indicators -->
+                    <div class="flex items-center justify-center gap-2 mt-4">
+                        <template x-for="(item, index) in total" :key="index">
+                            <button @click="scrollTo(index)"
+                                    class="h-2.5 rounded-full transition-all duration-300"
+                                    :class="active === index ? 'w-8 bg-orange' : 'w-2.5 bg-outline-variant/50 hover:bg-outline-variant'">
                             </button>
                         </template>
                     </div>
