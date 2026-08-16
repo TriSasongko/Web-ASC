@@ -13,17 +13,20 @@
             @endphp
 
             <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] overflow-hidden">
-                <div class="px-6 py-5 border-b border-outline-variant/30 bg-surface/50 flex items-center gap-3">
+                <div class="px-4 py-4 sm:px-6 sm:py-5 border-b border-outline-variant/30 bg-surface/50 flex flex-wrap items-center gap-3">
                     <div class="w-11 h-11 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-label-md text-label-md shrink-0">
                         {{ strtoupper(substr($child->full_name, 0, 1)) }}
                     </div>
-                    <div class="min-w-0 flex-1">
+                    <div class="min-w-0 flex-1 basis-40">
                         <h3 class="font-headline text-headline-sm text-on-surface truncate">{{ $child->full_name }}</h3>
                         <p class="font-body-sm text-body-sm text-outline truncate">
                             {{ $child->classes->pluck('name')->implode(', ') ?: 'Belum ada kelas aktif' }}
                         </p>
                     </div>
-                    <span class="font-label-sm text-label-sm text-outline shrink-0">{{ $totalSessions }} sesi</span>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">event</span>
+                        {{ $totalSessions }} sesi
+                    </span>
                 </div>
 
                 <div class="divide-y divide-outline-variant/30">
@@ -31,11 +34,11 @@
                         @if ($schedules->isEmpty())
                             @continue
                         @endif
-                        <div class="px-6 py-2.5 bg-surface/40">
+                        <div class="px-4 py-2.5 sm:px-6 bg-surface/40">
                             <span class="font-label-md text-label-md text-on-surface uppercase tracking-wide">{{ ucfirst($day) }}</span>
                         </div>
                         @foreach ($schedules as $s)
-                            <div class="px-6 py-3 flex flex-wrap items-center gap-x-6 gap-y-2 hover:bg-surface-container-low/50 transition-colors">
+                            <div class="px-4 py-3 sm:px-6 flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 hover:bg-surface-container-low/50 transition-colors">
                                 <div class="w-16 shrink-0">
                                     <p class="font-label-md text-label-md text-primary">{{ \Carbon\Carbon::parse($s->start_time)->format('H:i') }}</p>
                                     <p class="font-label-sm text-label-sm text-outline">{{ \Carbon\Carbon::parse($s->end_time)->format('H:i') }}</p>

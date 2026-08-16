@@ -31,7 +31,63 @@
             <div class="p-5 border-b border-outline-variant/30 bg-surface/50 flex items-center justify-between">
                 <h3 class="font-headline text-headline-sm text-on-surface">Daftar Pendaftaran</h3>
             </div>
-            <div class="overflow-x-auto">
+
+            {{-- Mobile: kartu pendaftaran --}}
+            <div class="md:hidden divide-y divide-outline-variant/30">
+                @forelse ($registrations as $reg)
+                    @php
+                        $student = $reg->student;
+                        $gender = $student->gender === 'L' ? 'Laki-laki' : 'Perempuan';
+                        $ttl = implode(', ', array_filter([$student->birth_place, $student->birth_date?->format('d/m/Y')])) ?: '-';
+
+                        $badge = match($reg->status) {
+                            'diterima' => 'bg-[#E8F5E9] text-[#2E7D32]',
+                            'ditolak' => 'bg-error-container text-on-error-container',
+                            default => 'bg-[#FFF8E1] text-[#B26A00]',
+                        };
+
+                        $waText = "Selamat {$salam} Admin Antasena Swimming Club.\n\n"
+                            . "Saya orang tua/wali dari calon peserta didik yang ingin mendaftarkan diri ke Antasena Swimming Club. Berikut data yang telah saya isi:\n\n"
+                            . "*Formulir Pendaftaran Antasena Swimming Club*\n\n"
+                            . "Nama : {$student->full_name}\n"
+                            . "TTL : {$ttl}\n"
+                            . "Jenis Kelamin : {$gender}\n"
+                            . "No. HP : " . (auth()->user()->phone ?: '-') . "\n"
+                            . "Alamat : " . ($student->address ?: '-') . "\n"
+                            . "Kelas/Program : {$reg->program->name}\n"
+                            . "BB : " . ($student->weight ?: '-') . " kg\n"
+                            . "TB : " . ($student->height ?: '-') . " cm\n\n"
+                            . "Mohon dibantu untuk proses pendaftarannya, Admin.\n\n"
+                            . "Terima kasih atas bantuan dan informasinya. 🙏";
+
+                        $waUrl = 'https://wa.me/62895609706131?text=' . rawurlencode($waText);
+                    @endphp
+                    <div class="p-4 hover:bg-surface-container-low/50 transition-colors">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="font-label-md text-label-md text-on-surface truncate">{{ $student->full_name }}</p>
+                                <p class="font-body-sm text-body-sm text-outline truncate mt-0.5">{{ $reg->program->name }}</p>
+                            </div>
+                            <span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm {{ $badge }}">
+                                {{ str_replace('_', ' ', ucfirst($reg->status)) }}
+                            </span>
+                        </div>
+                        @if ($reg->status === 'menunggu_verifikasi')
+                            <div class="mt-3">
+                                <a href="{{ $waUrl }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#25D366] hover:opacity-90 text-white font-label-sm text-label-sm rounded-lg transition-all">
+                                    <span class="material-symbols-outlined text-[16px]">chat</span>
+                                    Konfirmasi via WhatsApp
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                @empty
+                    <div class="p-6 text-center font-body-sm text-body-sm text-outline">Belum ada pendaftaran.</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop: tabel pendaftaran --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-surface-container-low">
                         <tr>
@@ -43,42 +99,41 @@
                     </thead>
                     <tbody class="divide-y divide-outline-variant/30">
                         @forelse ($registrations as $reg)
+                            @php
+                                $student = $reg->student;
+                                $gender = $student->gender === 'L' ? 'Laki-laki' : 'Perempuan';
+                                $ttl = implode(', ', array_filter([$student->birth_place, $student->birth_date?->format('d/m/Y')])) ?: '-';
+
+                                $badge = match($reg->status) {
+                                    'diterima' => 'bg-[#E8F5E9] text-[#2E7D32]',
+                                    'ditolak' => 'bg-error-container text-on-error-container',
+                                    default => 'bg-[#FFF8E1] text-[#B26A00]',
+                                };
+
+                                $waText = "Selamat {$salam} Admin Antasena Swimming Club.\n\n"
+                                    . "Saya orang tua/wali dari calon peserta didik yang ingin mendaftarkan diri ke Antasena Swimming Club. Berikut data yang telah saya isi:\n\n"
+                                    . "*Formulir Pendaftaran Antasena Swimming Club*\n\n"
+                                    . "Nama : {$student->full_name}\n"
+                                    . "TTL : {$ttl}\n"
+                                    . "Jenis Kelamin : {$gender}\n"
+                                    . "No. HP : " . (auth()->user()->phone ?: '-') . "\n"
+                                    . "Alamat : " . ($student->address ?: '-') . "\n"
+                                    . "Kelas/Program : {$reg->program->name}\n"
+                                    . "BB : " . ($student->weight ?: '-') . " kg\n"
+                                    . "TB : " . ($student->height ?: '-') . " cm\n\n"
+                                    . "Mohon dibantu untuk proses pendaftarannya, Admin.\n\n"
+                                    . "Terima kasih atas bantuan dan informasinya. 🙏";
+
+                                $waUrl = 'https://wa.me/62895609706131?text=' . rawurlencode($waText);
+                            @endphp
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $reg->student->full_name }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $student->full_name }}</td>
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $reg->program->name }}</td>
                                 <td class="px-4 py-3">
-                                    @php
-                                        $badge = match($reg->status) {
-                                            'diterima' => 'bg-[#E8F5E9] text-[#2E7D32]',
-                                            'ditolak' => 'bg-error-container text-on-error-container',
-                                            default => 'bg-[#FFF8E1] text-[#B26A00]',
-                                        };
-                                    @endphp
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm {{ $badge }}">
                                         {{ str_replace('_', ' ', ucfirst($reg->status)) }}
                                     </span>
                                 </td>
-                                @php
-                                    $student = $reg->student;
-                                    $gender = $student->gender === 'L' ? 'Laki-laki' : 'Perempuan';
-                                    $ttl = implode(', ', array_filter([$student->birth_place, $student->birth_date?->format('d/m/Y')])) ?: '-';
-
-                                    $waText = "Selamat {$salam} Admin Antasena Swimming Club.\n\n"
-                                        . "Saya orang tua/wali dari calon peserta didik yang ingin mendaftarkan diri ke Antasena Swimming Club. Berikut data yang telah saya isi:\n\n"
-                                        . "*Formulir Pendaftaran Antasena Swimming Club*\n\n"
-                                        . "Nama : {$student->full_name}\n"
-                                        . "TTL : {$ttl}\n"
-                                        . "Jenis Kelamin : {$gender}\n"
-                                        . "No. HP : " . (auth()->user()->phone ?: '-') . "\n"
-                                        . "Alamat : " . ($student->address ?: '-') . "\n"
-                                        . "Kelas/Program : {$reg->program->name}\n"
-                                        . "BB : " . ($student->weight ?: '-') . " kg\n"
-                                        . "TB : " . ($student->height ?: '-') . " cm\n\n"
-                                        . "Mohon dibantu untuk proses pendaftarannya, Admin.\n\n"
-                                        . "Terima kasih atas bantuan dan informasinya. 🙏";
-
-                                    $waUrl = 'https://wa.me/62895609706131?text=' . rawurlencode($waText);
-                                @endphp
                                 <td class="px-4 py-3">
                                     @if ($reg->status === 'menunggu_verifikasi')
                                         <a href="{{ $waUrl }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-[#25D366] hover:opacity-90 text-white font-label-sm text-label-sm rounded-lg transition-all">
