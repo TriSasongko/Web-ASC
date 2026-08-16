@@ -42,8 +42,8 @@
                 <div class="relative z-20 flex flex-col h-full justify-between">
                     <!-- Logo Area -->
                     <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined filled text-4xl text-on-primary">pool</span>
-                        <h1 class="font-headline text-headline-md text-on-primary">ASC Academy</h1>
+                        <img src="{{ asset('images/Logo_ASR.png') }}" alt="ANTASENA SC" class="h-14 w-auto drop-shadow-lg">
+                        <h1 class="font-headline text-headline-md text-on-primary">ANTASENA SC</h1>
                     </div>
                     <!-- Slogan Area -->
                     <div class="max-w-md">
@@ -56,9 +56,9 @@
             <!-- Right Side: Auth Content -->
             <section class="w-full md:w-1/2 h-full flex flex-col px-6 md:px-16 lg:px-24 bg-surface-container-lowest relative overflow-y-auto">
                 <!-- Mobile Logo (Visible only on small screens) -->
-                <div class="md:hidden flex items-center gap-3 mb-10 justify-center shrink-0">
-                    <span class="material-symbols-outlined filled text-3xl text-primary">pool</span>
-                    <h1 class="font-headline text-headline-sm text-primary">ASC Academy</h1>
+                <div class="md:hidden flex items-center gap-2 pt-6 mb-10 justify-center shrink-0">
+                    <img src="{{ asset('images/Logo_ASR.png') }}" alt="ANTASENA SC" class="h-12 w-auto rounded-xl bg-primary p-1.5">
+                    <h1 class="font-headline text-headline-md text-primary">ANTASENA SC</h1>
                 </div>
                 <div class="w-full max-w-sm mx-auto my-auto py-8 md:py-0">
                     {{ $slot }}
