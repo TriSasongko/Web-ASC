@@ -137,7 +137,7 @@
             <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] relative overflow-hidden group">
                 <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary-container/20 rounded-full opacity-60 group-hover:scale-110 transition-transform"></div>
                 <div class="p-2.5 bg-primary-container text-on-primary rounded-lg w-fit relative z-10 mb-3">
-                    <span class="material-symbols-outlined">swim</span>
+                    <span class="material-symbols-outlined">workspace_premium</span>
                 </div>
                 <p class="font-label-sm text-label-sm text-outline mb-1 uppercase tracking-wider relative z-10">Program Aktif</p>
                 <h3 class="font-headline text-headline-xl text-on-surface relative z-10">{{ $activePrograms }}</h3>
