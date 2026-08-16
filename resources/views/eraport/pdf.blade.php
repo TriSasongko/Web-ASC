@@ -82,6 +82,13 @@
         <!-- Penilaian -->
         <h2>Penilaian Perkembangan</h2>
 
+        <div style="margin-bottom: 12px;">
+            <span style="font-size: 10px; color: #737785; margin-right: 8px;">Skala nilai:</span>
+            @foreach (\App\Models\Development::scores() as $scoreKey => $scoreLabel)
+                <span class="score score-{{ $scoreKey }}" style="margin-right: 4px;">{{ $loop->iteration }} · {{ $scoreLabel }}</span>
+            @endforeach
+        </div>
+
         <h3>Penilaian Umum</h3>
         <table class="matrix">
             <tr>

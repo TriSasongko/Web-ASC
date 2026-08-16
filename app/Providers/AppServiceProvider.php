@@ -6,6 +6,7 @@ use App\Models\Registration;
 use App\Models\SchoolClass;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema; // <-- Ditambahkan
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Solusi untuk error: 1071 Specified key was too long
+        Schema::defaultStringLength(191);
+
         View::composer('layouts.sidebar', function ($view) {
             $role = Auth::check() ? Auth::user()->role : null;
 

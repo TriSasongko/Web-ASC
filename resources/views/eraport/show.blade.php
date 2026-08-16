@@ -14,6 +14,14 @@
                 default => 'bg-surface-container-low text-outline',
             };
         };
+        $dimensionMap = ['Penilaian Umum' => ['aspects' => \App\Models\Development::umumAspects()]];
+        foreach (\App\Models\Development::styles() as $style => $styleLabel) {
+            $dimensionMap[$styleLabel] = [
+                'aspects' => collect(\App\Models\Development::khususAspects())
+                    ->mapWithKeys(fn ($label, $aspect) => [\App\Models\Development::styleAspectKey($style, $aspect) => $label])
+                    ->all(),
+            ];
+        }
     @endphp
 
     <div class="space-y-6">
@@ -162,7 +170,7 @@
             </div>
 
             <!-- Right Column (Matrix & Narrative) -->
-            <div class="lg:col-span-8 flex flex-col gap-gutter">
+            <div class="lg:col-span-8 flex flex-col gap-gutter" x-data="{ dim: null }">
                 <!-- Skill Matrix -->
                 <div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,71,169,0.05)] p-6 flex flex-col hover:-translate-y-0.5 transition-transform duration-300">
                     <div class="flex items-center justify-between mb-6 pb-4 border-b border-outline-variant/30">
@@ -187,23 +195,50 @@
                                     data-values='{{ json_encode($radarData['values']) }}'
                                     data-colors='{{ json_encode($chartColors) }}'></canvas>
                             </div>
-                            <ul class="mt-5 space-y-2">
+                            <ul class="mt-5 space-y-1">
                                 @foreach ($radarData['labels'] as $i => $label)
-                                    <li class="flex items-center justify-between gap-2">
-                                        <span class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant min-w-0">
-                                            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $chartColors[$i] }}"></span>
-                                            <span class="truncate">{{ $label }}</span>
-                                        </span>
-                                        <span class="font-label-sm text-label-sm text-on-surface shrink-0">
-                                            {{ \App\Models\Development::scoreLabel($radarData['keys'][$i] ?? null) }}
-                                        </span>
-                                    </li>
+                                    @php $dim = $dimensionMap[$label] ?? null; @endphp
+                                    @if ($dim)
+                                        <li>
+                                            <button type="button" @click="dim = @js($label)"
+                                                class="w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg hover:bg-surface-container-low transition-colors group">
+                                                <span class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant min-w-0">
+                                                    <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $chartColors[$i] }}"></span>
+                                                    <span class="truncate">{{ $label }}</span>
+                                                </span>
+                                                <span class="flex items-center gap-1 shrink-0">
+                                                    <span class="font-label-sm text-label-sm text-on-surface">
+                                                        {{ \App\Models\Development::scoreLabel($radarData['keys'][$i] ?? null) }}
+                                                    </span>
+                                                    <span class="material-symbols-outlined text-[16px] text-outline group-hover:text-primary transition-colors">chevron_right</span>
+                                                </span>
+                                            </button>
+                                        </li>
+                                    @else
+                                        <li class="flex items-center justify-between gap-2 px-2.5 py-2">
+                                            <span class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant min-w-0">
+                                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: {{ $chartColors[$i] }}"></span>
+                                                <span class="truncate">{{ $label }}</span>
+                                            </span>
+                                            <span class="font-label-sm text-label-sm text-on-surface shrink-0">
+                                                {{ \App\Models\Development::scoreLabel($radarData['keys'][$i] ?? null) }}
+                                            </span>
+                                        </li>
+                                    @endif
                                 @endforeach
                             </ul>
                         </div>
 
                         <!-- Skill Matrix -->
                         <div class="col-span-1 md:col-span-2 overflow-x-auto custom-scrollbar pb-2">
+                            <div class="flex flex-wrap items-center gap-2 mb-4">
+                                <span class="font-label-sm text-label-sm text-on-surface-variant mr-1">Skala nilai:</span>
+                                @foreach (\App\Models\Development::scores() as $scoreKey => $scoreLabel)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full {{ $scoreBadge($scoreKey) }} font-label-sm text-label-sm">
+                                        {{ $loop->iteration }} · {{ $scoreLabel }}
+                                    </span>
+                                @endforeach
+                            </div>
                             <table class="w-full text-left border-collapse min-w-[560px]">
                             <thead>
                                 <tr>
@@ -262,7 +297,48 @@
                         </p>
                     @endif
                 </div>
+
+                <!-- Dimension Detail Popup -->
+                <div x-show="dim !== null" x-cloak x-transition.opacity class="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]" @click="dim = null"></div>
+                <div x-show="dim !== null" x-cloak x-transition @keydown.escape.window="dim = null" role="dialog" aria-modal="true"
+                    class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+                    <div class="w-full max-w-md bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col pointer-events-auto">
+                        <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30">
+                            <div>
+                                <h3 class="font-headline text-headline-sm text-on-surface" x-text="dim !== null ? dim : ''"></h3>
+                                <p class="font-body-sm text-body-sm text-outline mt-0.5">Rincian aspek penilaian</p>
+                            </div>
+                            <button type="button" @click="dim = null"
+                                class="w-9 h-9 rounded-full hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant transition-colors">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+                        <div class="px-6 py-5 overflow-y-auto">
+                            @foreach ($dimensionMap as $dimLabel => $dimInfo)
+                                <div x-show="dim === @js($dimLabel)" class="divide-y divide-outline-variant/30 rounded-xl border border-outline-variant/30 overflow-hidden">
+                                    @foreach ($dimInfo['aspects'] as $aspectKey => $aspectLabel)
+                                        <div class="flex items-center justify-between gap-3 px-4 py-3">
+                                            <span class="font-body-sm text-body-sm text-on-surface">{{ $aspectLabel }}</span>
+                                            <span class="inline-flex items-center justify-center px-3 py-1 rounded-full {{ $scoreBadge($development->$aspectKey) }} font-label-sm text-label-sm shrink-0">
+                                                {{ \App\Models\Development::scoreLabel($development->$aspectKey) }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                            <div class="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-outline-variant/30">
+                                <span class="font-label-sm text-label-sm text-on-surface-variant mr-1">Skala nilai:</span>
+                                @foreach (\App\Models\Development::scores() as $scoreKey => $scoreLabel)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full {{ $scoreBadge($scoreKey) }} font-label-sm text-label-sm">
+                                        {{ $loop->iteration }} · {{ $scoreLabel }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
     @vite(['resources/js/eraport.js'])
