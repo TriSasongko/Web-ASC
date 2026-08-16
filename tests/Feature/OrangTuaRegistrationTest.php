@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Program;
+use App\Models\Registration;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -57,5 +59,43 @@ class OrangTuaRegistrationTest extends TestCase
             'full_name' => 'Anak Test',
             'address' => 'Jl. Melati No. 12',
         ]);
+    }
+
+    public function test_registration_index_shows_confirmation_popup_when_pending(): void
+    {
+        $parent = User::factory()->create([
+            'role' => 'orang_tua',
+            'is_active' => true,
+        ]);
+
+        $program = Program::create([
+            'name' => 'Reguler',
+            'slug' => 'reguler',
+            'total_sessions' => 8,
+            'price' => 350000,
+            'billing_type' => 'per_paket',
+            'is_active' => true,
+        ]);
+
+        $student = Student::create([
+            'parent_id' => $parent->id,
+            'full_name' => 'Anak Baru',
+            'gender' => 'L',
+        ]);
+
+        Registration::create([
+            'student_id' => $student->id,
+            'program_id' => $program->id,
+            'status' => 'menunggu_verifikasi',
+        ]);
+
+        $this->actingAs($parent)
+            ->get(route('orangtua.registrations.index'))
+            ->assertOk()
+            ->assertSee('Konfirmasi Pendaftaran & Pembayaran', false)
+            ->assertSee('Konfirmasi ke Admin')
+            ->assertSee('Selesaikan Pembayaran')
+            ->assertSee('Konfirmasi via WhatsApp')
+            ->assertSee('Anak Baru');
     }
 }

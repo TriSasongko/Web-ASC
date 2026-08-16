@@ -19,7 +19,15 @@ class RegistrationController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('orangtua.registrations.index', compact('registrations'));
+        $pendingRegistration = Registration::whereHas('student', function ($q) {
+            $q->where('parent_id', auth()->id());
+        })
+            ->with(['student', 'program'])
+            ->where('status', 'menunggu_verifikasi')
+            ->latest()
+            ->first();
+
+        return view('orangtua.registrations.index', compact('registrations', 'pendingRegistration'));
     }
 
     public function create()

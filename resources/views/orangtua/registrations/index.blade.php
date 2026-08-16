@@ -156,4 +156,6 @@
             <div class="p-4 border-t border-outline-variant/30">{{ $registrations->links() }}</div>
         </div>
     </div>
+
+    @include('orangtua._confirmation_popup', ['reg' => $pendingRegistration])
 </x-sidebar-layout>

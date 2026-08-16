@@ -634,4 +634,6 @@
             </div>
         </div>
     @endif
+
+    @include('orangtua._confirmation_popup', ['reg' => $registrations->firstWhere('status', 'menunggu_verifikasi')])
 </x-sidebar-layout>

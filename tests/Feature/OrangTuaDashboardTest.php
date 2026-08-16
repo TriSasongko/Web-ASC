@@ -136,6 +136,98 @@ class OrangTuaDashboardTest extends TestCase
             ->assertSee('Anak Baru');
     }
 
+    public function test_dashboard_shows_confirmation_and_payment_popup_when_registration_pending()
+    {
+        $parent = $this->makeParent();
+
+        $program = Program::create([
+            'name' => 'Reguler',
+            'slug' => 'reguler',
+            'total_sessions' => 8,
+            'price' => 350000,
+            'billing_type' => 'per_paket',
+            'is_active' => true,
+        ]);
+
+        $student = Student::create([
+            'parent_id' => $parent->id,
+            'full_name' => 'Anak Baru',
+            'gender' => 'L',
+        ]);
+
+        Registration::create([
+            'student_id' => $student->id,
+            'program_id' => $program->id,
+            'status' => 'menunggu_verifikasi',
+        ]);
+
+        $this->actingAs($parent)
+            ->get(route('orangtua.dashboard'))
+            ->assertOk()
+            ->assertSee('Konfirmasi Pendaftaran & Pembayaran', false)
+            ->assertSee('Konfirmasi ke Admin')
+            ->assertSee('Selesaikan Pembayaran')
+            ->assertSee('Konfirmasi via WhatsApp')
+            ->assertSee('Biaya Paket')
+            ->assertSee('Rp 350.000');
+    }
+
+    public function test_dashboard_keeps_showing_confirmation_popup_even_with_active_package()
+    {
+        $parent = $this->makeParent();
+
+        $program = Program::create([
+            'name' => 'Reguler',
+            'slug' => 'reguler',
+            'total_sessions' => 8,
+            'price' => 350000,
+            'billing_type' => 'per_paket',
+            'is_active' => true,
+        ]);
+
+        $class = SchoolClass::create([
+            'program_id' => $program->id,
+            'name' => 'Reguler A',
+            'level' => 1,
+            'is_active' => true,
+        ]);
+
+        $activeStudent = Student::create([
+            'parent_id' => $parent->id,
+            'full_name' => 'Anak Aktif',
+            'gender' => 'L',
+        ]);
+
+        ClassStudent::create([
+            'class_id' => $class->id,
+            'student_id' => $activeStudent->id,
+            'level' => 1,
+            'sessions_completed' => 2,
+            'is_active' => true,
+            'renewal_status' => 'aktif',
+            'started_at' => now(),
+        ]);
+
+        $pendingStudent = Student::create([
+            'parent_id' => $parent->id,
+            'full_name' => 'Anak Baru',
+            'gender' => 'L',
+        ]);
+
+        Registration::create([
+            'student_id' => $pendingStudent->id,
+            'program_id' => $program->id,
+            'status' => 'menunggu_verifikasi',
+        ]);
+
+        $this->actingAs($parent)
+            ->get(route('orangtua.dashboard'))
+            ->assertOk()
+            ->assertSee('Konfirmasi Pendaftaran & Pembayaran', false)
+            ->assertSee('Konfirmasi ke Admin')
+            ->assertSee('Anak Baru');
+    }
+
     public function test_dashboard_shows_development_pie_chart_per_child()
     {
         $parent = $this->makeParent();
