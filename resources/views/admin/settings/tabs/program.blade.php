@@ -128,7 +128,7 @@
 
             <div class="space-y-4">
                 @forelse ($programs as $program)
-                    <div class="border border-outline-variant/30 rounded-xl overflow-hidden" x-data="{ editing: false }">
+                    <div class="border border-outline-variant/30 rounded-xl overflow-hidden" x-data="{ editing: false, deleteOpen: false }">
                         <div class="flex items-start gap-4 p-4">
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
@@ -163,13 +163,10 @@
                                     class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit">
                                     <span class="material-symbols-outlined text-[20px]" x-text="editing ? 'close' : 'edit'">edit</span>
                                 </button>
-                                <form action="{{ route('admin.settings.programs.destroy', $program) }}" method="POST"
-                                    onsubmit="return confirm('Hapus program ini?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus">
-                                        <span class="material-symbols-outlined text-[20px]">delete</span>
-                                    </button>
-                                </form>
+                                <button type="button" @click="deleteOpen = true"
+                                    class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
                             </div>
                         </div>
 
@@ -251,6 +248,41 @@
                             </div>
                             <x-primary-button>Simpan Perubahan</x-primary-button>
                         </form>
+
+                        <div x-show="deleteOpen" x-cloak x-transition.opacity
+                            class="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+                            @click="deleteOpen = false"></div>
+
+                        <div x-show="deleteOpen" x-cloak x-transition
+                            @keydown.escape.window="deleteOpen = false"
+                            class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                            <div class="w-full max-w-sm bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden">
+                                <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30 bg-surface/50">
+                                    <div>
+                                        <h3 class="font-headline text-headline-sm text-on-surface">Hapus Program</h3>
+                                        <p class="font-body-sm text-body-sm text-outline mt-0.5">{{ $program->name }}</p>
+                                    </div>
+                                    <button @click="deleteOpen = false" type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors">
+                                        <span class="material-symbols-outlined text-[20px]">close</span>
+                                    </button>
+                                </div>
+                                <div class="px-6 py-5">
+                                    <p class="font-body-sm text-body-sm text-on-surface-variant">Yakin ingin menghapus program ini? Tindakan ini tidak dapat dibatalkan.</p>
+                                    <div class="flex items-center justify-end gap-2 mt-4">
+                                        <button @click="deleteOpen = false" type="button" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all">
+                                            Batal
+                                        </button>
+                                        <form action="{{ route('admin.settings.programs.destroy', $program) }}" method="POST">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="inline-flex items-center justify-center gap-2 bg-error text-on-error px-4 py-2 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all active:scale-95">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 @empty
                     <p class="text-center font-body-sm text-body-sm text-outline py-8">Belum ada program. Tambahkan program pertama Anda.</p>
