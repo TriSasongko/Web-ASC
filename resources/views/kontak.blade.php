@@ -5,23 +5,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Hubungi Kami - Antasena Swimming Club</title>
 
-        <!-- Fonts: Montserrat, Inter & Material Symbols -->
+        <!-- Fonts: Manrope & Material Symbols -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:wght@100..900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
         <!-- Styles / Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <style>
             body {
-                font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+                font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
             }
             .font-body {
-                font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+                font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
             }
             .font-headline {
-                font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+                font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
             }
             .material-symbols-outlined {
                 font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
