@@ -59,7 +59,7 @@
                 <!-- Mobile Logo (Visible only on small screens) -->
                 <div class="flex items-center justify-center gap-2 pt-6 mb-10 md:hidden shrink-0">
                     <img src="{{ asset('images/Logo_ASR.png') }}" alt="AantassenaSwimClub" class="h-12 w-auto rounded-xl bg-primary p-1.5">
-                    <h1 class="font-headline text-headline-md text-primary">AantassenaSwimClub</h1>
+                    <h1 class="font-headline text-headline-md text-primary">Aantassena<br> Swim Club</h1>
                 </div>
                 <div class="w-full max-w-sm py-8 mx-auto my-auto md:py-0">
                     {{ $slot }}

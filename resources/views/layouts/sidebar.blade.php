@@ -86,7 +86,7 @@
                     <img src="{{ asset('images/Logo_ASR.png') }}" alt="AantassenaSwimClub"
                         class="object-contain w-14 h-14 shrink-0">
                     <div>
-                        <h1 class="font-extrabold font-headline text-headline-md text-primary">AantassenaSwimClub</h1>
+                        <h1 class="font-extrabold font-headline text-headline-md text-primary">Aantassena<br class="md:hidden"> Swim Club</h1>
                         <p class="font-label-sm text-label-sm text-outline">Elite Performance</p>
                     </div>
                 </div>

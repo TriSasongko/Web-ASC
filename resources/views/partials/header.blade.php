@@ -15,9 +15,7 @@
         <!-- Logo -->
         <a href="/" class="flex items-center gap-2 min-w-0">
             <img src="{{ asset('images/Logo_ASR.png') }}" alt="Logo AantassenaSwimClub" class="w-10 h-10 shrink-0 object-contain">
-            <span class="font-bold font-headline text-headline-sm md:text-headline-md text-primary truncate">
-                <span>AantassenaSwimClub</span>
-            </span>
+                <span class="font-bold font-headline text-headline-sm md:text-headline-md text-primary truncate">AantassenaSwimClub</span>
         </a>
 
         <!-- Desktop Links -->
