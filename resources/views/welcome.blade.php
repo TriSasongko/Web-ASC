@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Antasena Swimming Club - Belajar Renang Bersama Coach Berpengalaman</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/Logo_ASR.png') }}">
 
     <!-- Fonts: Manrope & Material Symbols -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

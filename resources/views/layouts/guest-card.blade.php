@@ -6,6 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
+        <link rel="icon" type="image/png" href="{{ asset('images/Logo_ASR.png') }}">
 
         <!-- Fonts: Plus Jakarta Sans & Material Symbols -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
