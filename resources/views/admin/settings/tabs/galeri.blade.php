@@ -59,6 +59,7 @@
                     <x-input-label for="gallery_photo" value="Foto" />
                     <input type="file" id="gallery_photo" name="photo" accept="image/*" x-show="aspect !== 'video'"
                         class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                    <p class="font-body-xs text-body-xs text-outline mt-1" x-show="aspect !== 'video'">Maks. 2 MB</p>
                     <x-input-error :messages="$errors->get('photo')" class="mt-2" />
                     <x-input-label for="gallery_image_url" value="URL Video" />
                     <x-text-input id="gallery_image_url" name="image_url" class="mt-1 block w-full"
@@ -152,6 +153,7 @@
                                 @endif
                                 <input type="file" id="gallery_photo_{{ $image->id }}" name="photo" accept="image/*" x-show="aspect !== 'video'"
                                     class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                <p class="font-body-xs text-body-xs text-outline mt-1" x-show="aspect !== 'video'">Maks. 2 MB</p>
                                 <x-input-error :messages="$errors->get('photo')" class="mt-2" />
                                 <x-input-label for="gallery_image_url_{{ $image->id }}" value="URL Video" />
                                 <x-text-input id="gallery_image_url_{{ $image->id }}" name="image_url" class="mt-1 block w-full"

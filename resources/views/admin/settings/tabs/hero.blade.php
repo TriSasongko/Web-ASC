@@ -44,6 +44,7 @@
                 @endif
                 <input type="file" id="hero_image" name="hero_image" accept="image/*"
                     class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                <p class="font-body-xs text-body-xs text-outline mt-1">Maks. 2 MB</p>
                 <x-input-error :messages="$errors->get('hero_image')" class="mt-2" />
                 @if (! empty($s['hero_image'] ?? ''))
                     <label class="inline-flex items-center gap-2 mt-2 font-label-md text-label-md text-on-surface-variant">
@@ -61,6 +62,7 @@
                 @endif
                 <input type="file" id="hero_side_image" name="hero_side_image" accept="image/*"
                     class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                <p class="font-body-xs text-body-xs text-outline mt-1">Maks. 2 MB</p>
                 <x-input-error :messages="$errors->get('hero_side_image')" class="mt-2" />
                 @if (! empty($s['hero_side_image'] ?? ''))
                     <label class="inline-flex items-center gap-2 mt-2 font-label-md text-label-md text-on-surface-variant">

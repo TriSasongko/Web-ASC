@@ -68,6 +68,7 @@
                     @endif
                     <input type="file" id="tentang_image" name="tentang_image" accept="image/*"
                         class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                    <p class="font-body-xs text-body-xs text-outline mt-1">Maks. 2 MB</p>
                     <x-input-error :messages="$errors->get('tentang_image')" class="mt-2" />
                     @if (! empty($s['tentang_image'] ?? ''))
                         <label class="inline-flex items-center gap-2 mt-2 font-label-md text-label-md text-on-surface-variant">
@@ -144,6 +145,7 @@
                             <x-input-label for="coach_photo" value="Foto Coach" />
                             <input type="file" id="coach_photo" name="photo" accept="image/*"
                                 class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                            <p class="font-body-xs text-body-xs text-outline mt-1">Maks. 2 MB</p>
                             <x-input-error :messages="$errors->get('photo')" class="mt-2" />
                         </div>
                         <div>
@@ -243,6 +245,7 @@
                                             @endif
                                             <input type="file" id="coach_photo_{{ $coach->id }}" name="photo" accept="image/*"
                                                 class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all">
+                                            <p class="font-body-xs text-body-xs text-outline mt-1">Maks. 2 MB</p>
                                             <x-input-error :messages="$errors->get('photo')" class="mt-2" />
                                         </div>
                                         <div>
