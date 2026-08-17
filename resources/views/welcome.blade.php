@@ -12,6 +12,7 @@
     <meta property="og:type" content="website">
     <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
     <meta property="og:url" content="{{ url('/') }}">
+    <meta name="google-site-verification" content="UpITRXp3ZVBELmykN2Pfj3T0gsljISCJ_GF5bpMmA9w" />
     <link rel="canonical" href="{{ url('/') }}">
     <link rel="icon" type="image/png" href="{{ asset('images/Logo_ASR.png') }}">
 
