@@ -103,7 +103,7 @@
                         <span class="transition-colors material-symbols-outlined text-outline group-hover:text-primary">settings</span>
                         <span class="font-label-md text-label-md">Pengaturan</span>
                     </a>
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout.post') }}">
                         @csrf
                         <button type="submit"
                             class="flex items-center w-full gap-3 px-4 py-3 transition-colors rounded-lg text-on-surface-variant hover:bg-surface-container-low group">
@@ -176,7 +176,7 @@
                                         <span class="material-symbols-outlined text-[18px] text-outline">person</span>
                                         Profil
                                     </a>
-                                    <form method="POST" action="{{ route('logout') }}">
+                                    <form method="POST" action="{{ route('logout.post') }}">
                                         @csrf
                                         <button type="submit"
                                             class="flex items-center w-full gap-2 px-4 py-2 transition-colors text-body-sm text-on-surface hover:bg-surface-container-low">
