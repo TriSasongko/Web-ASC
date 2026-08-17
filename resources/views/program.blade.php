@@ -4,6 +4,14 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Program Pelatihan - Antasena Swimming Club</title>
+        <meta name="description" content="Pilihan program pelatihan renang di Antasena Swimming Club: Reguler, Privat, dan Kompetitif untuk semua level kemampuan.">
+        <meta property="og:title" content="Program Pelatihan - Antasena Swimming Club">
+        <meta property="og:description" content="Pilihan program pelatihan renang di Antasena Swimming Club: Reguler, Privat, dan Kompetitif untuk semua level kemampuan.">
+        <meta property="og:type" content="website">
+        <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
+        <meta property="og:url" content="{{ url('/program') }}">
+        <link rel="canonical" href="{{ url('/program') }}">
+        <link rel="icon" type="image/png" href="{{ asset('images/Logo_ASR.png') }}">
 
         <!-- Fonts: Manrope & Material Symbols -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

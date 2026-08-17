@@ -4,6 +4,14 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Hubungi Kami - Antasena Swimming Club</title>
+        <meta name="description" content="Hubungi Antasena Swimming Club untuk informasi pendaftaran, jadwal latihan, dan pertanyaan lainnya. Kami siap membantu Anda.">
+        <meta property="og:title" content="Hubungi Kami - Antasena Swimming Club">
+        <meta property="og:description" content="Hubungi Antasena Swimming Club untuk informasi pendaftaran, jadwal latihan, dan pertanyaan lainnya. Kami siap membantu Anda.">
+        <meta property="og:type" content="website">
+        <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
+        <meta property="og:url" content="{{ url('/kontak') }}">
+        <link rel="canonical" href="{{ url('/kontak') }}">
+        <link rel="icon" type="image/png" href="{{ asset('images/Logo_ASR.png') }}">
 
         <!-- Fonts: Manrope & Material Symbols -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

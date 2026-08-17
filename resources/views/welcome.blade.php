@@ -5,6 +5,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Antasena Swimming Club - Belajar Renang Bersama Coach Berpengalaman</title>
+    <meta name="description" content="Antasena Swimming Club (ASC) adalah klub renang terpercaya untuk anak-anak dan pemula. Belajar renang bersama coach berpengalaman dengan program latihan terstruktur.">
+    <meta name="keywords" content=" klub renang, les renang, belajar renang, Antasena Swimming Club, ASC, renang anak, coach renang">
+    <meta property="og:title" content="Antasena Swimming Club - Belajar Renang Bersama Coach Berpengalaman">
+    <meta property="og:description" content="Antasena Swimming Club (ASC) adalah klub renang terpercaya untuk anak-anak dan pemula. Belajar renang bersama coach berpengalaman dengan program latihan terstruktur.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
+    <meta property="og:url" content="{{ url('/') }}">
+    <link rel="canonical" href="{{ url('/') }}">
     <link rel="icon" type="image/png" href="{{ asset('images/Logo_ASR.png') }}">
 
     <!-- Fonts: Manrope & Material Symbols -->

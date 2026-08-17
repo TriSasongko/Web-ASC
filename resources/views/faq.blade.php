@@ -4,6 +4,14 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Pertanyaan Umum (FAQ) - Antasena Swimming Club</title>
+        <meta name="description" content="Jawaban atas pertanyaan umum seputar pendaftaran, jadwal latihan, biaya, dan program di Antasena Swimming Club.">
+        <meta property="og:title" content="Pertanyaan Umum (FAQ) - Antasena Swimming Club">
+        <meta property="og:description" content="Jawaban atas pertanyaan umum seputar pendaftaran, jadwal latihan, biaya, dan program di Antasena Swimming Club.">
+        <meta property="og:type" content="website">
+        <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
+        <meta property="og:url" content="{{ url('/faq') }}">
+        <link rel="canonical" href="{{ url('/faq') }}">
+        <link rel="icon" type="image/png" href="{{ asset('images/Logo_ASR.png') }}">
 
         <!-- Fonts: Manrope & Material Symbols -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -4,6 +4,14 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Tentang Kami - Antasena Swimming Club</title>
+        <meta name="description" content="Kenali lebih dekat Antasena Swimming Club. Sejarah, visi misi, dan tim coach berpengalaman yang membimbing atlet renang muda berprestasi.">
+        <meta property="og:title" content="Tentang Kami - Antasena Swimming Club">
+        <meta property="og:description" content="Kenali lebih dekat Antasena Swimming Club. Sejarah, visi misi, dan tim coach berpengalaman yang membimbing atlet renang muda berprestasi.">
+        <meta property="og:type" content="website">
+        <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
+        <meta property="og:url" content="{{ url('/tentang') }}">
+        <link rel="canonical" href="{{ url('/tentang') }}">
+        <link rel="icon" type="image/png" href="{{ asset('images/Logo_ASR.png') }}">
 
         <!-- Fonts: Manrope & Material Symbols -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

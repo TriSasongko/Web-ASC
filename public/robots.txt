@@ -1,2 +1,22 @@
 User-agent: *
-Disallow:
+Allow: /
+Allow: /tentang
+Allow: /program
+Allow: /galeri
+Allow: /faq
+Allow: /kontak
+
+Disallow: /admin/
+Disallow: /pelatih/
+Disallow: /orangtua/
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /confirm-password
+Disallow: /profile
+Disallow: /eraport/
+
+Sitemap: https://antasenaswimmingclub.com/sitemap.xml
