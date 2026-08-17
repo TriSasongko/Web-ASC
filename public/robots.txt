@@ -19,4 +19,4 @@ Disallow: /confirm-password
 Disallow: /profile
 Disallow: /eraport/
 
-Sitemap: https://antasenaswimmingclub.com/sitemap.xml
+Sitemap: https://aantassenaswimclub.com/sitemap.xml
