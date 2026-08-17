@@ -60,7 +60,7 @@
                             . "Mohon dibantu untuk proses pendaftarannya, Admin.\n\n"
                             . "Terima kasih atas bantuan dan informasinya. 🙏";
 
-                        $waUrl = 'https://wa.me/62895609706131?text=' . rawurlencode($waText);
+                        $waUrl = 'https://wa.me/' . \App\Models\User::adminPhone() . '?text=' . rawurlencode($waText);
                     @endphp
                     <div class="p-4 hover:bg-surface-container-low/50 transition-colors">
                         <div class="flex items-start justify-between gap-3">
@@ -124,7 +124,7 @@
                                     . "Mohon dibantu untuk proses pendaftarannya, Admin.\n\n"
                                     . "Terima kasih atas bantuan dan informasinya. 🙏";
 
-                                $waUrl = 'https://wa.me/62895609706131?text=' . rawurlencode($waText);
+                                $waUrl = 'https://wa.me/' . \App\Models\User::adminPhone() . '?text=' . rawurlencode($waText);
                             @endphp
                             <tr class="hover:bg-surface-container-low/50 transition-colors">
                                 <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $student->full_name }}</td>

@@ -44,7 +44,7 @@
                                 . 'Saya ' . auth()->user()->name . ', orang tua/wali dari *' . ($reg->student?->full_name ?? '-') . '* yang telah mendaftar program *' . ($reg->program?->name ?? '-') . '* (biaya paket ' . $fmt($reg->program?->price) . ").\n\n"
                                 . 'Mohon konfirmasi pendaftaran dan informasi pembayaran paketnya agar bisa segera diproses.' . "\n\n"
                                 . 'Terima kasih atas bantuan dan informasinya. 🙏';
-                            $waUrl = 'https://wa.me/62895609706131?text=' . rawurlencode($waText);
+                            $waUrl = 'https://wa.me/' . \App\Models\User::adminPhone() . '?text=' . rawurlencode($waText);
                         @endphp
                         <div class="rounded-xl border border-outline-variant/30 bg-surface/50 p-4">
                             <div class="flex items-start justify-between gap-3">
