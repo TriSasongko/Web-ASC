@@ -3,10 +3,10 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Tentang Kami - Antasena Swimming Club</title>
-        <meta name="description" content="Kenali lebih dekat Antasena Swimming Club. Sejarah, visi misi, dan tim coach berpengalaman yang membimbing atlet renang muda berprestasi.">
-        <meta property="og:title" content="Tentang Kami - Antasena Swimming Club">
-        <meta property="og:description" content="Kenali lebih dekat Antasena Swimming Club. Sejarah, visi misi, dan tim coach berpengalaman yang membimbing atlet renang muda berprestasi.">
+        <title>Tentang Kami - AantassenaSwimClub</title>
+        <meta name="description" content="Kenali lebih dekat AantassenaSwimClub. Sejarah, visi misi, dan tim coach berpengalaman yang membimbing atlet renang muda berprestasi.">
+        <meta property="og:title" content="Tentang Kami - AantassenaSwimClub">
+        <meta property="og:description" content="Kenali lebih dekat AantassenaSwimClub. Sejarah, visi misi, dan tim coach berpengalaman yang membimbing atlet renang muda berprestasi.">
         <meta property="og:type" content="website">
         <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
         <meta property="og:url" content="{{ url('/tentang') }}">

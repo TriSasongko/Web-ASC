@@ -3,10 +3,10 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Pertanyaan Umum (FAQ) - Antasena Swimming Club</title>
-        <meta name="description" content="Jawaban atas pertanyaan umum seputar pendaftaran, jadwal latihan, biaya, dan program di Antasena Swimming Club.">
-        <meta property="og:title" content="Pertanyaan Umum (FAQ) - Antasena Swimming Club">
-        <meta property="og:description" content="Jawaban atas pertanyaan umum seputar pendaftaran, jadwal latihan, biaya, dan program di Antasena Swimming Club.">
+        <title>Pertanyaan Umum (FAQ) - AantassenaSwimClub</title>
+        <meta name="description" content="Jawaban atas pertanyaan umum seputar pendaftaran, jadwal latihan, biaya, dan program di AantassenaSwimClub.">
+        <meta property="og:title" content="Pertanyaan Umum (FAQ) - AantassenaSwimClub">
+        <meta property="og:description" content="Jawaban atas pertanyaan umum seputar pendaftaran, jadwal latihan, biaya, dan program di AantassenaSwimClub.">
         <meta property="og:type" content="website">
         <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
         <meta property="og:url" content="{{ url('/faq') }}">
@@ -65,7 +65,7 @@
                     </span>
                     <h1 class="mb-4 font-headline text-headline-lg-mobile md:text-headline-xl text-primary">Pertanyaan Umum (FAQ)</h1>
                     <p class="max-w-2xl mx-auto font-body text-body-lg text-on-surface-variant">
-                        Temukan jawaban atas berbagai pertanyaan yang sering diajukan seputar pendaftaran, kelas, dan pembayaran di Antasena Swimming Club.
+                        Temukan jawaban atas berbagai pertanyaan yang sering diajukan seputar pendaftaran, kelas, dan pembayaran di AantassenaSwimClub.
                     </p>
                 </section>
 

@@ -24,8 +24,8 @@ class LandingPageSeeder extends Seeder
             'hero_cta_secondary' => 'Lihat Program',
 
             // Tentang
-            'tentang_heading' => 'Tentang Antasena Swimming Club',
-            'tentang_text' => 'Berdiri sejak tahun 2010, Antasena Swimming Club (ASC) telah mendedikasikan diri untuk mencetak generasi perenang yang tangguh, percaya diri, dan berprestasi. Kami percaya bahwa berenang bukan sekadar olahraga, melainkan keterampilan hidup (life skill) yang esensial.',
+            'tentang_heading' => 'Tentang AantassenaSwimClub',
+            'tentang_text' => 'Berdiri sejak tahun 2010, AantassenaSwimClub (ASC) telah mendedikasikan diri untuk mencetak generasi perenang yang tangguh, percaya diri, dan berprestasi. Kami percaya bahwa berenang bukan sekadar olahraga, melainkan keterampilan hidup (life skill) yang esensial.',
             'tentang_visi' => 'Menjadi klub renang terbaik yang menginspirasi gaya hidup sehat dan mencetak atlet berprestasi di tingkat nasional maupun internasional.',
             'tentang_misi' => "Menyediakan metode pelatihan yang aman, terstruktur, dan menyenangkan.\nMengembangkan potensi setiap individu melalui pendekatan personal.\nMenumbuhkan karakter disiplin, sportivitas, dan pantang menyerah.",
             'tentang_years' => '10+',

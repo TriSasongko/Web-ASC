@@ -3,10 +3,10 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Galeri Kegiatan - Antasena Swimming Club</title>
-        <meta name="description" content="Lihat momen-momen seru latihan renang dan kegiatan Antasena Swimming Club. Galeri foto kegiatan atlet renang muda.">
-        <meta property="og:title" content="Galeri Kegiatan - Antasena Swimming Club">
-        <meta property="og:description" content="Lihat momen-momen seru latihan renang dan kegiatan Antasena Swimming Club. Galeri foto kegiatan atlet renang muda.">
+        <title>Galeri Kegiatan - AantassenaSwimClub</title>
+        <meta name="description" content="Lihat momen-momen seru latihan renang dan kegiatan AantassenaSwimClub. Galeri foto kegiatan atlet renang muda.">
+        <meta property="og:title" content="Galeri Kegiatan - AantassenaSwimClub">
+        <meta property="og:description" content="Lihat momen-momen seru latihan renang dan kegiatan AantassenaSwimClub. Galeri foto kegiatan atlet renang muda.">
         <meta property="og:type" content="website">
         <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
         <meta property="og:url" content="{{ url('/galeri') }}">

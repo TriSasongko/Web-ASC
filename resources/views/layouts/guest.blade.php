@@ -43,8 +43,8 @@
                 <div class="relative z-20 flex flex-col justify-between h-full">
                     <!-- Logo Area -->
                     <div class="flex items-center gap-3">
-                        <img src="{{ asset('images/Logo_ASR.png') }}" alt="ANTASENA SC" class="w-auto h-14 drop-shadow-lg">
-                        <h1 class="font-headline text-headline-md text-on-primary">ANTASENA SC</h1>
+                        <img src="{{ asset('images/Logo_ASR.png') }}" alt="AantassenaSwimClub" class="w-auto h-14 drop-shadow-lg">
+                        <h1 class="font-headline text-headline-md text-on-primary">AantassenaSwimClub</h1>
                     </div>
                     <!-- Slogan Area -->
                     <div class="max-w-md">
@@ -58,8 +58,8 @@
             <section class="relative flex flex-col w-full h-full px-6 overflow-y-auto md:w-1/2 md:px-16 lg:px-24 bg-surface-container-lowest">
                 <!-- Mobile Logo (Visible only on small screens) -->
                 <div class="flex items-center justify-center gap-2 pt-6 mb-10 md:hidden shrink-0">
-                    <img src="{{ asset('images/Logo_ASR.png') }}" alt="ANTASENA SC" class="h-12 w-auto rounded-xl bg-primary p-1.5">
-                    <h1 class="font-headline text-headline-md text-primary">ANTASENA SC</h1>
+                    <img src="{{ asset('images/Logo_ASR.png') }}" alt="AantassenaSwimClub" class="h-12 w-auto rounded-xl bg-primary p-1.5">
+                    <h1 class="font-headline text-headline-md text-primary">AantassenaSwimClub</h1>
                 </div>
                 <div class="w-full max-w-sm py-8 mx-auto my-auto md:py-0">
                     {{ $slot }}

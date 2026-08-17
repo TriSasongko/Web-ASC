@@ -12,8 +12,8 @@
         <!-- Brand Column -->
         <div class="space-y-4">
             <a href="/" class="flex items-center gap-2 mb-6">
-                <img src="{{ asset('images/Logo_ASR.png') }}" alt="Logo Antasena Swimming Club" class="w-12 h-12 object-contain rounded-full">
-                <span class="font-bold font-headline text-headline-sm text-primary">Antasena Swimming Club</span>
+                <img src="{{ asset('images/Logo_ASR.png') }}" alt="Logo AantassenaSwimClub" class="w-12 h-12 object-contain rounded-full">
+                <span class="font-bold font-headline text-headline-sm text-primary">AantassenaSwimClub</span>
             </a>
             <p class="pr-4 text-on-surface-variant text-body-sm">
                 Mencetak perenang tangguh dengan metode aman, menyenangkan, dan profesional sejak 2010. Berbasis standar pelatihan modern.
@@ -68,13 +68,13 @@
                 allowfullscreen=""
                 loading="lazy"
                 referrerpolicy="strict-origin-when-cross-origin"
-                title="Lokasi Antasena Swimming Club"></iframe>
+                title="Lokasi AantassenaSwimClub"></iframe>
         </div>
     </div>
     <!-- Copyright -->
     <div class="py-4 mt-8 bg-primary text-on-primary">
         <div class="flex flex-col items-center justify-between gap-2 mx-auto text-center max-w-container_max_width px-margin_mobile md:px-margin_desktop font-body text-label-sm md:flex-row">
-            <p>&copy; {{ date('Y') }} Antasena Swimming Club. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} AantassenaSwimClub. All rights reserved.</p>
         </div>
     </div>
 </footer>

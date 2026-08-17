@@ -46,9 +46,9 @@
                             default => 'bg-[#FFF8E1] text-[#B26A00]',
                         };
 
-                        $waText = "Selamat {$salam} Admin Antasena Swimming Club.\n\n"
-                            . "Saya orang tua/wali dari calon peserta didik yang ingin mendaftarkan diri ke Antasena Swimming Club. Berikut data yang telah saya isi:\n\n"
-                            . "*Formulir Pendaftaran Antasena Swimming Club*\n\n"
+                        $waText = "Selamat {$salam} Admin AantassenaSwimClub.\n\n"
+                            . "Saya orang tua/wali dari calon peserta didik yang ingin mendaftarkan diri ke AantassenaSwimClub. Berikut data yang telah saya isi:\n\n"
+                            . "*Formulir Pendaftaran AantassenaSwimClub*\n\n"
                             . "Nama : {$student->full_name}\n"
                             . "TTL : {$ttl}\n"
                             . "Jenis Kelamin : {$gender}\n"
@@ -110,9 +110,9 @@
                                     default => 'bg-[#FFF8E1] text-[#B26A00]',
                                 };
 
-                                $waText = "Selamat {$salam} Admin Antasena Swimming Club.\n\n"
-                                    . "Saya orang tua/wali dari calon peserta didik yang ingin mendaftarkan diri ke Antasena Swimming Club. Berikut data yang telah saya isi:\n\n"
-                                    . "*Formulir Pendaftaran Antasena Swimming Club*\n\n"
+                                $waText = "Selamat {$salam} Admin AantassenaSwimClub.\n\n"
+                                    . "Saya orang tua/wali dari calon peserta didik yang ingin mendaftarkan diri ke AantassenaSwimClub. Berikut data yang telah saya isi:\n\n"
+                                    . "*Formulir Pendaftaran AantassenaSwimClub*\n\n"
                                     . "Nama : {$student->full_name}\n"
                                     . "TTL : {$ttl}\n"
                                     . "Jenis Kelamin : {$gender}\n"

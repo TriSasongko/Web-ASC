@@ -3,10 +3,10 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Hubungi Kami - Antasena Swimming Club</title>
-        <meta name="description" content="Hubungi Antasena Swimming Club untuk informasi pendaftaran, jadwal latihan, dan pertanyaan lainnya. Kami siap membantu Anda.">
-        <meta property="og:title" content="Hubungi Kami - Antasena Swimming Club">
-        <meta property="og:description" content="Hubungi Antasena Swimming Club untuk informasi pendaftaran, jadwal latihan, dan pertanyaan lainnya. Kami siap membantu Anda.">
+        <title>Hubungi Kami - AantassenaSwimClub</title>
+        <meta name="description" content="Hubungi AantassenaSwimClub untuk informasi pendaftaran, jadwal latihan, dan pertanyaan lainnya. Kami siap membantu Anda.">
+        <meta property="og:title" content="Hubungi Kami - AantassenaSwimClub">
+        <meta property="og:description" content="Hubungi AantassenaSwimClub untuk informasi pendaftaran, jadwal latihan, dan pertanyaan lainnya. Kami siap membantu Anda.">
         <meta property="og:type" content="website">
         <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
         <meta property="og:url" content="{{ url('/kontak') }}">
@@ -140,7 +140,7 @@
                         </p>
                         <form
                             class="space-y-5"
-                            @submit.prevent="window.open('{{ \App\Models\User::adminWaLink() }}?text=' + encodeURIComponent('Halo Antasena Swimming Club, saya ' + nama + (telepon ? ' (' + telepon + ')' : '') + '. ' + pesan), '_blank')">
+                            @submit.prevent="window.open('{{ \App\Models\User::adminWaLink() }}?text=' + encodeURIComponent('Halo AantassenaSwimClub, saya ' + nama + (telepon ? ' (' + telepon + ')' : '') + '. ' + pesan), '_blank')">
                             <div>
                                 <label class="block font-body text-label-md text-primary mb-2" for="nama">Nama Lengkap</label>
                                 <input type="text" id="nama" x-model="nama" required
@@ -177,7 +177,7 @@
                             allowfullscreen=""
                             loading="lazy"
                             referrerpolicy="strict-origin-when-cross-origin"
-                            title="Lokasi Antasena Swimming Club"></iframe>
+                            title="Lokasi AantassenaSwimClub"></iframe>
                         <div class="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto bg-surface/95 backdrop-blur px-4 sm:px-5 py-3 rounded-2xl pool-shadow flex items-center gap-3 pointer-events-none">
                             <span class="w-10 h-10 shrink-0 rounded-full bg-primary-container text-primary flex items-center justify-center">
                                 <span class="material-symbols-outlined">map</span>

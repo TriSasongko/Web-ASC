@@ -37,7 +37,7 @@ class LandingPageSettingTest extends TestCase
             ->assertSee('Temui Coach Kami')
             ->assertSee('Galeri Kegiatan');
 
-        $this->get('/tentang')->assertOk()->assertSee('Tentang Antasena Swimming Club');
+        $this->get('/tentang')->assertOk()->assertSee('Tentang AantassenaSwimClub');
         $this->get('/program')->assertOk()->assertSee('Program Kelas Kami')->assertSee('Private');
         $this->get('/galeri')->assertOk()->assertSee('Galeri Kegiatan');
         $this->get('/kontak')->assertOk()->assertSee('Jam Operasional');

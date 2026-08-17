@@ -14,9 +14,9 @@
     <div class="flex items-center justify-between py-4 mx-auto max-w-container_max_width px-margin_mobile md:px-margin_desktop">
         <!-- Logo -->
         <a href="/" class="flex items-center gap-2 min-w-0">
-            <img src="{{ asset('images/Logo_ASR.png') }}" alt="Logo Antasena Swimming Club" class="w-10 h-10 shrink-0 object-contain">
+            <img src="{{ asset('images/Logo_ASR.png') }}" alt="Logo AantassenaSwimClub" class="w-10 h-10 shrink-0 object-contain">
             <span class="font-bold font-headline text-headline-sm md:text-headline-md text-primary truncate">
-                <span>Antasena SC</span>
+                <span>AantassenaSwimClub</span>
             </span>
         </a>
 

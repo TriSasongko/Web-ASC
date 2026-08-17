@@ -3,10 +3,10 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Program Pelatihan - Antasena Swimming Club</title>
-        <meta name="description" content="Pilihan program pelatihan renang di Antasena Swimming Club: Reguler, Privat, dan Kompetitif untuk semua level kemampuan.">
-        <meta property="og:title" content="Program Pelatihan - Antasena Swimming Club">
-        <meta property="og:description" content="Pilihan program pelatihan renang di Antasena Swimming Club: Reguler, Privat, dan Kompetitif untuk semua level kemampuan.">
+        <title>Program Pelatihan - AantassenaSwimClub</title>
+        <meta name="description" content="Pilihan program pelatihan renang di AantassenaSwimClub: Reguler, Privat, dan Kompetitif untuk semua level kemampuan.">
+        <meta property="og:title" content="Program Pelatihan - AantassenaSwimClub">
+        <meta property="og:description" content="Pilihan program pelatihan renang di AantassenaSwimClub: Reguler, Privat, dan Kompetitif untuk semua level kemampuan.">
         <meta property="og:type" content="website">
         <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
         <meta property="og:url" content="{{ url('/program') }}">

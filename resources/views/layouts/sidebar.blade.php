@@ -83,10 +83,10 @@
                 class="fixed top-0 left-0 z-50 flex flex-col h-screen px-4 py-8 transition-transform duration-300 ease-in-out border-r w-sidebar_width bg-surface border-outline-variant/30 md:flex">
                 <!-- Brand -->
                 <div class="flex items-center gap-4 px-4 mb-10">
-                    <img src="{{ asset('images/Logo_ASR.png') }}" alt="Antasena SC"
+                    <img src="{{ asset('images/Logo_ASR.png') }}" alt="AantassenaSwimClub"
                         class="object-contain w-14 h-14 shrink-0">
                     <div>
-                        <h1 class="font-extrabold font-headline text-headline-md text-primary">Antasena SC</h1>
+                        <h1 class="font-extrabold font-headline text-headline-md text-primary">AantassenaSwimClub</h1>
                         <p class="font-label-sm text-label-sm text-outline">Elite Performance</p>
                     </div>
                 </div>

@@ -4,11 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Antasena Swimming Club - Belajar Renang Bersama Coach Berpengalaman</title>
-    <meta name="description" content="Antasena Swimming Club (ASC) adalah klub renang terpercaya untuk anak-anak dan pemula. Belajar renang bersama coach berpengalaman dengan program latihan terstruktur.">
-    <meta name="keywords" content=" klub renang, les renang, belajar renang, Antasena Swimming Club, ASC, renang anak, coach renang">
-    <meta property="og:title" content="Antasena Swimming Club - Belajar Renang Bersama Coach Berpengalaman">
-    <meta property="og:description" content="Antasena Swimming Club (ASC) adalah klub renang terpercaya untuk anak-anak dan pemula. Belajar renang bersama coach berpengalaman dengan program latihan terstruktur.">
+    <title>AantassenaSwimClub - Belajar Renang Bersama Coach Berpengalaman</title>
+    <meta name="description" content="AantassenaSwimClub (ASC) adalah klub renang terpercaya untuk anak-anak dan pemula. Belajar renang bersama coach berpengalaman dengan program latihan terstruktur.">
+    <meta name="keywords" content=" klub renang, les renang, belajar renang, AantassenaSwimClub, ASC, renang anak, coach renang">
+    <meta property="og:title" content="AantassenaSwimClub - Belajar Renang Bersama Coach Berpengalaman">
+    <meta property="og:description" content="AantassenaSwimClub (ASC) adalah klub renang terpercaya untuk anak-anak dan pemula. Belajar renang bersama coach berpengalaman dengan program latihan terstruktur.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="{{ asset('images/Logo_ASR.png') }}">
     <meta property="og:url" content="{{ url('/') }}">
@@ -146,9 +146,9 @@
             <div class="grid items-center grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
                 <div class="space-y-5 md:space-y-6">
                     <h2 class="font-bold font-headline text-headline-lg-mobile md:text-headline-lg text-primary">
-                        {{ $s['tentang_heading'] ?? 'Tentang Antasena Swimming Club' }}</h2>
+                        {{ $s['tentang_heading'] ?? 'Tentang AantassenaSwimClub' }}</h2>
                     <p class="text-on-surface-variant font-body text-body-md md:text-body-lg">
-                        {{ $s['tentang_text'] ?? 'Berdiri sejak tahun 2010, Antasena Swimming Club (ASC) telah mendedikasikan diri untuk mencetak generasi perenang yang tangguh, percaya diri, dan berprestasi. Kami percaya bahwa berenang bukan sekadar olahraga, melainkan keterampilan hidup (life skill) yang esensial.' }}
+                        {{ $s['tentang_text'] ?? 'Berdiri sejak tahun 2010, AantassenaSwimClub (ASC) telah mendedikasikan diri untuk mencetak generasi perenang yang tangguh, percaya diri, dan berprestasi. Kami percaya bahwa berenang bukan sekadar olahraga, melainkan keterampilan hidup (life skill) yang esensial.' }}
                     </p>
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="p-5 border-t-4 bg-surface-container-low rounded-xl border-orange">
@@ -659,7 +659,7 @@
 
                         Lihat berbagai momen latihan,
                         kebersamaan, dan pencapaian siswa
-                        Antasena Swimming Club.
+                        AantassenaSwimClub.
 
                     </p>
 
@@ -1009,8 +1009,7 @@
                     <h2 class="mb-4 font-bold font-headline text-headline-lg-mobile md:text-headline-xl">Siap Memulai
                         Perjalanan Renang Anda?</h2>
                     <p class="max-w-2xl mx-auto mb-8 font-body text-body-lg text-on-primary/90">Bergabunglah dengan
-                        ratusan siswa lainnya yang telah merasakan manfaat belajar renang bersama Antasena Swimming
-                        Club. Daftar sekarang dan jadilah perenang tangguh!</p>
+                        ratusan siswa lainnya yang telah merasakan manfaat belajar renang bersama AantassenaSwimClub. Daftar sekarang dan jadilah perenang tangguh!</p>
                     <a href="{{ route('register') }}"
                         class="inline-block px-8 py-4 text-white transition-colors duration-200 transform shadow-lg bg-orange rounded-xl font-body text-label-md hover:bg-orange-light shadow-orange/40 hover:scale-105">
                         Daftar Sekarang Juga

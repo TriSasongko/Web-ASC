@@ -40,7 +40,7 @@
                 <div class="px-6 py-5 overflow-y-auto space-y-3">
                     @foreach ($regs as $reg)
                         @php
-                            $waText = "Selamat {$salam} Admin Antasena Swimming Club.\n\n"
+                            $waText = "Selamat {$salam} Admin AantassenaSwimClub.\n\n"
                                 . 'Saya ' . auth()->user()->name . ', orang tua/wali dari *' . ($reg->student?->full_name ?? '-') . '* yang telah mendaftar program *' . ($reg->program?->name ?? '-') . '* (biaya paket ' . $fmt($reg->program?->price) . ").\n\n"
                                 . 'Mohon konfirmasi pendaftaran dan informasi pembayaran paketnya agar bisa segera diproses.' . "\n\n"
                                 . 'Terima kasih atas bantuan dan informasinya. 🙏';

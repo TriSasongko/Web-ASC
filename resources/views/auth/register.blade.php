@@ -1,7 +1,7 @@
 <x-guest-card-layout>
     <!-- Header -->
     <div class="text-center mb-8">
-        <h1 class="font-headline text-headline-md text-primary mb-2">ANTASENA SC</h1>
+        <h1 class="font-headline text-headline-md text-primary mb-2">AantassenaSwimClub</h1>
         <p class="font-body text-body-sm text-on-surface-variant">Buat akun Anda untuk bergabung dengan platform performa elit.</p>
     </div>
 
@@ -87,7 +87,7 @@
             <div class="flex items-start justify-between gap-4 px-6 py-4 border-b border-outline-variant/30 bg-surface-container-lowest sticky top-0 z-10">
                 <div>
                     <h3 class="font-headline text-headline-sm text-on-surface">Syarat &amp; Ketentuan</h3>
-                    <p class="font-body-sm text-body-sm text-outline mt-1">Pendaftaran &amp; Kegiatan Latihan Renang ANTASENA SC</p>
+                    <p class="font-body-sm text-body-sm text-outline mt-1">Pendaftaran &amp; Kegiatan Latihan Renang AantassenaSwimClub</p>
                 </div>
                 <button type="button" @click="$dispatch('close-modal', 'syarat-ketentuan')" class="text-outline hover:text-on-surface transition-colors shrink-0">
                     <span class="material-symbols-outlined text-[22px]">close</span>
