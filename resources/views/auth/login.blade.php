@@ -37,15 +37,12 @@
             <x-input-error :messages="$errors->get('password')" />
         </div>
 
-        <!-- Remember & Forgot -->
-        <div class="flex items-center justify-between">
+        <!-- Remember -->
+        <div class="flex items-center">
             <label for="remember_me" class="flex items-center cursor-pointer">
                 <input id="remember_me" name="remember" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-outline-variant rounded bg-surface-bright" />
                 <span class="ml-2 text-body-sm text-on-surface-variant">Ingat saya</span>
             </label>
-            @if (Route::has('password.request'))
-                <a class="text-label-md text-primary hover:text-primary-container transition-colors" href="{{ route('password.request') }}">Lupa Password?</a>
-            @endif
         </div>
 
         <!-- Submit Button -->
