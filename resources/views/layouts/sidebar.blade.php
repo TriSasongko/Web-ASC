@@ -151,15 +151,6 @@
 
                         <!-- Actions & Profile -->
                         <div class="flex items-center gap-4 ml-auto shrink-0">
-                            @if ($role === 'admin')
-                                <button class="relative p-2 transition-colors rounded-full text-outline hover:text-primary hover:bg-surface-container-low" title="Notifikasi">
-                                    <span class="material-symbols-outlined">notifications</span>
-                                    @if ($navPendingRegistrations > 0)
-                                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
-                                    @endif
-                                </button>
-                                <div class="hidden w-px h-8 bg-outline-variant/30 sm:block"></div>
-                            @endif
                             <!-- Profile Dropdown -->
                             <div x-data="{ open: false }" class="relative">
                                 <button @click="open = ! open" class="flex items-center gap-3 p-1 transition-colors rounded-full hover:bg-surface-container-low group">
