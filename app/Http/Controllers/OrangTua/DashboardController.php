@@ -95,6 +95,40 @@ class DashboardController extends Controller
             ->unique('student_id')
             ->values();
 
+        // Rekap absensi per anak per enrollment aktif
+        $attendanceRecaps = $students->map(function ($student) {
+            $enrollments = $student->enrollments()
+                ->where('is_active', true)
+                ->with('schoolClass.program')
+                ->get()
+                ->map(function ($enrollment) {
+                    $totalSessions = $enrollment->schoolClass?->program?->total_sessions;
+                    $hadirCount = $enrollment->attendances()->count();
+
+                    $recentAttendances = $enrollment->attendances()
+                        ->orderByDesc('attendance_date')
+                        ->limit(5)
+                        ->get()
+                        ->map(fn ($a) => [
+                            'date' => $a->attendance_date->format('d M Y'),
+                        ]);
+
+                    return [
+                        'class_name' => $enrollment->schoolClass?->name ?? 'Tanpa Kelas',
+                        'program_name' => $enrollment->schoolClass?->program?->name ?? '-',
+                        'total_sessions' => $totalSessions,
+                        'hadir_count' => $hadirCount,
+                        'recent_attendances' => $recentAttendances,
+                    ];
+                });
+
+            return [
+                'student_id' => $student->id,
+                'student_name' => $student->full_name,
+                'enrollments' => $enrollments,
+            ];
+        })->values();
+
         // Distribusi penilaian umum terbaru per anak (untuk diagram pie)
         $scoreWeights = array_flip(array_keys(Development::scores()));
         $scoreColors = [
@@ -182,6 +216,7 @@ class DashboardController extends Controller
             'upcomingSchedules',
             'developmentCharts',
             'latestDevelopments',
+            'attendanceRecaps',
         ));
     }
 }

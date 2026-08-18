@@ -291,6 +291,79 @@
             </div>
         </div>
 
+        <!-- Rekap Absensi -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
+            <div class="flex items-start justify-between gap-3 mb-5">
+                <div>
+                    <h3 class="font-headline text-headline-sm text-on-surface">Rekap Absensi</h3>
+                    <p class="font-body-sm text-body-sm text-outline mt-0.5">Ringkasan kehadiran anak Anda selama latihan</p>
+                </div>
+                <span class="material-symbols-outlined text-outline text-[24px]">fact_check</span>
+            </div>
+
+            <div class="grid grid-cols-1 {{ $totalChildren > 1 ? 'md:grid-cols-2' : '' }} gap-4">
+                @forelse ($attendanceRecaps as $recap)
+                    <div class="rounded-xl border border-outline-variant/30 p-4 hover:bg-surface-container-low/50 transition-colors">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-label-md text-label-md shrink-0">
+                                {{ strtoupper(substr($recap['student_name'], 0, 1)) }}
+                            </div>
+                            <h4 class="font-headline text-headline-sm text-on-surface truncate">{{ $recap['student_name'] }}</h4>
+                        </div>
+
+                        <div class="space-y-4">
+                            @forelse ($recap['enrollments'] as $enroll)
+                                @php
+                                    $total = $enroll['total_sessions'];
+                                    $hadir = $enroll['hadir_count'];
+                                    $pct = ($total !== null && $total > 0) ? min(100, (int) round(($hadir / $total) * 100)) : null;
+                                    $barColor = $pct === null ? 'bg-surface-container-highest' : ($pct >= 80 ? 'bg-[#2E7D32]' : ($pct >= 50 ? 'bg-[#FFB300]' : 'bg-error'));
+                                @endphp
+                                <div class="pb-4 border-b border-outline-variant/20 last:border-b-0 last:pb-0">
+                                    <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                                        <span class="font-label-md text-label-md text-on-surface">{{ $enroll['class_name'] }}</span>
+                                        <span class="font-body-sm text-body-sm text-outline">· {{ $enroll['program_name'] }}</span>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 mb-1.5">
+                                        @if ($total !== null)
+                                            <div class="flex-1 h-1.5 rounded-full bg-surface-container-highest/60 overflow-hidden">
+                                                <div class="h-full rounded-full {{ $barColor }} transition-all duration-500" style="width: {{ $pct }}%"></div>
+                                            </div>
+                                            <span class="font-label-sm text-label-sm text-on-surface tabular-nums whitespace-nowrap">{{ $hadir }}/{{ $total }} hadir</span>
+                                        @else
+                                            <span class="font-label-sm text-label-sm text-outline">{{ $hadir }} kali hadir</span>
+                                        @endif
+                                    </div>
+
+                                    @if ($enroll['recent_attendances']->isNotEmpty())
+                                        <div class="mt-2 space-y-1">
+                                            @foreach ($enroll['recent_attendances'] as $att)
+                                                <div class="flex items-center gap-2">
+                                                    <span class="material-symbols-outlined text-[14px] text-[#2E7D32]">check_circle</span>
+                                                    <span class="font-body-sm text-body-sm text-on-surface-variant">{{ $att['date'] }}</span>
+                                                    <span class="font-label-sm text-label-sm text-[#2E7D32]">Hadir</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <p class="font-body-sm text-body-sm text-outline mt-1">Belum ada data absensi.</p>
+                                    @endif
+                                </div>
+                            @empty
+                                <p class="font-body-sm text-body-sm text-outline">Belum ada program aktif.</p>
+                            @endforelse
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-10 {{ $totalChildren > 1 ? 'md:col-span-2' : '' }}">
+                        <span class="material-symbols-outlined text-outline text-[40px]">fact_check</span>
+                        <p class="font-body-sm text-body-sm text-outline mt-2">Belum ada data absensi untuk ditampilkan.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
         <!-- Grafik Absensi + Jadwal Mendatang -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
