@@ -47,7 +47,7 @@ class DashboardController extends Controller
 
         $todayStudentCount = $todaySchedules->flatMap(fn ($s) => $s->students)->unique('id')->count();
 
-        $nextSchedule = ClassSchedule::with(['schoolClass.program', 'students'])
+        $sortedSchedules = ClassSchedule::with(['schoolClass.program', 'students'])
             ->whereHas('coaches', fn ($q) => $q->where('users.id', $userId))
             ->get()
             ->map(function ($schedule) {
@@ -66,7 +66,12 @@ class DashboardController extends Controller
                 return $schedule;
             })
             ->sortBy('next_occurrence')
-            ->first();
+            ->values();
+
+        $upcomingSchedules = $sortedSchedules->filter(function ($s) {
+            return $s->next_occurrence->lte(now()->copy()->endOfDay()->addDay());
+        })->values();
+        $nextSchedule = $sortedSchedules->first();
 
         $days = collect(range(6, 0))->map(function ($offset) {
             return today()->subDays($offset);
@@ -93,6 +98,7 @@ class DashboardController extends Controller
             'todaySchedules',
             'todayStudentCount',
             'nextSchedule',
+            'upcomingSchedules',
             'attendanceChart',
             'canAssess'
         ));

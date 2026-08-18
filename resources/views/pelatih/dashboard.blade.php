@@ -110,10 +110,8 @@
             @endif
         </div>
 
-        <!-- Jadwal Hari Ini + Sesi Berikutnya -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Jadwal Hari Ini -->
-            <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
+        <!-- Jadwal Hari Ini -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
                 <div class="flex items-start justify-between gap-3 mb-5">
                     <div>
                         <h3 class="font-headline text-headline-sm text-on-surface">Jadwal Hari Ini</h3>
@@ -222,77 +220,37 @@
                 </div>
             </div>
 
-            <!-- Sesi Berikutnya -->
-            <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
-                <div class="flex items-start justify-between gap-3 mb-5">
-                    <div>
-                        <h3 class="font-headline text-headline-sm text-on-surface">Sesi Berikutnya</h3>
-                        <p class="font-body-sm text-body-sm text-outline mt-0.5">Jadwal latihan terdekat</p>
-                    </div>
-                    <span class="p-2 bg-secondary/10 text-secondary rounded-lg shrink-0">
-                        <span class="material-symbols-outlined">schedule</span>
-                    </span>
-                </div>
-
-                @if ($nextSchedule)
+        <!-- Jadwal Mendatang -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-5 md:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-headline text-headline-sm text-on-surface">Jadwal Mendatang</h3>
+                <a href="{{ route('pelatih.schedules.index') }}" class="text-primary font-label-sm text-label-sm hover:underline shrink-0">Lihat Semua</a>
+            </div>
+            <div class="flex-1 space-y-3 overflow-y-auto max-h-[300px] pr-1">
+                @forelse ($upcomingSchedules as $schedule)
                     @php
-                        $nsStart = $nextSchedule->start_time ? \Carbon\Carbon::parse($nextSchedule->start_time)->format('H:i') : '-';
-                        $nsEnd = $nextSchedule->end_time ? \Carbon\Carbon::parse($nextSchedule->end_time)->format('H:i') : '-';
-                        $nsDays = (int) now()->startOfDay()->diffInDays($nextSchedule->next_occurrence->startOfDay());
-                        $nsLabel = $nsDays === 0 ? 'Hari ini' : ($nsDays === 1 ? 'Besok' : $nsDays.' hari lagi');
+                        $sStart = $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '-';
+                        $sEnd = $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '-';
+                        $daysFromNow = (int) now()->startOfDay()->diffInDays($schedule->next_occurrence->startOfDay());
+                        $dateLabel = $daysFromNow === 0 ? 'Hari ini' : 'Besok';
                     @endphp
-                    <div class="text-center py-2">
-                        <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full {{ $nsDays === 0 ? 'bg-error/10 text-error' : 'bg-secondary/10 text-secondary' }} font-label-sm text-label-sm">
-                            <span class="material-symbols-outlined text-[16px]">{{ $nsDays === 0 ? 'bolt' : 'hourglass_top' }}</span>
-                            {{ $nsLabel }}
-                        </span>
-                    </div>
-
-                    <div class="mt-4 border border-outline-variant/30 rounded-xl p-4 bg-surface/50">
-                        <div class="flex items-center justify-between gap-3">
-                            <p class="font-headline text-headline-md text-on-surface">{{ $nextSchedule->schoolClass?->name ?? 'Tanpa Kelas' }}</p>
-                            <span class="font-label-sm text-label-sm text-primary whitespace-nowrap">{{ ucfirst($nextSchedule->day) }}</span>
+                    <div class="flex items-center gap-3 border border-outline-variant/30 rounded-lg p-3">
+                        <div class="p-2 bg-surface-container-low rounded-lg shrink-0">
+                            <span class="material-symbols-outlined text-[18px] text-secondary">event_available</span>
                         </div>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
-                            {{ $nextSchedule->next_occurrence->format('d M Y') }}
-                        </p>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
-                            {{ $nsStart }}–{{ $nsEnd }}
-                            @if ($nextSchedule->location)
-                                · {{ $nextSchedule->location }}
-                            @endif
-                        </p>
-
-                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 pt-3 border-t border-outline-variant/30">
-                            @if ($nextSchedule->schoolClass)
-                                <span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-outline">
-                                    <span class="material-symbols-outlined text-[16px]">signal_cellular_alt</span>
-                                    {{ $nextSchedule->schoolClass->level_label }}
-                                </span>
-                            @endif
-                            <span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-outline">
-                                <span class="material-symbols-outlined text-[16px]">group</span>
-                                {{ $nextSchedule->students->count() }} siswa
-                            </span>
-                            @if ($nextSchedule->session_number)
-                                <span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-outline">
-                                    <span class="material-symbols-outlined text-[16px]">tag</span>
-                                    Sesi {{ $nextSchedule->session_number }}
-                                </span>
-                            @endif
+                        <div class="min-w-0">
+                            <p class="font-label-md text-label-md text-on-surface truncate">{{ $schedule->schoolClass?->name ?? 'Tanpa Kelas' }}</p>
+                            <p class="font-label-sm text-label-sm text-outline truncate">
+                                {{ $sStart }} – {{ $sEnd }} · {{ $schedule->location ?? '-' }} · {{ $dateLabel }}
+                            </p>
                         </div>
                     </div>
-
-                    <a href="{{ route('pelatih.schedules.index') }}" class="mt-4 w-full inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all active:scale-95">
-                        <span class="material-symbols-outlined text-[18px]">calendar_month</span>
-                        Buka Jadwal Lengkap
-                    </a>
-                @else
-                    <div class="text-center py-10">
-                        <span class="material-symbols-outlined text-outline text-[40px]">event_note</span>
-                        <p class="font-body-sm text-body-sm text-outline mt-2">Belum ada jadwal latihan.</p>
+                @empty
+                    <div class="text-center py-6">
+                        <span class="material-symbols-outlined text-outline text-[32px]">event_busy</span>
+                        <p class="font-body-sm text-body-sm text-outline mt-2">Tidak ada jadwal mendatang.</p>
                     </div>
-                @endif
+                @endforelse
             </div>
         </div>
 
