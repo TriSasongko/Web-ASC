@@ -45,6 +45,7 @@
                     <div class="md:col-span-2">
                         <x-input-label for="photo" value="Foto" />
                         <input type="file" id="photo" name="photo" class="mt-1 block w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all" accept="image/*">
+                        <p class="font-body-xs text-body-xs text-outline mt-1">Maks. 2 MB</p>
                         <x-input-error :messages="$errors->get('photo')" class="mt-2" />
                     </div>
                 </div>

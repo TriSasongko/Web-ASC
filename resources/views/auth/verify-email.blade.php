@@ -22,7 +22,7 @@
             </x-primary-button>
         </form>
 
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ route('logout.post') }}">
             @csrf
 
             <button type="submit" class="font-label-md text-label-md text-primary hover:text-primary/80 transition-colors">
