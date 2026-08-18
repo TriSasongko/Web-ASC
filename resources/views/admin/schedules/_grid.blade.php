@@ -1,4 +1,4 @@
-@props(['schedulesByDay', 'showClassLink' => true, 'manageable' => false])
+@props(['schedulesByDay', 'showClassLink' => true, 'manageable' => false, 'classes' => [], 'coaches' => [], 'studentsByClass' => []])
 
 @php
     $days = \App\Models\ClassSchedule::DAYS;
@@ -74,10 +74,10 @@
                                             <div x-data="{ open: false }" class="relative">
                                                 <button @click="open = true" type="button"
                                                     class="inline-flex items-center justify-center gap-0.5 bg-surface-container text-on-surface-variant px-2 py-1 rounded font-label-sm text-label-sm hover:bg-surface-container-high transition-all active:scale-95">
-                                                    <span class="material-symbols-outlined text-[14px]">tune</span>
-                                                    Atur
+                                                    <span class="material-symbols-outlined text-[14px]">edit</span>
+                                                    Edit
                                                 </button>
-                                                @include('admin.schedules._assign_modal', ['s' => $s, 'coaches' => $coaches])
+                                                @include('admin.schedules._edit_modal', ['s' => $s, 'classes' => $classes, 'coaches' => $coaches, 'studentsByClass' => $studentsByClass])
                                             </div>
                                             <form action="{{ route('admin.schedules.destroy', $s) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?')">
                                                 @csrf @method('DELETE')
@@ -142,10 +142,10 @@
                                                     <div x-data="{ open: false }" class="relative">
                                                         <button @click="open = true" type="button"
                                                             class="inline-flex items-center justify-center gap-0.5 bg-surface-container text-on-surface-variant px-1.5 py-0.5 rounded font-label-sm text-label-sm hover:bg-surface-container-high transition-all active:scale-95">
-                                                            <span class="material-symbols-outlined text-[12px]">tune</span>
-                                                            Atur
+                                                            <span class="material-symbols-outlined text-[12px]">edit</span>
+                                                            Edit
                                                         </button>
-                                                        @include('admin.schedules._assign_modal', ['s' => $s, 'coaches' => $coaches])
+                                                        @include('admin.schedules._edit_modal', ['s' => $s, 'classes' => $classes, 'coaches' => $coaches, 'studentsByClass' => $studentsByClass])
                                                     </div>
                                                     <form action="{{ route('admin.schedules.destroy', $s) }}" method="POST" onsubmit="return confirm('Hapus jadwal ini?')">
                                                         @csrf @method('DELETE')

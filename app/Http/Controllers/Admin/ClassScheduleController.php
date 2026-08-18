@@ -150,6 +150,74 @@ class ClassScheduleController extends Controller
         return back()->with('success', 'Siswa dan pelatih jadwal berhasil diperbarui.');
     }
 
+    public function update(Request $request, ClassSchedule $schedule)
+    {
+        $validated = $request->validate([
+            'class_id' => ['required', 'exists:classes,id'],
+            'day' => ['required', 'in:'.implode(',', ClassSchedule::DAYS)],
+            'start_time' => ['required'],
+            'end_time' => ['required', 'after:start_time'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'session_number' => ['required', 'integer', 'min:1'],
+            'coach_ids' => ['nullable', 'array'],
+            'coach_ids.*' => ['integer', 'exists:users,id'],
+            'student_ids' => ['nullable', 'array'],
+            'student_ids.*' => ['integer', 'exists:students,id'],
+        ]);
+
+        $coachIds = $validated['coach_ids'] ?? [];
+        $conflicts = [];
+
+        if ($coachIds) {
+            $coachNames = User::whereIn('id', $coachIds)->pluck('name', 'id');
+
+            $existing = ClassSchedule::overlaps($validated['day'], $validated['start_time'], $validated['end_time'], $schedule->id)
+                ->with('coaches', 'schoolClass')
+                ->get();
+
+            foreach ($existing as $other) {
+                $conflictCoachIds = array_intersect($coachIds, $other->coaches->pluck('id')->toArray());
+
+                foreach ($conflictCoachIds as $coachId) {
+                    $conflicts[] = [
+                        'coach' => $coachNames[$coachId] ?? 'Coach',
+                        'day' => ucfirst($validated['day']),
+                        'class' => $other->schoolClass?->name ?? '-',
+                        'time' => Carbon::parse($other->start_time)->format('H:i')
+                            .' – '.Carbon::parse($other->end_time)->format('H:i'),
+                    ];
+                }
+            }
+        }
+
+        if ($conflicts !== []) {
+            return back()->withErrors(['coach_ids' => $conflicts])->withInput();
+        }
+
+        $class = SchoolClass::findOrFail($validated['class_id']);
+
+        $schedule->update([
+            'class_id' => $class->id,
+            'day' => $validated['day'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+            'location' => $validated['location'] ?? null,
+            'session_number' => $validated['session_number'],
+        ]);
+
+        $studentIds = collect($validated['student_ids'] ?? [])
+            ->filter(fn ($id) => $class->students()
+                ->where('students.id', $id)
+                ->wherePivot('is_active', true)
+                ->exists())
+            ->values();
+
+        $schedule->coaches()->sync($coachIds);
+        $schedule->students()->sync($studentIds);
+
+        return back()->with('success', 'Jadwal berhasil diperbarui.');
+    }
+
     public function destroy(ClassSchedule $schedule)
     {
         $schedule->delete();

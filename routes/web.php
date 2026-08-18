@@ -74,7 +74,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('classes', SchoolClassController::class);
     Route::get('schedules', [ClassScheduleController::class, 'index'])->name('schedules.index');
     Route::post('schedules', [ClassScheduleController::class, 'store'])->name('schedules.store');
-    Route::put('schedules/{schedule}', [ClassScheduleController::class, 'assign'])->name('schedules.assign');
+    Route::put('schedules/{schedule}', [ClassScheduleController::class, 'update'])->name('schedules.update');
+    Route::put('schedules/{schedule}/assign', [ClassScheduleController::class, 'assign'])->name('schedules.assign');
     Route::delete('schedules/{schedule}', [ClassScheduleController::class, 'destroy'])->name('schedules.destroy');
 
     Route::get('class-students/unplaced', [ClassStudentController::class, 'unplaced'])->name('class-students.unplaced');
