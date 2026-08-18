@@ -79,7 +79,7 @@ class ClassScheduleController extends Controller
         }
 
         if ($conflicts !== []) {
-            return back()->withErrors(['coach_ids' => $conflicts])->withInput();
+            return back()->withErrors(['coach_ids' => 'Konflik jadwal ditemukan.'])->with(['conflict_details' => $conflicts])->withInput();
         }
 
         $studentIds = collect($validated['student_ids'] ?? [])
@@ -141,7 +141,7 @@ class ClassScheduleController extends Controller
         }
 
         if ($conflicts !== []) {
-            return back()->withErrors(['coach_ids' => $conflicts])->withInput();
+            return back()->withErrors(['coach_ids' => 'Konflik jadwal ditemukan.'])->with(['conflict_details' => $conflicts])->withInput();
         }
 
         $schedule->students()->sync($validated['student_ids'] ?? []);
@@ -191,7 +191,7 @@ class ClassScheduleController extends Controller
         }
 
         if ($conflicts !== []) {
-            return back()->withErrors(['coach_ids' => $conflicts])->withInput();
+            return back()->withErrors(['coach_ids' => 'Konflik jadwal ditemukan.'])->with(['conflict_details' => $conflicts])->withInput();
         }
 
         $class = SchoolClass::findOrFail($validated['class_id']);
