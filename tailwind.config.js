@@ -7,6 +7,11 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './app/Models/LandingSetting.php',
+    ],
+
+    safelist: [
+        'list-decimal', 'list-inside', 'space-y-1', 'space-y-3',
     ],
 
     theme: {
