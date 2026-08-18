@@ -77,7 +77,7 @@
                         <x-input-label for="program_billing_unit" value="Satuan Harga" />
                         <select id="program_billing_unit" name="billing_unit" required
                             class="mt-1 block w-full rounded-lg border border-outline-variant bg-background px-4 py-3 text-body-md text-on-background focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
-                            @foreach (['/sesi', '/bulan', '/paket'] as $unit)
+                            @foreach (['/4 Sesi', '/8 Sesi', '/Bulan'] as $unit)
                                 <option value="{{ $unit }}" @selected(old('billing_unit') === $unit)>{{ $unit }}</option>
                             @endforeach
                         </select>
@@ -199,7 +199,7 @@
                                     <x-input-label for="program_billing_unit_{{ $program->id }}" value="Satuan Harga" />
                                     <select id="program_billing_unit_{{ $program->id }}" name="billing_unit" required
                                         class="mt-1 block w-full rounded-lg border border-outline-variant bg-background px-4 py-3 text-body-md text-on-background focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
-                                        @foreach (['/sesi', '/bulan', '/paket'] as $unit)
+                                        @foreach (['/4 Sesi', '/8 Sesi', '/Bulan'] as $unit)
                                             <option value="{{ $unit }}" @selected(old('billing_unit', $program->billing_unit) === $unit)>{{ $unit }}</option>
                                         @endforeach
                                     </select>

@@ -370,7 +370,7 @@ class SettingController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'subtitle' => ['nullable', 'string', 'max:255'],
             'price' => ['nullable', 'integer', 'min:0'],
-            'billing_unit' => ['required', Rule::in(['/sesi', '/bulan', '/paket'])],
+            'billing_unit' => ['required', Rule::in(['/4 Sesi', '/8 Sesi', '/Bulan'])],
             'features' => ['nullable', 'string', 'max:5000'],
             'badge' => ['nullable', 'string', 'max:100'],
             'button_label' => ['nullable', 'string', 'max:100'],
