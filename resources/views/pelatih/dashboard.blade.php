@@ -125,44 +125,91 @@
                     </a>
                 </div>
 
-                <div class="space-y-4">
+                <div class="space-y-3">
                     @forelse ($todaySchedules as $schedule)
                         @php
                             $start = $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '-';
                             $end = $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '-';
+                            $studentNames = $schedule->students->pluck('full_name');
+                            $maxVisible = 6;
+                            $visibleNames = $studentNames->take($maxVisible);
+                            $overflowCount = max(0, $studentNames->count() - $maxVisible);
                         @endphp
-                        <div class="flex items-center gap-4 border border-outline-variant/30 rounded-xl p-4 bg-surface/50 hover:bg-surface-container-low hover:border-primary/30 transition-all group">
-                            <div class="w-14 shrink-0 text-center">
-                                <p class="font-headline text-headline-md text-primary">{{ $start }}</p>
-                                <p class="font-label-sm text-label-sm text-outline">{{ $end }}</p>
-                            </div>
-                            <div class="p-2.5 bg-primary-container/60 rounded-lg shrink-0 group-hover:bg-primary-container transition-colors">
-                                <span class="material-symbols-outlined text-[20px] text-on-primary">pool</span>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <p class="font-label-md text-label-md text-on-surface truncate">{{ $schedule->schoolClass?->name ?? 'Tanpa Kelas' }}</p>
-                                    <span class="px-2 py-0.5 bg-primary/10 text-primary rounded-md font-label-sm text-label-sm whitespace-nowrap">
-                                        {{ $schedule->students->count() }} siswa
+                        <div class="border border-outline-variant/30 border-l-4 border-l-primary rounded-xl bg-surface/50 hover:bg-surface-container-low hover:border-primary/30 transition-all group">
+                            <div class="p-4 md:p-5">
+                                {{-- Baris 1: Waktu + Nama Kelas + Badge Siswa --}}
+                                <div class="flex items-center gap-3 mb-3">
+                                    {{-- Waktu --}}
+                                    <div class="hidden sm:flex items-center gap-2 shrink-0">
+                                        <span class="font-headline text-headline-sm text-primary">{{ $start }}</span>
+                                        <span class="font-body-sm text-body-sm text-outline">–</span>
+                                        <span class="font-headline text-headline-sm text-primary">{{ $end }}</span>
+                                    </div>
+                                    <div class="hidden sm:block w-px h-6 bg-outline-variant/30 shrink-0"></div>
+
+                                    {{-- Nama Kelas --}}
+                                    <div class="min-w-0 flex-1">
+                                        <p class="font-label-md text-label-md text-on-surface truncate">{{ $schedule->schoolClass?->name ?? 'Tanpa Kelas' }}</p>
+                                    </div>
+
+                                    {{-- Badge Jumlah Siswa --}}
+                                    <span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm">
+                                        <span class="material-symbols-outlined text-[14px]">group</span>
+                                        {{ $schedule->students->count() }}
                                     </span>
                                 </div>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">
+
+                                {{-- Waktu mobile --}}
+                                <div class="flex sm:hidden items-center gap-2 mb-3">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm">
+                                        <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                        {{ $start }} – {{ $end }}
+                                    </span>
+                                </div>
+
+                                {{-- Baris 2: Info Tags --}}
+                                <div class="flex flex-wrap items-center gap-1.5 mb-3">
                                     @if ($schedule->schoolClass)
-                                        {{ $schedule->schoolClass->level_label }}
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+                                            <span class="material-symbols-outlined text-[14px]">signal_cellular_alt</span>
+                                            {{ $schedule->schoolClass->level_label }}
+                                        </span>
                                     @endif
                                     @if ($schedule->schoolClass?->program)
-                                        · {{ $schedule->schoolClass->program->name }}
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+                                            <span class="material-symbols-outlined text-[14px]">sports_soccer</span>
+                                            {{ $schedule->schoolClass->program->name }}
+                                        </span>
                                     @endif
                                     @if ($schedule->location)
-                                        · {{ $schedule->location }}
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+                                            <span class="material-symbols-outlined text-[14px]">location_on</span>
+                                            {{ $schedule->location }}
+                                        </span>
                                     @endif
                                     @if ($schedule->session_number)
-                                        · Sesi {{ $schedule->session_number }}
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+                                            <span class="material-symbols-outlined text-[14px]">tag</span>
+                                            Sesi {{ $schedule->session_number }}
+                                        </span>
                                     @endif
-                                </p>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 truncate">
-                                    {{ $schedule->students->pluck('full_name')->implode(', ') }}
-                                </p>
+                                </div>
+
+                                {{-- Baris 3: Daftar Nama Siswa --}}
+                                @if ($studentNames->isNotEmpty())
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @foreach ($visibleNames as $name)
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-primary/5 text-on-surface border border-outline-variant/30 font-label-sm text-label-sm">
+                                                {{ $name }}
+                                            </span>
+                                        @endforeach
+                                        @if ($overflowCount > 0)
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container text-outline font-label-sm text-label-sm">
+                                                +{{ $overflowCount }} lainnya
+                                            </span>
+                                        @endif
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @empty
