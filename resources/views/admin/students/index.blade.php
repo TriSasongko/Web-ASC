@@ -7,6 +7,13 @@
             </div>
         </div>
 
+        @if (session('success'))
+            <div class="flex items-center gap-2 bg-[#E8F5E9] text-[#2E7D32] border border-[#2E7D32]/20 px-4 py-3 rounded-lg font-body-sm text-body-sm">
+                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="flex items-center gap-1 bg-surface-container-low rounded-xl p-1 w-fit max-w-full overflow-x-auto">
             @foreach ([null => 'Semua'] + \App\Models\SchoolClass::levelOptions() as $lv => $label)
                 <a href="{{ route('admin.students.index', array_filter([
@@ -67,10 +74,21 @@
                                     <p class="font-body-sm text-body-sm text-outline truncate">{{ $student->parent->name }}</p>
                                 </div>
                             </div>
-                            <a href="{{ route('admin.students.show', $student) }}" class="shrink-0 inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">
-                                Rekap
-                                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-                            </a>
+                            <div class="shrink-0 flex items-center gap-1">
+                                <a href="{{ route('admin.students.show', $student) }}" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Rekap">
+                                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                </a>
+                                <a href="{{ route('admin.students.edit', $student) }}" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </a>
+                                <form action="{{ route('admin.students.destroy', $student) }}" method="POST" class="inline"
+                                      onsubmit="return confirmDeleteStudent(event, this, '{{ $student->full_name }}')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus">
+                                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
 
                         <p class="mt-2.5 flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant">
@@ -185,7 +203,21 @@
                                     @endforelse
                                 </td>
                                 <td class="px-4 py-3">
-                                    <a href="{{ route('admin.students.show', $student) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Lihat Rekap</a>
+                                    <div class="flex items-center gap-1">
+                                        <a href="{{ route('admin.students.show', $student) }}" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Lihat Rekap">
+                                            <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                        </a>
+                                        <a href="{{ route('admin.students.edit', $student) }}" class="p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container-low transition-colors" title="Edit">
+                                            <span class="material-symbols-outlined text-[20px]">edit</span>
+                                        </a>
+                                        <form action="{{ route('admin.students.destroy', $student) }}" method="POST" class="inline"
+                                              onsubmit="return confirmDeleteStudent(event, this, '{{ $student->full_name }}')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="p-2 rounded-lg text-outline hover:text-error hover:bg-error-container/40 transition-colors" title="Hapus">
+                                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

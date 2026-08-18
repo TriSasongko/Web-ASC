@@ -342,4 +342,25 @@ window.confirmMoveToClass = function (event, form, studentName) {
     return false;
 };
 
+window.confirmDeleteStudent = function (event, form, studentName) {
+    event.preventDefault();
+
+    Swal.fire({
+        title: 'Hapus siswa?',
+        html: '<strong>' + studentName + '</strong> akan dihapus permanen dari sistem.',
+        text: 'Data absensi, perkembangan, dan riwayat lainnya juga akan terhapus.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#D32F2F',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+
+    return false;
+};
+
 Alpine.start();

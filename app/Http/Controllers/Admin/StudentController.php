@@ -114,6 +114,38 @@ class StudentController extends Controller
         return view('admin.students.show', compact('student', 'attendanceLists'));
     }
 
+    public function edit(Student $student)
+    {
+        $student->load('parent');
+
+        return view('admin.students.edit', compact('student'));
+    }
+
+    public function update(Request $request, Student $student)
+    {
+        $validated = $request->validate([
+            'full_name' => ['required', 'string', 'max:255'],
+            'nickname' => ['nullable', 'string', 'max:255'],
+            'birth_place' => ['nullable', 'string', 'max:255'],
+            'birth_date' => ['nullable', 'date'],
+            'gender' => ['required', 'in:L,P'],
+            'weight' => ['nullable', 'numeric', 'min:0', 'max:999.99'],
+            'height' => ['nullable', 'numeric', 'min:0', 'max:999.99'],
+            'address' => ['nullable', 'string'],
+        ]);
+
+        $student->update($validated);
+
+        return redirect()->route('admin.students.index')->with('success', 'Data siswa berhasil diperbarui.');
+    }
+
+    public function destroy(Student $student)
+    {
+        $student->delete();
+
+        return back()->with('success', 'Siswa berhasil dihapus.');
+    }
+
     private function periodContains($pivot, Carbon $date): bool
     {
         $started = $pivot->started_at ? Carbon::parse($pivot->started_at) : null;

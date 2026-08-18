@@ -9,10 +9,24 @@
                 <h2 class="font-headline text-headline-lg-mobile md:text-headline-lg text-on-surface">Rekap — {{ $student->full_name }}</h2>
                 <p class="font-body-sm text-body-sm text-outline mt-1">Rincian paket dan perkembangan siswa.</p>
             </div>
-            <a href="{{ route('admin.students.index') }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all shrink-0">
-                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-                Kembali
-            </a>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.students.edit', $student) }}" class="inline-flex items-center justify-center gap-2 border border-primary text-primary px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:text-on-primary transition-all shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                    Edit
+                </a>
+                <form action="{{ route('admin.students.destroy', $student) }}" method="POST"
+                      onsubmit="return confirmDeleteStudent(event, this, '{{ $student->full_name }}')">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 bg-error text-on-error px-4 py-2.5 rounded-lg font-label-md text-label-md hover:opacity-90 transition-all shrink-0 active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                        Hapus
+                    </button>
+                </form>
+                <a href="{{ route('admin.students.index') }}" class="inline-flex items-center justify-center gap-2 border border-outline-variant/50 text-on-surface-variant px-4 py-2.5 rounded-lg font-label-md text-label-md hover:bg-surface-container transition-all shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Kembali
+                </a>
+            </div>
         </div>
 
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_20px_rgba(23,32,51,0.02)] p-6">
