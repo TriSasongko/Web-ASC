@@ -13,7 +13,7 @@
         @method('PUT')
 
         <div>
-            <x-input-label for="syarat_ketentuan" value="Isi Syarat &amp; Ketentuan" />
+            <x-input-label for="syarat_ketentuan" value="Isi Syarat & Ketentuan" />
             <p class="font-body-xs text-body-xs text-outline mt-1 mb-2">
                 Tulis teks biasa. Format otomatis:<br>
                 &bull; Judul bagian diawali huruf besar + titik, contoh: <code>A. Ketentuan Umum</code><br>
