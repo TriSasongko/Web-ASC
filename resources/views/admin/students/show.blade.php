@@ -279,9 +279,17 @@
                                             <p class="font-body-sm text-body-sm text-outline mb-2">Orang Tua: {{ $student->parent->name }} ({{ $student->parent->phone ?? '-' }})</p>
 
                                             @php
-                                                $waMsg = $left === 0
+                                                $attendanceDates = $records->sortBy('attendance_date')->values();
+                                                $attendanceRecap = '';
+                                                if ($attendanceDates->isNotEmpty()) {
+                                                    $lines = $attendanceDates->map(fn ($a, $i) => ($i + 1).'. '.$a->attendance_date->format('d/m/Y'))->implode("\n");
+                                                    $attendanceRecap = "\n\nRekap absensi:\n".$lines;
+                                                }
+
+                                                $baseMsg = $left === 0
                                                     ? 'Halo '.$student->parent->name.', paket '.$class->program->name.' an. '.$student->full_name.' sudah habis ('.$pivot->sessions_completed.'/'.$total.'). Apakah ingin memperpanjang paket?'
                                                     : 'Halo '.$student->parent->name.', paket '.$class->program->name.' an. '.$student->full_name.' tersisa '.$left.' pertemuan lagi. Harga '.$fmt($class->program->price).'. Apakah ingin memperpanjang paket?';
+                                                $waMsg = $baseMsg.$attendanceRecap;
                                             @endphp
                                             @if ($phone)
                                                 <a href="{{ $wa }}?text={{ urlencode($waMsg) }}"

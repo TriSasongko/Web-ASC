@@ -11,7 +11,7 @@ class RenewalController extends Controller
 {
     public function index()
     {
-        $enrollments = ClassStudent::with(['student.parent', 'schoolClass.program'])
+        $enrollments = ClassStudent::with(['student.parent', 'schoolClass.program', 'attendances'])
             ->where('is_active', true)
             ->get()
             ->filter(fn ($enrollment) => $enrollment->needsRenewalConfirmation())

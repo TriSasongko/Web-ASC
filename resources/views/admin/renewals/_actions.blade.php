@@ -9,9 +9,18 @@
     $left = $total === null ? null : max(0, $total - $completed);
     $phone = preg_replace('/\D/', '', $student?->parent?->phone ?? '');
     $wa = 'https://wa.me/'.preg_replace('/^0/', '62', $phone);
-    $waText = $left > 0
+
+    $attendanceDates = $enrollment->attendances->sortBy('attendance_date')->values();
+    $attendanceRecap = '';
+    if ($attendanceDates->isNotEmpty()) {
+        $lines = $attendanceDates->map(fn ($a, $i) => ($i + 1).'. '.$a->attendance_date->format('d/m/Y'))->implode("\n");
+        $attendanceRecap = "\n\nRekap absensi:\n".$lines;
+    }
+
+    $baseMsg = $left > 0
         ? 'Halo '.$student->parent->name.', paket '.$program->name.' an. '.$student->full_name.' tersisa '.$left.' pertemuan lagi. Apakah ingin memperpanjang paket?'
         : 'Halo '.$student->parent->name.', paket '.$program->name.' an. '.$student->full_name.' sudah habis ('.$completed.'/'.$total.'). Apakah ingin memperpanjang paket?';
+    $waText = $baseMsg.$attendanceRecap;
 @endphp
 
 <div class="flex flex-wrap items-center gap-2">
