@@ -130,7 +130,6 @@
                         @php
                             $start = $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '-';
                             $end = $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '-';
-                            $avatarStudents = $schedule->students->take(4);
                         @endphp
                         <div class="flex items-center gap-4 border border-outline-variant/30 rounded-xl p-4 bg-surface/50 hover:bg-surface-container-low hover:border-primary/30 transition-all group">
                             <div class="w-14 shrink-0 text-center">
@@ -161,18 +160,9 @@
                                         · Sesi {{ $schedule->session_number }}
                                     @endif
                                 </p>
-                                <div class="flex items-center gap-1.5 mt-2">
-                                    @foreach ($avatarStudents as $st)
-                                        <div class="w-6 h-6 rounded-full bg-tertiary-fixed text-tertiary flex items-center justify-center font-label-sm text-label-sm text-[10px] ring-2 ring-surface" title="{{ $st->full_name }}">
-                                            {{ strtoupper(substr($st->full_name, 0, 1)) }}
-                                        </div>
-                                    @endforeach
-                                    @if ($schedule->students->count() > 4)
-                                        <div class="w-6 h-6 rounded-full bg-surface-container-low text-outline flex items-center justify-center font-label-sm text-label-sm text-[10px] ring-2 ring-surface">
-                                            +{{ $schedule->students->count() - 4 }}
-                                        </div>
-                                    @endif
-                                </div>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 truncate">
+                                    {{ $schedule->students->pluck('full_name')->implode(', ') }}
+                                </p>
                             </div>
                         </div>
                     @empty
