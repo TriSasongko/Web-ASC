@@ -143,6 +143,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('settings/galeri', [SettingController::class, 'updateGaleri'])->name('settings.galeri');
     Route::put('settings/jadwal', [SettingController::class, 'updateJadwal'])->name('settings.jadwal');
     Route::put('settings/kontak', [SettingController::class, 'updateKontak'])->name('settings.kontak');
+    Route::put('settings/syarat', [SettingController::class, 'updateSyaratKetentuan'])->name('settings.syarat');
 
     Route::post('settings/coaches', [SettingController::class, 'storeCoach'])->name('settings.coaches.store');
     Route::put('settings/coaches/{coach}', [SettingController::class, 'updateCoach'])->name('settings.coaches.update');

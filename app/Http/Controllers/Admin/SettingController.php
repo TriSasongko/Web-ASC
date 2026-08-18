@@ -14,7 +14,7 @@ use Illuminate\Validation\Rule;
 
 class SettingController extends Controller
 {
-    private const TABS = ['hero', 'tentang', 'program', 'galeri', 'jadwal', 'kontak'];
+    private const TABS = ['hero', 'tentang', 'program', 'galeri', 'jadwal', 'kontak', 'syarat'];
 
     public function edit(Request $request)
     {
@@ -221,6 +221,20 @@ class SettingController extends Controller
 
         return redirect()->route('admin.settings.edit', ['tab' => 'kontak'])
             ->with('success', 'Pengaturan kontak berhasil diperbarui.');
+    }
+
+    public function updateSyaratKetentuan(Request $request)
+    {
+        $validated = $request->validate([
+            'syarat_ketentuan' => ['required', 'string'],
+        ], [
+            'syarat_ketentuan.required' => 'Isi Syarat & Ketentuan wajib diisi.',
+        ]);
+
+        $this->saveSettings(['syarat_ketentuan' => $validated['syarat_ketentuan']]);
+
+        return redirect()->route('admin.settings.edit', ['tab' => 'syarat'])
+            ->with('success', 'Syarat & Ketentuan berhasil diperbarui.');
     }
 
     public function storeCoach(Request $request)

@@ -29,6 +29,7 @@
                     'galeri' => ['label' => 'Galeri', 'icon' => 'photo_library'],
                     'jadwal' => ['label' => 'Jadwal', 'icon' => 'calendar_month'],
                     'kontak' => ['label' => 'Kontak', 'icon' => 'contact_phone'],
+                    'syarat' => ['label' => 'Syarat & Ketentuan', 'icon' => 'gavel'],
                 ];
             @endphp
             @foreach ($tabs as $key => $item)
@@ -55,6 +56,9 @@
                 @break
             @case('kontak')
                 @include('admin.settings.tabs.kontak')
+                @break
+            @case('syarat')
+                @include('admin.settings.tabs.syarat')
                 @break
             @default
                 @include('admin.settings.tabs.hero')

@@ -57,6 +57,91 @@ class LandingPageSeeder extends Seeder
             'kontak_maps_url' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.3473943868075!2d105.23627687474358!3d-5.363862494614921!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40c54bbc12a533%3A0xf38f052a38ab7537!2sKolam%20Renang%20Universitas%20Lampung!5e0!3m2!1sid!2sid!4v1786456619529!5m2!1sid!2sid',
             'kontak_hours_weekday' => 'Senin – Jumat: 08.00 – 20.00',
             'kontak_hours_weekend' => 'Sabtu – Minggu: 07.00 – 18.00',
+
+            // Syarat & Ketentuan
+            'syarat_ketentuan' => <<<'TEXT'
+A. Ketentuan Umum
+1. Peserta latihan renang adalah siswa yang telah melakukan pendaftaran dan memenuhi persyaratan yang ditetapkan oleh klub.
+2. Orang tua/wali wajib membaca, memahami, dan menyetujui seluruh Syarat dan Ketentuan sebelum mendaftarkan siswa.
+3. Pendaftaran dianggap sah setelah data peserta lengkap dan pembayaran sesuai program telah diterima oleh klub.
+4. Penempatan siswa dalam kelompok latihan ditentukan berdasarkan usia, kemampuan berenang, hasil observasi, dan pertimbangan pelatih.
+5. Klub berhak melakukan evaluasi dan memindahkan siswa ke kelompok latihan yang sesuai dengan perkembangan kemampuan siswa.
+
+B. Data dan Kondisi Kesehatan Siswa
+1. Orang tua/wali wajib memberikan informasi yang benar mengenai kondisi kesehatan, riwayat cedera, alergi, maupun kondisi khusus yang dapat memengaruhi aktivitas berenang.
+2. Siswa tidak diperkenankan mengikuti latihan apabila sedang mengalami kondisi yang dapat membahayakan diri sendiri maupun peserta lain, seperti demam, penyakit menular, luka terbuka, atau kondisi kesehatan lainnya.
+3. Orang tua/wali bertanggung jawab untuk memastikan siswa dalam kondisi layak mengikuti latihan.
+4. Apabila siswa memiliki kondisi kesehatan khusus, orang tua/wali wajib berkonsultasi dengan tenaga medis dan memberitahukan rekomendasi yang relevan kepada klub/pelatih.
+
+C. Pembayaran
+1. Biaya latihan dibayarkan sesuai paket/program yang dipilih pada saat pendaftaran.
+2. Pembayaran yang telah dilakukan tidak dapat dikembalikan (non-refundable), kecuali terdapat kebijakan khusus yang ditetapkan oleh klub.
+3. Keterlambatan pembayaran dapat menyebabkan siswa tidak dapat mengikuti sesi latihan sampai kewajiban pembayaran diselesaikan.
+4. Biaya latihan tidak termasuk perlengkapan pribadi siswa dan biaya lain di luar program yang telah ditentukan.
+5. Perubahan harga atau ketentuan pembayaran akan diinformasikan terlebih dahulu kepada orang tua/wali.
+
+D. Kehadiran dan Ketidakhadiran
+1. Siswa diharapkan hadir sesuai jadwal latihan yang telah ditentukan.
+2. Orang tua/wali wajib menginformasikan kepada klub/pelatih apabila siswa tidak dapat mengikuti latihan.
+3. Ketidakhadiran siswa atas alasan pribadi, kegiatan lain, lupa jadwal, atau alasan lainnya tidak otomatis mendapatkan penggantian sesi.
+4. Penggantian sesi hanya dapat diberikan apabila memenuhi ketentuan make-up class yang berlaku di klub.
+5. Siswa yang datang terlambat tetap mengikuti latihan sesuai sisa waktu yang tersedia dan tidak mendapatkan tambahan waktu sebagai kompensasi keterlambatan.
+6. Klub berhak membatalkan atau memindahkan jadwal latihan apabila terdapat kondisi tertentu, seperti cuaca buruk, kondisi kolam, kegiatan klub, atau keadaan darurat.
+
+E. Make-Up Class / Penggantian Sesi
+1. Penggantian sesi hanya dapat dilakukan sesuai kebijakan dan ketersediaan jadwal klub.
+2. Pengajuan penggantian sesi wajib disampaikan sebelum jadwal latihan berlangsung.
+3. Sesi yang tidak digunakan dalam batas waktu program dapat dinyatakan hangus.
+4. Make-up class tidak dapat diuangkan atau dialihkan menjadi bentuk kompensasi lainnya.
+5. Klub berhak menentukan jadwal, kelompok, dan pelatih untuk sesi pengganti sesuai dengan ketersediaan.
+
+F. Peraturan Selama Latihan
+1. Siswa wajib mengikuti instruksi pelatih selama kegiatan berlangsung.
+2. Siswa wajib menjaga ketertiban, kebersihan, dan keamanan lingkungan kolam.
+3. Siswa dilarang melakukan tindakan yang dapat membahayakan diri sendiri, pelatih, maupun peserta lain.
+4. Siswa wajib menggunakan pakaian dan perlengkapan renang yang sesuai.
+5. Siswa wajib menjaga dan bertanggung jawab atas barang pribadi yang dibawa.
+6. Penggunaan fasilitas kolam wajib mengikuti peraturan yang ditetapkan oleh pengelola kolam.
+7. Siswa yang melakukan tindakan tidak disiplin atau membahayakan dapat diberikan teguran dan/atau tindakan sesuai kebijakan klub.
+
+G. Tanggung Jawab Orang Tua/Wali
+1. Orang tua/wali bertanggung jawab atas pengantaran dan penjemputan siswa sesuai jadwal.
+2. Orang tua/wali wajib memastikan siswa datang tepat waktu dan membawa perlengkapan latihan.
+3. Orang tua/wali tidak diperkenankan mengganggu proses latihan dengan memberikan instruksi langsung kepada siswa selama sesi berlangsung.
+4. Komunikasi mengenai program latihan, perkembangan siswa, jadwal, dan administrasi dilakukan melalui kanal komunikasi resmi klub.
+5. Orang tua/wali wajib memberikan informasi yang benar dan terbaru terkait data siswa serta kondisi yang dapat memengaruhi proses latihan.
+
+H. Keamanan dan Tanggung Jawab Klub
+1. Klub dan pelatih akan berupaya menjalankan kegiatan latihan dengan memperhatikan aspek keselamatan dan prosedur latihan yang sesuai.
+2. Pelatih bertanggung jawab memberikan instruksi dan pengawasan selama sesi latihan sesuai dengan kondisi dan program yang diberikan.
+3. Aktivitas renang memiliki risiko yang melekat pada olahraga air. Orang tua/wali memahami dan menyetujui bahwa risiko cedera atau kejadian tidak terduga tetap dapat terjadi meskipun prosedur keselamatan telah diterapkan.
+4. Klub akan mengambil tindakan pertolongan awal sesuai kemampuan dan prosedur yang tersedia apabila terjadi keadaan darurat selama latihan.
+5. Apabila diperlukan, klub dapat meminta bantuan tenaga medis atau fasilitas kesehatan dan akan menghubungi orang tua/wali.
+
+I. Perlengkapan Siswa
+1. Siswa wajib membawa perlengkapan latihan yang diperlukan, antara lain: pakaian renang, kacamata renang, topi renang apabila diwajibkan, handuk, perlengkapan mandi, botol minum, serta perlengkapan latihan tambahan sesuai instruksi pelatih.
+
+J. Dokumentasi dan Publikasi
+1. Klub dapat melakukan dokumentasi berupa foto atau video selama kegiatan latihan, pertandingan, maupun kegiatan klub.
+2. Dokumentasi dapat digunakan untuk kebutuhan informasi, evaluasi, dokumentasi kegiatan, dan promosi klub.
+3. Orang tua/wali yang tidak mengizinkan penggunaan dokumentasi siswa untuk keperluan publikasi wajib menyampaikan keberatan kepada pihak klub pada saat pendaftaran.
+
+K. Disiplin dan Etika
+1. Setiap siswa wajib menghormati pelatih, staf, teman latihan, pengelola kolam, dan pihak lainnya.
+2. Perundungan (bullying), pelecehan, kekerasan, penghinaan, diskriminasi, dan tindakan yang merugikan orang lain tidak diperbolehkan.
+3. Pelanggaran terhadap peraturan dapat diberikan teguran, pembinaan, pembatasan mengikuti latihan, hingga penghentian keanggotaan sesuai tingkat pelanggaran.
+4. Orang tua/wali diharapkan turut mendukung pembentukan sikap disiplin, sportivitas, tanggung jawab, dan sikap saling menghormati.
+
+L. Pengunduran Diri
+1. Pengunduran diri peserta wajib disampaikan oleh orang tua/wali kepada pihak klub.
+2. Pengunduran diri tidak otomatis menyebabkan pengembalian biaya latihan yang telah dibayarkan.
+3. Sisa sesi latihan tidak dapat dialihkan kepada orang lain tanpa persetujuan klub.
+
+M. Perubahan Jadwal dan Keadaan Khusus
+1. Klub dapat melakukan perubahan jadwal latihan karena kondisi kolam, cuaca, kegiatan kompetisi, hari libur, keadaan darurat, atau alasan operasional lainnya.
+2. Perubahan jadwal akan diinformasikan melalui kanal komunikasi resmi klub.
+3. Klub akan berupaya memberikan jadwal pengganti apabila perubahan berasal dari pihak klub dan memungkinkan untuk dilakukan.
+TEXT,
         ];
 
         foreach ($settings as $key => $value) {
