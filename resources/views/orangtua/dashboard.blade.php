@@ -30,7 +30,7 @@
                             {{ $totalChildren }} Anak
                         </span>
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm font-label-sm text-label-sm">
-                            <span class="material-symbols-outlined text-[16px]">swim</span>
+                            <span class="material-symbols-outlined text-[16px]">sports</span>
                             {{ $activePrograms }} Program Aktif
                         </span>
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm font-label-sm text-label-sm">
