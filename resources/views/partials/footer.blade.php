@@ -75,6 +75,14 @@
     <div class="py-4 mt-8 bg-primary text-on-primary">
         <div class="flex flex-col items-center justify-between gap-2 mx-auto text-center max-w-container_max_width px-margin_mobile md:px-margin_desktop font-body text-label-sm md:flex-row">
             <p>&copy; {{ date('Y') }} AantassenaSwimClub. All rights reserved.</p>
+        <p>
+            Developed by
+            <a href="https://www.instagram.com/mr3.codeproject?igsh=aWtmbzR5b2h0bTZ2&igsi=aWtmbzR5b2h0bTZ2"
+               target="_blank" rel="noopener noreferrer"
+               class="underline transition-colors hover:text-orange">
+                MR3 CODE PROJECT
+            </a>
+        </p>
         </div>
     </div>
 </footer>
