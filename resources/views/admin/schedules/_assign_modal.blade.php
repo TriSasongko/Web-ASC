@@ -20,6 +20,19 @@
 
         <form action="{{ route('admin.schedules.assign', $s) }}" method="POST" class="px-6 py-5 space-y-4">
             @csrf @method('PUT')
+            @if ($errors->has('coach_ids') && is_array($errors->get('coach_ids')[0]))
+                <div class="flex items-start gap-2 bg-[#FFEBEE] text-[#C62828] border border-[#C62828]/20 px-4 py-3 rounded-lg font-body-sm text-body-sm">
+                    <span class="material-symbols-outlined text-[18px] mt-0.5">error</span>
+                    <div>
+                        <p class="font-semibold mb-1">Konflik jadwal:</p>
+                        <ul class="list-disc list-inside space-y-0.5">
+                            @foreach ($errors->get('coach_ids')[0] as $c)
+                                <li><strong>{{ $c['coach'] }}</strong> sudah mengajar <strong>{{ $c['class'] }}</strong> di <strong>{{ $c['day'] }}</strong> jam <strong>{{ $c['time'] }}</strong></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
             <div>
                 <x-input-label value="Pelatih" />
                 <div class="max-h-40 overflow-y-auto space-y-1.5 border border-outline-variant/30 rounded-lg p-2">

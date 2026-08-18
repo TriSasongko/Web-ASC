@@ -31,4 +31,12 @@ class ClassSchedule extends Model
         return $this->belongsToMany(User::class, 'class_schedule_user', 'class_schedule_id', 'user_id')
             ->withTimestamps();
     }
+
+    public function scopeOverlaps($query, string $day, string $startTime, string $endTime, ?int $excludeId = null)
+    {
+        return $query->where('day', $day)
+            ->where('start_time', '<', $endTime)
+            ->where('end_time', '>', $startTime)
+            ->when($excludeId, fn ($q) => $q->where('id', '!=', $excludeId));
+    }
 }
