@@ -940,9 +940,7 @@
                     </button>
                     <div class="p-4 border-t bg-surface border-outline-variant/30 text-on-surface-variant" x-cloak
                         x-show="expanded">
-                        Pendaftaran dapat dilakukan secara online dengan mengklik tombol "Daftar" di website ini, atau
-                        Anda bisa datang langsung ke meja pendaftaran kami di Kolam Renang Universitas Lampung pada jam
-                        operasional.
+                        Untuk mendaftar, Anda cukup masuk ke website dan menghubungi admin kami yang akan membantu seluruh proses pendaftarannya.
                     </div>
                 </div>
                 <!-- Item 2 -->
@@ -983,10 +981,7 @@
                     </button>
                     <div class="p-4 border-t bg-surface border-outline-variant/30 text-on-surface-variant" x-cloak
                         x-show="expanded">
-                        Ya, seluruh biaya program kelas (Private, Reguler, dll) yang tercantum sudah termasuk biaya
-                        tiket masuk kolam renang untuk siswa selama sesi latihan berlangsung. Pendamping/orang tua yang
-                        masuk area kolam namun tidak berenang mungkin dikenakan tarif masuk reguler kolam renang (bukan
-                        dari pihak ASC).
+                        Tidak, biaya paket belum termasuk tiket masuk. Biaya yang tertera hanya untuk program latihan bersama pelatih. Tiket masuk kolam renang dibeli terpisah di lokasi (loket kolam) baik untuk siswa yang akan latihan maupun orang tua/pendamping yang ikut masuk ke area kolam.
                     </div>
                 </div>
             </div>

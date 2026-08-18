@@ -73,7 +73,7 @@
                     @php
                         $faqs = [
                             ['q' => 'Bagaimana cara mendaftar di ASC?', 'a' => 'Untuk mendaftar, Anda cukup masuk ke website dan menghubungi admin kami yang akan membantu seluruh proses pendaftarannya.'],
-                            ['q' => 'Mulai usia berapa anak bisa ikut kelas renang?', 'a' => 'Kami menerima siswa mulai dari usia 3 tahun untuk program reguler/mini reguler anak-anak. Untuk usia di bawah 3 tahun, disarankan mengikuti program private dengan pendampingan khusus.'],
+                            ['q' => 'Mulai usia berapa anak bisa ikut kelas renang?', 'a' => 'Kami menerima siswa mulai dari usia 4 tahun untuk program reguler/mini reguler anak-anak. Untuk usia di bawah 4 tahun, disarankan mengikuti program private dengan pendampingan khusus.'],
                             ['q' => 'Bagaimana sistem pembayaran biayanya?', 'a' => 'Pembayaran dapat dilakukan melalui transfer bank, e-wallet (GoPay, OVO, Dana), atau secara tunai di lokasi pendaftaran. Pembayaran dilakukan di awal sebelum sesi pertama dimulai.'],
                             ['q' => 'Apakah biaya sudah termasuk tiket masuk kolam?', 'a' => 'Tidak, biaya paket belum termasuk tiket masuk. Biaya yang tertera hanya untuk program latihan bersama pelatih. Tiket masuk kolam renang dibeli terpisah di lokasi (loket kolam) baik untuk siswa yang akan latihan maupun orang tua/pendamping yang ikut masuk ke area kolam.'],
                             ['q' => 'Apakah tersedia kelas untuk dewasa?', 'a' => 'Ya, tersedia. Dewasa dapat mengikuti program private, mini private, atau reguler dengan kelompok dewasa. Program dapat disesuaikan mulai dari pemula total hingga perbaikan teknik gaya.'],

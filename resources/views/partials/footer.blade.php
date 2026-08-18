@@ -12,11 +12,11 @@
         <!-- Brand Column -->
         <div class="space-y-4">
             <a href="/" class="flex items-center gap-2 mb-6">
-                <img src="{{ asset('images/Logo_ASR.png') }}" alt="Logo AantassenaSwimClub" class="w-12 h-12 object-contain rounded-full">
+                <img src="{{ asset('images/Logo_ASR.png') }}" alt="Logo AantassenaSwimClub" class="object-contain w-12 h-12 rounded-full">
                 <span class="font-bold font-headline text-headline-sm text-primary">AantassenaSwimClub</span>
             </a>
             <p class="pr-4 text-on-surface-variant text-body-sm">
-                Mencetak perenang tangguh dengan metode aman, menyenangkan, dan profesional sejak 2010. Berbasis standar pelatihan modern.
+                Mencetak perenang tangguh dengan metode aman, menyenangkan, dan profesional sejak 2022. Berbasis standar pelatihan modern.
             </p>
         </div>
         <!-- Quick Links -->
