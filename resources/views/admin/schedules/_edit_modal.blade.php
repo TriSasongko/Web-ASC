@@ -10,8 +10,8 @@
 
 <div x-show="open" x-cloak x-transition
     @keydown.escape.window="open = false"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="w-full max-w-2xl bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl flex flex-col max-h-[90vh]">
+    class="fixed inset-0 z-50 flex justify-center p-4 items-start md:items-center overflow-y-auto">
+    <div class="w-full max-w-2xl bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-2xl flex flex-col max-h-[90vh] my-4 md:my-0">
 
         <div class="flex items-start justify-between gap-3 px-6 py-4 border-b border-outline-variant/30 bg-surface/50 shrink-0">
             <div>
