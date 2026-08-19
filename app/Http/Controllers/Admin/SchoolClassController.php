@@ -18,6 +18,14 @@ class SchoolClassController extends Controller
             ->latest()
             ->paginate(10);
 
+        $studentCounts = ClassStudent::whereIn('class_id', $classes->pluck('id'))
+            ->where('is_active', true)
+            ->selectRaw('class_id, COUNT(DISTINCT student_id) as count')
+            ->groupBy('class_id')
+            ->pluck('count', 'class_id');
+
+        $classes->getCollection()->transform(fn ($class) => tap($class, fn ($c) => $c->students_count = $studentCounts[$c->id] ?? 0));
+
         $programs = Program::where('is_active', true)->get();
 
         return view('admin.classes.index', compact('classes', 'programs'));
@@ -117,8 +125,8 @@ class SchoolClassController extends Controller
 
         $enrollments = ClassStudent::with(['student.parent', 'schoolClass.program'])
             ->where('class_id', $class->id)
+            ->where('is_active', true)
             ->where('renewal_status', '!=', 'berhenti')
-            ->orderBy('is_active', 'desc')
             ->orderBy('student_id')
             ->get()
             ->filter(fn ($e) => $e->student !== null)

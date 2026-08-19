@@ -39,7 +39,7 @@
                                 <p class="font-body-sm text-body-sm text-outline truncate mt-0.5">{{ $class->program->name }}</p>
                             </div>
                             <div class="shrink-0 text-right">
-                                <p class="font-label-md text-label-md text-on-surface">{{ $class->students()->count() }}</p>
+                                <p class="font-label-md text-label-md text-on-surface">{{ $class->students_count }}</p>
                                 <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Murid</p>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
                                 Edit
                             </a>
                             <form action="{{ route('admin.classes.destroy', $class) }}" method="POST" class="inline"
-                                  onsubmit="return confirmDeleteClass(event, this, '{{ $class->name }}', {{ $class->students()->count() }})">
+                                  onsubmit="return confirmDeleteClass(event, this, '{{ $class->name }}', {{ $class->students_count }})">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="inline-flex items-center gap-1 text-error font-label-md text-label-md hover:underline">
                                     Hapus
@@ -100,13 +100,13 @@
                                         <span class="font-body-sm text-body-sm text-outline">Belum ada jadwal</span>
                                     @endforelse
                                 </td>
-                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->students()->count() }}</td>
+                                <td class="px-4 py-3 font-body-sm text-body-sm text-on-surface">{{ $class->students_count }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-3">
                                         <a href="{{ route('admin.classes.show', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Detail</a>
                                         <a href="{{ route('admin.classes.edit', $class) }}" class="inline-flex items-center gap-1 text-primary font-label-md text-label-md hover:underline">Edit</a>
                                         <form action="{{ route('admin.classes.destroy', $class) }}" method="POST" class="inline"
-                                              onsubmit="return confirmDeleteClass(event, this, '{{ $class->name }}', {{ $class->students()->count() }})">
+                                              onsubmit="return confirmDeleteClass(event, this, '{{ $class->name }}', {{ $class->students_count }})">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="inline-flex items-center gap-1 text-error font-label-md text-label-md hover:underline">Hapus</button>
                                         </form>
