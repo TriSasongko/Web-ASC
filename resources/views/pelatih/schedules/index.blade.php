@@ -7,6 +7,6 @@
             </div>
         </div>
 
-        @include('admin.schedules._grid', ['schedulesByDay' => $schedulesByDay, 'showClassLink' => false])
+        @include('admin.schedules._grid', ['schedulesByDay' => $schedulesByDay, 'showClassLink' => false, 'showStudentDetail' => true])
     </div>
 </x-sidebar-layout>

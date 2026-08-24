@@ -1,4 +1,4 @@
-@props(['schedulesByDay', 'showClassLink' => true, 'manageable' => false, 'classes' => [], 'coaches' => [], 'studentsByClass' => []])
+@props(['schedulesByDay', 'showClassLink' => true, 'manageable' => false, 'showStudentDetail' => false, 'classes' => [], 'coaches' => [], 'studentsByClass' => []])
 
 @php
     $days = \App\Models\ClassSchedule::DAYS;
@@ -63,7 +63,9 @@
                                         </span>
                                     </div>
                                     <p class="text-[11px] leading-tight text-on-surface-variant mt-1">
-                                        @if ($s->students->isEmpty())
+                                        @if ($showStudentDetail)
+                                            @include('admin.schedules._student_detail', ['s' => $s])
+                                        @elseif ($s->students->isEmpty())
                                             <span class="text-outline">Belum ada siswa</span>
                                         @else
                                             {{ $s->students->count() }} siswa
@@ -131,7 +133,9 @@
                                             @endif
                                             <p class="text-[11px] leading-tight text-outline mt-0.5">{{ $s->schoolClass?->level_label ?? '-' }}</p>
                                             <p class="text-[11px] leading-tight text-on-surface-variant mt-0.5">
-                                                @if ($s->students->isEmpty())
+                                                @if ($showStudentDetail)
+                                                    @include('admin.schedules._student_detail', ['s' => $s, 'compact' => true])
+                                                @elseif ($s->students->isEmpty())
                                                     <span class="text-outline">Belum ada siswa</span>
                                                 @else
                                                     {{ $s->students->count() }} siswa
