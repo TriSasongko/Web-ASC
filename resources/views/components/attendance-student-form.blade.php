@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <div class="overflow-hidden rounded-lg border border-outline-variant/30">
+        <div class="overflow-x-auto rounded-lg border border-outline-variant/30">
             <table class="w-full text-left">
                 <thead class="bg-surface-container-low">
                     <tr>
