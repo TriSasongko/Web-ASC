@@ -10,6 +10,7 @@ use App\Models\Registration;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -285,5 +286,134 @@ class OrangTuaDashboardTest extends TestCase
             ->assertSee('Detail E-Raport')
             ->assertSee('Anak Belum Dinilai')
             ->assertSee('Belum ada penilaian');
+    }
+
+    private function makeEnrolledChild(User $parent, string $childName): array
+    {
+        $program = Program::firstOrCreate(['slug' => 'reguler'], [
+            'name' => 'Reguler',
+            'total_sessions' => 8,
+            'price' => 350000,
+            'billing_type' => 'per_paket',
+            'is_active' => true,
+        ]);
+
+        $class = SchoolClass::create([
+            'program_id' => $program->id,
+            'name' => 'Reguler Uji',
+            'level' => 1,
+            'is_active' => true,
+        ]);
+
+        $student = Student::create([
+            'parent_id' => $parent->id,
+            'full_name' => $childName,
+            'gender' => 'L',
+        ]);
+
+        ClassStudent::create([
+            'class_id' => $class->id,
+            'student_id' => $student->id,
+            'level' => 1,
+            'sessions_completed' => 0,
+            'is_active' => true,
+            'renewal_status' => 'aktif',
+            'started_at' => now(),
+        ]);
+
+        return [$class, $student];
+    }
+
+    private function makeSchedule(SchoolClass $class, string $day, string $startTime): ClassSchedule
+    {
+        return ClassSchedule::create([
+            'class_id' => $class->id,
+            'day' => $day,
+            'start_time' => $startTime,
+            'end_time' => '17:00',
+            'location' => 'Kolam Utama',
+            'session_number' => 1,
+        ]);
+    }
+
+    public function test_dashboard_only_shows_sessions_assigned_to_the_child()
+    {
+        // Rabu, agar tidak ada jadwal uji yang jatuh pada "hari ini".
+        $this->travelTo(Carbon::parse('2026-08-26 10:00'));
+
+        $parent = $this->makeParent();
+        [$class, $student] = $this->makeEnrolledChild($parent, 'Anak Bersesi');
+
+        $this->makeSchedule($class, 'senin', '07:00');
+        $sabtu = $this->makeSchedule($class, 'sabtu', '08:00');
+        $minggu = $this->makeSchedule($class, 'minggu', '09:00');
+
+        $sabtu->students()->attach($student->id);
+        $minggu->students()->attach($student->id);
+
+        $this->actingAs($parent)
+            ->get(route('orangtua.dashboard'))
+            ->assertOk()
+            ->assertSee('08:00')
+            ->assertSee('09:00')
+            ->assertDontSee('07:00');
+    }
+
+    public function test_dashboard_shows_all_class_sessions_when_child_has_no_assignment()
+    {
+        $this->travelTo(Carbon::parse('2026-08-26 10:00'));
+
+        $parent = $this->makeParent();
+        [$class] = $this->makeEnrolledChild($parent, 'Anak Data Lama');
+
+        $this->makeSchedule($class, 'senin', '07:00');
+        $this->makeSchedule($class, 'sabtu', '08:00');
+        $this->makeSchedule($class, 'minggu', '09:00');
+
+        $this->actingAs($parent)
+            ->get(route('orangtua.dashboard'))
+            ->assertOk()
+            ->assertSee('07:00')
+            ->assertSee('08:00')
+            ->assertSee('09:00');
+    }
+
+    public function test_dashboard_keeps_unassigned_sibling_visible_on_class_sessions()
+    {
+        $this->travelTo(Carbon::parse('2026-08-26 10:00'));
+
+        $parent = $this->makeParent();
+        [$class, $studentA] = $this->makeEnrolledChild($parent, 'Anak Bersesi');
+
+        $studentB = Student::create([
+            'parent_id' => $parent->id,
+            'full_name' => 'Anak Lepas',
+            'gender' => 'P',
+        ]);
+
+        ClassStudent::create([
+            'class_id' => $class->id,
+            'student_id' => $studentB->id,
+            'level' => 1,
+            'sessions_completed' => 0,
+            'is_active' => true,
+            'renewal_status' => 'aktif',
+            'started_at' => now(),
+        ]);
+
+        $this->makeSchedule($class, 'senin', '07:00');
+        $sabtu = $this->makeSchedule($class, 'sabtu', '08:00');
+        $minggu = $this->makeSchedule($class, 'minggu', '09:00');
+
+        $sabtu->students()->attach($studentA->id);
+        $minggu->students()->attach($studentA->id);
+
+        $this->actingAs($parent)
+            ->get(route('orangtua.dashboard'))
+            ->assertOk()
+            ->assertSee('Anak Bersesi')
+            ->assertSee('Anak Lepas')
+            // Sesi Senin tetap tampil karena Anak Lepas tanpa penugasan (fallback kelas).
+            ->assertSee('07:00');
     }
 }

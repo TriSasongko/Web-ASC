@@ -4,6 +4,23 @@
         $dayLabels = ['senin' => 'Senin', 'selasa' => 'Selasa', 'rabu' => 'Rabu', 'kamis' => 'Kamis', 'jumat' => 'Jumat', 'sabtu' => 'Sabtu', 'minggu' => 'Minggu'];
         $monthLabels = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'];
         $todayLabel = ucfirst($dayLabels[$todayDay]).', '.now()->format('d').' '.$monthLabels[now()->month].' '.now()->year;
+
+        // Nama anak pengikut sesi berdasarkan penugasan per-sesi (class_schedule_student);
+        // anak tanpa penugasan sama sekali di kelas tersebut dianggap ikut semua sesinya.
+        $childNamesForSchedule = function ($schedule) use ($students) {
+            $matching = $students->filter(function ($s) use ($schedule) {
+                if (! $s->classes->contains('id', $schedule->class_id)) {
+                    return false;
+                }
+
+                $assigned = $s->schedules->where('class_id', $schedule->class_id);
+
+                return $assigned->isEmpty() || $assigned->contains('id', $schedule->id);
+            });
+
+            return $matching->pluck('nickname')->filter()->implode(', ')
+                ?: $matching->pluck('full_name')->implode(', ');
+        };
     @endphp
 
     <div class="space-y-6">
@@ -182,8 +199,7 @@
                         @php
                             $start = $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '-';
                             $end = $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '-';
-                            $matching = $students->filter(fn ($s) => $s->classes->contains('id', $schedule->class_id));
-                            $childNames = $matching->pluck('nickname')->filter()->implode(', ') ?: $matching->pluck('full_name')->implode(', ');
+                            $childNames = ($childNamesForSchedule)($schedule);
                         @endphp
                         <div class="flex items-start gap-3 border border-outline-variant/30 rounded-lg p-3 hover:border-primary/40 hover:bg-surface-container-low/50 transition-colors">
                             <div class="p-2.5 bg-primary-container/60 rounded-lg shrink-0">
@@ -458,8 +474,7 @@
                             $schedule = $item['schedule'];
                             $date = $item['date'];
                             $start = $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '-';
-                            $matching = $students->filter(fn ($s) => $s->classes->contains('id', $schedule->class_id));
-                            $childNames = $matching->pluck('nickname')->filter()->implode(', ') ?: $matching->pluck('full_name')->implode(', ');
+                            $childNames = ($childNamesForSchedule)($schedule);
                             $isToday = $date->isToday();
                         @endphp
                         <div class="flex items-center gap-3 border border-outline-variant/30 rounded-lg p-3 {{ $isToday ? 'border-primary/50 bg-primary-container/10' : '' }}">

@@ -14,13 +14,15 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        // Anak dengan kelas aktif + program
+        // Anak dengan kelas aktif + program + penugasan sesi
         $students = $user->students()
-            ->with(['classes' => fn ($q) => $q->wherePivot('is_active', true)->with('program')])
+            ->with([
+                'classes' => fn ($q) => $q->wherePivot('is_active', true)->with('program'),
+                'schedules',
+            ])
             ->orderBy('full_name')
             ->get();
 
-        $activeClassIds = $students->flatMap(fn ($s) => $s->classes->pluck('id'))->unique()->values();
         $totalChildren = $students->count();
 
         // Pendaftaran (untuk panduan orang tua baru / menunggu verifikasi)
@@ -53,12 +55,16 @@ class DashboardController extends Controller
 
         $pendingRecommendations = $recommendations->where('status', 'menunggu_ortu')->count();
 
-        // Jadwal latihan hari ini untuk anak
+        // Jadwal latihan hari ini untuk anak.
+        // Hanya sesi yang ditugaskan ke anak (class_schedule_student);
+        // anak tanpa penugasan sama sekali di sebuah kelas (data lama)
+        // dianggap mengikuti semua sesi kelas tersebut.
         $todayDay = ClassSchedule::DAYS[(now()->dayOfWeek + 6) % 7];
 
-        $todaySchedules = ClassSchedule::with(['schoolClass.program', 'coaches'])
+        [$assignedScheduleIds, $fallbackClassIds] = $this->resolveScheduleScope($students);
+
+        $todaySchedules = $this->scheduleScopeQuery($assignedScheduleIds, $fallbackClassIds)
             ->where('day', $todayDay)
-            ->whereIn('class_id', $activeClassIds)
             ->orderBy('start_time')
             ->get();
 
@@ -69,9 +75,8 @@ class DashboardController extends Controller
             $date = today()->addDays($offset);
             $day = ClassSchedule::DAYS[($date->dayOfWeek + 6) % 7];
 
-            ClassSchedule::with(['schoolClass.program', 'coaches'])
+            $this->scheduleScopeQuery($assignedScheduleIds, $fallbackClassIds)
                 ->where('day', $day)
-                ->whereIn('class_id', $activeClassIds)
                 ->orderBy('start_time')
                 ->get()
                 ->each(function ($schedule) use (&$upcomingSchedules, $date) {
@@ -218,5 +223,45 @@ class DashboardController extends Controller
             'latestDevelopments',
             'attendanceRecaps',
         ));
+    }
+
+    /**
+     * Tentukan cakupan sesi latihan tiap anak terhadap kelas aktifnya:
+     * - id sesi yang ditugaskan eksplisit via class_schedule_student, dan
+     * - kelas aktif yang belum punya penugasan sesi sama sekali untuk anak
+     *   tersebut (data lama) — semua sesi kelas itu ditampilkan sebagai fallback.
+     *
+     * @return array{0: list<int>, 1: list<int>}
+     */
+    private function resolveScheduleScope($students): array
+    {
+        $assignedScheduleIds = collect();
+        $fallbackClassIds = collect();
+
+        foreach ($students as $student) {
+            foreach ($student->classes as $class) {
+                $assignedInClass = $student->schedules->where('class_id', $class->id);
+
+                if ($assignedInClass->isEmpty()) {
+                    $fallbackClassIds->push($class->id);
+                } else {
+                    $assignedScheduleIds = $assignedScheduleIds->merge($assignedInClass->pluck('id'));
+                }
+            }
+        }
+
+        return [
+            $assignedScheduleIds->unique()->values()->all(),
+            $fallbackClassIds->unique()->values()->all(),
+        ];
+    }
+
+    private function scheduleScopeQuery(array $assignedScheduleIds, array $fallbackClassIds)
+    {
+        return ClassSchedule::with(['schoolClass.program', 'coaches'])
+            ->where(function ($query) use ($assignedScheduleIds, $fallbackClassIds) {
+                $query->whereIn('id', $assignedScheduleIds)
+                    ->orWhereIn('class_id', $fallbackClassIds);
+            });
     }
 }
