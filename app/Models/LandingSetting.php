@@ -38,6 +38,46 @@ class LandingSetting extends Model
         return Storage::url($value);
     }
 
+    // Ubah URL YouTube biasa menjadi URL embed (untuk iframe)
+    // Mendukung: youtube.com/watch?v=, youtu.be/, youtube.com/shorts/, dan embed/ yang sudah jadi
+    public static function youtubeEmbedUrl(?string $url): ?string
+    {
+        if (! $url) {
+            return null;
+        }
+
+        $url = trim($url);
+
+        if (! preg_match('#^https?://(www\.)?(youtube\.com|youtu\.be)/#i', $url)) {
+            return null;
+        }
+
+        $host = parse_url($url, PHP_URL_HOST);
+        $path = parse_url($url, PHP_URL_PATH);
+
+        // Sudah berupa embed
+        if (str_contains($path, '/embed/')) {
+            return $url;
+        }
+
+        $videoId = null;
+
+        if (str_ends_with(strtolower((string) $host), 'youtu.be')) {
+            $videoId = trim((string) $path, '/');
+        } elseif (preg_match('~^/(shorts|live|embed)/([^/?#]+)~i', (string) $path, $m)) {
+            $videoId = $m[2];
+        } else {
+            parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
+            $videoId = $query['v'] ?? null;
+        }
+
+        if ($videoId && preg_match('/^[\w-]{11}$/', $videoId)) {
+            return 'https://www.youtube.com/embed/'.$videoId;
+        }
+
+        return null;
+    }
+
     // Parse teks biasa Syarat & Ketentuan menjadi HTML
     // Format: baris judul bagian diawali huruf (A. B. C.), baris list diawali angka (1. 2. 3.)
     public static function parseSyaratKetentuan(?string $text): string

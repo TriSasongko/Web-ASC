@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\LandingCoach;
 use App\Models\LandingGalleryImage;
 use App\Models\LandingProgram;
+use App\Models\LandingRenangFaq;
 use App\Models\LandingSetting;
 use App\Models\User;
 use Database\Seeders\LandingPageSeeder;
@@ -42,13 +43,14 @@ class LandingPageSettingTest extends TestCase
         $this->get('/galeri')->assertOk()->assertSee('Galeri Kegiatan');
         $this->get('/kontak')->assertOk()->assertSee('Jam Operasional');
         $this->get('/faq')->assertOk();
+        $this->get('/renang')->assertOk()->assertSee('Tentang Renang')->assertSee('Pertanyaan Seputar Renang');
     }
 
     public function test_admin_can_open_settings_tabs(): void
     {
         $admin = $this->makeAdmin();
 
-        foreach (['hero', 'tentang', 'program', 'galeri', 'jadwal', 'kontak'] as $tab) {
+        foreach (['hero', 'tentang', 'program', 'galeri', 'jadwal', 'kontak', 'renang'] as $tab) {
             $this->actingAs($admin)->get(route('admin.settings.edit', ['tab' => $tab]))
                 ->assertOk();
         }
@@ -174,7 +176,7 @@ class LandingPageSettingTest extends TestCase
             'name' => 'Program Baru',
             'subtitle' => '1 Coach : 1 Siswa',
             'price' => 100000,
-            'billing_unit' => '/sesi',
+            'billing_unit' => '/4 Sesi',
             'features' => "Fitur satu\nFitur dua",
             'badge' => '',
             'button_label' => 'Pilih',
@@ -282,5 +284,78 @@ class LandingPageSettingTest extends TestCase
         ])->assertSessionHasErrors('kontak_email');
 
         $this->assertNotSame('bukan-email', LandingSetting::get('kontak_email'));
+    }
+
+    public function test_admin_can_update_renang_settings_and_it_reflects_on_renang_page(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->put(route('admin.settings.renang'), [
+            'renang_heading' => 'Seluk Beluk Renang',
+            'renang_subtitle' => 'Subtitle halaman renang.',
+            'renang_umum_heading' => 'Penjelasan Umum',
+            'renang_umum_text' => 'Renang adalah olahraga air.',
+            'renang_khusus_heading' => 'Renang di ASC',
+            'renang_khusus_text' => 'Program renang yang aman dan menyenangkan.',
+            'renang_faq_heading' => 'Tanya Seputar Renang',
+            'renang_faq_subtitle' => 'Jawaban singkat.',
+        ])->assertRedirect(route('admin.settings.edit', ['tab' => 'renang']));
+
+        $this->assertSame('Seluk Beluk Renang', LandingSetting::get('renang_heading'));
+
+        $this->get('/renang')->assertOk()
+            ->assertSee('Seluk Beluk Renang')
+            ->assertSee('Penjelasan Umum')
+            ->assertSee('Tanya Seputar Renang');
+    }
+
+    public function test_admin_can_crud_renang_faq(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $this->actingAs($admin)->post(route('admin.settings.renang.faqs.store'), [
+            'question' => 'Berapa lama belajar sampai bisa berenang?',
+            'answer' => 'Rata-rata 3-6 bulan dengan latihan rutin.',
+            'videos' => [
+                ['title' => 'Gaya Bebas', 'youtube_url' => 'https://youtu.be/abc123def45'],
+                ['title' => 'Gaya Dada', 'youtube_url' => 'https://www.youtube.com/watch?v=xyz789gmail'],
+            ],
+            'sort_order' => 9,
+            'is_active' => 1,
+        ])->assertRedirect(route('admin.settings.edit', ['tab' => 'renang']));
+
+        $faq = LandingRenangFaq::where('question', 'Berapa lama belajar sampai bisa berenang?')->first();
+        $this->assertNotNull($faq);
+        $this->assertSame(2, $faq->videos()->count());
+        $this->assertSame('https://www.youtube.com/embed/abc123def45', $faq->videos()->first()->embed_url);
+
+        $this->get('/renang')->assertOk()->assertSee('Berapa lama belajar sampai bisa berenang?')->assertSee('https://www.youtube.com/embed/abc123def45')->assertSee('https://www.youtube.com/embed/xyz789gmail');
+
+        $this->actingAs($admin)->put(route('admin.settings.renang.faqs.update', $faq), [
+            'question' => 'Pertanyaan Diubah',
+            'answer' => 'Jawaban diubah.',
+            'videos' => [],
+            'sort_order' => 9,
+            'is_active' => 0,
+        ])->assertRedirect();
+
+        $fresh = $faq->fresh();
+        $this->assertSame('Pertanyaan Diubah', $fresh->question);
+        $this->assertFalse($fresh->is_active);
+        $this->assertSame(0, $fresh->videos()->count());
+
+        $this->actingAs($admin)->delete(route('admin.settings.renang.faqs.destroy', $faq))->assertRedirect();
+        $this->assertDatabaseMissing('landing_renang_faqs', ['id' => $faq->id]);
+        $this->assertDatabaseCount('landing_renang_faq_videos', 0);
+    }
+
+    public function test_youtube_embed_url_helper(): void
+    {
+        $this->assertSame('https://www.youtube.com/embed/abc123def45', LandingSetting::youtubeEmbedUrl('https://www.youtube.com/watch?v=abc123def45'));
+        $this->assertSame('https://www.youtube.com/embed/abc123def45', LandingSetting::youtubeEmbedUrl('https://youtu.be/abc123def45'));
+        $this->assertSame('https://www.youtube.com/embed/abc123def45', LandingSetting::youtubeEmbedUrl('https://www.youtube.com/shorts/abc123def45'));
+        $this->assertSame('https://www.youtube.com/embed/abc123def45', LandingSetting::youtubeEmbedUrl('https://www.youtube.com/embed/abc123def45'));
+        $this->assertNull(LandingSetting::youtubeEmbedUrl('https://vimeo.com/12345'));
+        $this->assertNull(LandingSetting::youtubeEmbedUrl(null));
     }
 }

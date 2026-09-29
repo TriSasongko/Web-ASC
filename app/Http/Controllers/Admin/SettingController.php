@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\LandingCoach;
 use App\Models\LandingGalleryImage;
 use App\Models\LandingProgram;
+use App\Models\LandingRenangFaq;
+use App\Models\LandingRenangFaqVideo;
 use App\Models\LandingSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,7 +16,7 @@ use Illuminate\Validation\Rule;
 
 class SettingController extends Controller
 {
-    private const TABS = ['hero', 'tentang', 'program', 'galeri', 'jadwal', 'kontak', 'syarat'];
+    private const TABS = ['hero', 'tentang', 'program', 'galeri', 'jadwal', 'kontak', 'syarat', 'renang'];
 
     public function edit(Request $request)
     {
@@ -28,6 +30,7 @@ class SettingController extends Controller
             'coaches' => LandingCoach::orderBy('sort_order')->orderBy('id')->get(),
             'programs' => LandingProgram::orderBy('sort_order')->orderBy('id')->get(),
             'gallery' => LandingGalleryImage::orderBy('sort_order')->orderBy('id')->get(),
+            'renangFaqs' => LandingRenangFaq::with('videos')->orderBy('sort_order')->orderBy('id')->get(),
             'adminPhone' => User::where('role', 'admin')->orderBy('id')->value('phone'),
             'adminAddress' => User::where('role', 'admin')->orderBy('id')->value('address'),
         ]);
@@ -235,6 +238,103 @@ class SettingController extends Controller
 
         return redirect()->route('admin.settings.edit', ['tab' => 'syarat'])
             ->with('success', 'Syarat & Ketentuan berhasil diperbarui.');
+    }
+
+    public function updateRenang(Request $request)
+    {
+        $validated = $request->validate([
+            'renang_heading' => ['required', 'string', 'max:255'],
+            'renang_subtitle' => ['nullable', 'string', 'max:1000'],
+            'renang_umum_heading' => ['required', 'string', 'max:255'],
+            'renang_umum_text' => ['required', 'string', 'max:10000'],
+            'renang_khusus_heading' => ['required', 'string', 'max:255'],
+            'renang_khusus_text' => ['required', 'string', 'max:10000'],
+            'renang_faq_heading' => ['nullable', 'string', 'max:255'],
+            'renang_faq_subtitle' => ['nullable', 'string', 'max:1000'],
+        ], [
+            'renang_heading.required' => 'Judul halaman Renang wajib diisi.',
+            'renang_umum_heading.required' => 'Judul penjelasan umum wajib diisi.',
+            'renang_umum_text.required' => 'Isi penjelasan umum wajib diisi.',
+            'renang_khusus_heading.required' => 'Judul penjelasan khusus wajib diisi.',
+            'renang_khusus_text.required' => 'Isi penjelasan khusus wajib diisi.',
+        ]);
+
+        $this->saveSettings(array_intersect_key($validated, array_flip([
+            'renang_heading', 'renang_subtitle', 'renang_umum_heading', 'renang_umum_text',
+            'renang_khusus_heading', 'renang_khusus_text',
+            'renang_faq_heading', 'renang_faq_subtitle',
+        ])));
+
+        return redirect()->route('admin.settings.edit', ['tab' => 'renang'])
+            ->with('success', 'Konten halaman Renang berhasil diperbarui.');
+    }
+
+    public function storeRenangFaq(Request $request)
+    {
+        $validated = $this->validateRenangFaq($request);
+
+        $faq = LandingRenangFaq::create($validated);
+        $this->syncRenangFaqVideos($faq, $validated['videos'] ?? []);
+
+        return redirect()->route('admin.settings.edit', ['tab' => 'renang'])
+            ->with('success', 'FAQ Renang berhasil ditambahkan.');
+    }
+
+    public function updateRenangFaq(Request $request, LandingRenangFaq $renangFaq)
+    {
+        $validated = $this->validateRenangFaq($request);
+
+        $renangFaq->update($validated);
+        $this->syncRenangFaqVideos($renangFaq, $validated['videos'] ?? []);
+
+        return redirect()->route('admin.settings.edit', ['tab' => 'renang'])
+            ->with('success', 'Data FAQ Renang berhasil diperbarui.');
+    }
+
+    public function destroyRenangFaq(LandingRenangFaq $renangFaq)
+    {
+        $renangFaq->delete();
+
+        return redirect()->route('admin.settings.edit', ['tab' => 'renang'])
+            ->with('success', 'FAQ Renang berhasil dihapus.');
+    }
+
+    private function validateRenangFaq(Request $request): array
+    {
+        return $request->validate([
+            'question' => ['required', 'string', 'max:255'],
+            'answer' => ['required', 'string', 'max:5000'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['sometimes', 'boolean'],
+            'videos' => ['nullable', 'array', 'max:10'],
+            'videos.*.title' => ['nullable', 'string', 'max:255'],
+            'videos.*.youtube_url' => ['nullable', 'url', 'max:2000'],
+        ], [
+            'question.required' => 'Pertanyaan wajib diisi.',
+            'answer.required' => 'Jawaban wajib diisi.',
+            'videos.max' => 'Maksimal 10 video per FAQ.',
+            'videos.*.youtube_url.url' => 'Tautan video harus berupa URL yang valid.',
+        ]);
+    }
+
+    private function syncRenangFaqVideos(LandingRenangFaq $faq, array $videos): void
+    {
+        $faq->videos()->delete();
+
+        foreach (array_values($videos) as $i => $video) {
+            $url = $video['youtube_url'] ?? null;
+
+            if (blank($url)) {
+                continue;
+            }
+
+            LandingRenangFaqVideo::create([
+                'renang_faq_id' => $faq->id,
+                'title' => $video['title'] ?? null,
+                'youtube_url' => $url,
+                'sort_order' => $i + 1,
+            ]);
+        }
     }
 
     public function storeCoach(Request $request)

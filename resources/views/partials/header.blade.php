@@ -5,6 +5,7 @@
         $navItems = [
             ['label' => 'Home', 'href' => url('/'), 'active' => request()->is('/')],
             ['label' => 'Tentang', 'href' => url('/tentang'), 'active' => request()->is('tentang')],
+            ['label' => 'Renang', 'href' => url('/renang'), 'active' => request()->is('renang')],
             ['label' => 'Program', 'href' => url('/program'), 'active' => request()->is('program')],
             ['label' => 'Galeri', 'href' => url('/galeri'), 'active' => request()->is('galeri')],
             ['label' => 'FAQ', 'href' => url('/faq'), 'active' => request()->is('faq')],

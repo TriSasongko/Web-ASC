@@ -46,6 +46,8 @@ Route::get('/faq', function () {
 
 Route::get('/kontak', [LandingController::class, 'kontak']);
 
+Route::get('/renang', [LandingController::class, 'renang']);
+
 // Route dashboard & fitur khusus Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
@@ -147,6 +149,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('settings/jadwal', [SettingController::class, 'updateJadwal'])->name('settings.jadwal');
     Route::put('settings/kontak', [SettingController::class, 'updateKontak'])->name('settings.kontak');
     Route::put('settings/syarat', [SettingController::class, 'updateSyaratKetentuan'])->name('settings.syarat');
+    Route::put('settings/renang', [SettingController::class, 'updateRenang'])->name('settings.renang');
+
+    Route::post('settings/renang/faqs', [SettingController::class, 'storeRenangFaq'])->name('settings.renang.faqs.store');
+    Route::put('settings/renang/faqs/{renangFaq}', [SettingController::class, 'updateRenangFaq'])->name('settings.renang.faqs.update');
+    Route::delete('settings/renang/faqs/{renangFaq}', [SettingController::class, 'destroyRenangFaq'])->name('settings.renang.faqs.destroy');
 
     Route::post('settings/coaches', [SettingController::class, 'storeCoach'])->name('settings.coaches.store');
     Route::put('settings/coaches/{coach}', [SettingController::class, 'updateCoach'])->name('settings.coaches.update');

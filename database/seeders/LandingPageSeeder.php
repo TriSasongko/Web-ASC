@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\LandingCoach;
 use App\Models\LandingGalleryImage;
 use App\Models\LandingProgram;
+use App\Models\LandingRenangFaq;
 use App\Models\LandingSetting;
 use Illuminate\Database\Seeder;
 
@@ -31,6 +32,16 @@ class LandingPageSeeder extends Seeder
             'tentang_years' => '10+',
             'tentang_years_label' => 'Tahun Pengalaman',
             'tentang_image' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuAmiadFbEY1R71f-xV10Cxoiqukf6VBfRXqj7WAZDt-9S6Qsaz14Ulc-fu2uW0Musp9wb2TDiJAnbNlef8AaXiOgPpxm8_YD4j-2Q2M_DCiQw4xeQVj4ZJ_loKzBmTJdlo7aKKbvLKtMznAVcrjHc8KykjKgfGvluY1i6IhJlR8AH0AaM-RitVo7ZINwDDQFJf99rWANhjcTy3ywYqqXGoy8sdBD396_dEBeG7v-MPlOLBzu9KEVlrz',
+
+            // Halaman Renang
+            'renang_heading' => 'Tentang Renang',
+            'renang_subtitle' => 'Mengenal lebih dalam olahraga renang dan bagaimana ASC membantu Anda menguasainya dengan aman dan menyenangkan.',
+            'renang_umum_heading' => 'Apa itu Renang?',
+            'renang_umum_text' => "Renang adalah olahraga air yang dilakukan dengan menggerakkan seluruh anggota tubuh di dalam air. Sebagai salah satu olahraga paling lengkap, renang melatih hampir seluruh otot tubuh tanpa memberi beban berlebih pada persendian. Renang juga melatih sistem pernapasan, kekuatan jantung, serta daya tahan tubuh. Karena sifatnya yang low impact, renang cocok untuk semua usia mulai dari anak-anak hingga lansia.\n\nAda empat gaya utama dalam renang: gaya bebas, gaya punggung, gaya dada, dan gaya kupu-kupu. Setiap gaya memiliki teknik dasar yang berbeda dan dapat dipelajari secara bertahap sesuai dengan kemampuan serta tujuan setiap perenang.",
+            'renang_khusus_heading' => 'Renang di AantassenaSwimClub',
+            'renang_khusus_text' => "Di AantassenaSwimClub (ASC), berenang diajarkan dengan pendekatan yang aman, terstruktur, dan menyenangkan. Kami memiliki kurikulum bertingkat yang dimulai dari pengenalan air, teknik pernapasan, hingga penyempurnaan gaya untuk tingkat kompetitif.\n\nSetiap siswa didampingi oleh coach bersertifikat dengan rasio yang terjaga agar perhatian tetap optimal. Kami juga memantau perkembangan siswa melalui E-Raport digital sehingga orang tua dapat melihat kemajuan anak setiap periode. Kelas tersedia untuk anak-anak maupun dewasa, dari program private hingga kelas reguler.",
+            'renang_faq_heading' => 'Pertanyaan Seputar Renang',
+            'renang_faq_subtitle' => 'Jawaban singkat untuk pertanyaan yang sering diajukan. Beberapa pertanyaan dilengkapi tautan video penjelasan.',
 
             // Program
             'program_heading' => 'Program Kelas Kami',
@@ -354,6 +365,33 @@ TEXT,
 
         foreach ($gallery as $image) {
             LandingGalleryImage::create($image);
+        }
+
+        $faqs = [
+            [
+                'question' => 'Apakah anak yang belum bisa berenang bisa ikut?',
+                'answer' => 'Bisa. Program kelas pemula kami dirancang khusus untuk pengenalan air, mengatasi rasa takut, serta belajar teknik pernapasan dan gerakan dasar secara bertahap.',
+                'sort_order' => 1,
+            ],
+            [
+                'question' => 'Mulai usia berapa anak sebaiknya belajar renang?',
+                'answer' => 'Anak dapat mulai belajar renang sejak usia 4 tahun pada kelas reguler/mini reguler. Untuk usia lebih muda, tersedia program private dengan pendampingan khusus.',
+                'sort_order' => 2,
+            ],
+            [
+                'question' => 'Apa saja gaya renang yang diajarkan di ASC?',
+                'answer' => 'Kami mengajarkan empat gaya renang: gaya bebas, gaya punggung, gaya dada, dan gaya kupu-kupu, disesuaikan dengan jenjang kemampuan setiap siswa.',
+                'sort_order' => 3,
+            ],
+            [
+                'question' => 'Apakah orang dewasa yang belum bisa berenang bisa mendaftar?',
+                'answer' => 'Tentu. Tersedia program khusus dewasa mulai dari pemula total hingga penyempurnaan teknik, baik private maupun kelompok kecil.',
+                'sort_order' => 4,
+            ],
+        ];
+
+        foreach ($faqs as $faq) {
+            LandingRenangFaq::create($faq);
         }
     }
 }

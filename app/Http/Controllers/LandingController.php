@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LandingCoach;
 use App\Models\LandingGalleryImage;
 use App\Models\LandingProgram;
+use App\Models\LandingRenangFaq;
 use App\Models\LandingSetting;
 
 class LandingController extends Controller
@@ -60,6 +61,14 @@ class LandingController extends Controller
         return view('galeri', [
             'settings' => LandingSetting::resolvedValues(),
             'gallery' => LandingGalleryImage::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get(),
+        ]);
+    }
+
+    public function renang()
+    {
+        return view('renang', [
+            'settings' => LandingSetting::resolvedValues(),
+            'faqs' => LandingRenangFaq::with('videos')->where('is_active', true)->orderBy('sort_order')->orderBy('id')->get(),
         ]);
     }
 
